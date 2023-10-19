@@ -1,0 +1,21 @@
+config {
+  type: "incremental",
+  uniqueKey: ["org_info_id"],
+  schema: "marketing"
+}
+
+
+SELECT
+    MD5(CONCAT(org_id,location,size,field,industry,category,type,partnership_category,partnership_type,segmentation,tax_code)) org_info_id,
+    org_id,
+    location,
+    size,
+    field,
+    industry,
+    category,
+    type,
+    partnership_category,
+    partnership_type,
+    segmentation,
+    tax_code
+FROM ${ref('raw_organization_info')}
