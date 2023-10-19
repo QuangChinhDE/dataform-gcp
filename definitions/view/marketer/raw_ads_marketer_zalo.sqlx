@@ -1,0 +1,10 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT  
+  MKTer marketer
+  ,SPLIT(MKTer, ' ')[OFFSET(1)] code
+  ,cast(ad_id as int64) ad_id
+FROM `base-datateam.airbyte_ads.marketer_zalo`

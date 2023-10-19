@@ -1,0 +1,46 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+  phone_account,
+  TO_JSON_STRING(reports) reports,
+  CAST(campaign_id AS INT64) campaign_id,
+  campaign_name,
+  CAST(ad_id AS INT64) ad_id,
+  ad_name,
+  MAX(_airbyte_extracted_at) _airbyte_extracted_at
+FROM `base-datateam.airbyte_ads.zalo_ads`
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+GROUP BY
+  phone_account,
+  TO_JSON_STRING(reports),
+  CAST(ad_id AS INT64),
+  CAST(campaign_id AS INT64),
+  ad_name,
+  campaign_name
+
+-- SELECT
+--     phone phone_account,
+--     TO_JSON_STRING(reports) reports,
+--     CAST(campaign_id AS INT64) campaign_id,
+--     campaign_name,
+--     start_date start_date,
+--     end_date end_date,
+--     CAST(ad_id AS INT64) ad_id,
+--     ad_type,
+--     ad_name,
+--         CAST(NULL AS TIMESTAMP) _airbyte_extracted_at
+
+-- FROM `base-datateam.airbyte_ads.zalo_old_ads_260422_300923`
+
+
+
+
+
+
+
+
+
+

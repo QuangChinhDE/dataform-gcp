@@ -1,0 +1,9 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT distinct
+  source_id
+  ,source
+FROM ${ref('raw_campaign_error')}

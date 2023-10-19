@@ -1,0 +1,49 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH
+    note AS (
+        SELECT DISTINCT
+            cast(JSON_EXTRACT_SCALAR(data, '$.deal_id') as int64) deal_id,
+            cast(JSON_EXTRACT_SCALAR(data, '$.content') as string) content,
+            DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
+            MAX(DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR)) update_time,
+        FROM `base-datateam.airbyte_pipedrive.note`
+        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+            AND cast(JSON_EXTRACT_SCALAR(data, '$.deal_id') as int64) is not null
+            AND cast(JSON_EXTRACT_SCALAR(data, '$.content') as string) like '%Product Name: %'
+        GROUP BY
+            cast(JSON_EXTRACT_SCALAR(data, '$.deal_id') as int64),
+            cast(JSON_EXTRACT_SCALAR(data, '$.content') as string),
+            DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR)
+    ),
+
+    old_note AS (
+        SELECT DISTINCT
+            deal_id
+            ,content
+            ,DATETIME_ADD(cast(add_time as DATETIME), INTERVAL 7 HOUR) add_time
+            ,MAX(DATETIME_ADD(cast(update_time as DATETIME), INTERVAL 7 HOUR)) update_time 
+        FROM `base-datateam.airbyte_pipedrive.old_notes`
+        WHERE deal_id is not null   
+            AND content like '%Product Name: %'
+        GROUP BY
+            deal_id
+            ,content
+            ,DATETIME_ADD(cast(add_time as DATETIME), INTERVAL 7 HOUR)
+    )
+
+SELECT
+    MD5(CONCAT(
+        IFNULL(cast(deal_id AS STRING), ''),
+        IFNULL(cast(content AS STRING), ''),
+        IFNULL(cast(add_time AS STRING), ''),
+        IFNULL(cast(update_time AS STRING), '')
+    )) note_id,
+    deal_id,
+    content,
+    add_time,
+    update_time,
+FROM (select * from note) notes

@@ -1,0 +1,32 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH
+    campaign AS (
+        SELECT distinct
+            ID campaign_id
+            ,Name name
+            ,Medium medium
+            ,case 
+                when lower(Source) like '%facebook%' then 'facebook'
+                when lower(Source) like '%coc_coc%' or lower(Source) like '%coccoc%' then 'coc_coc'
+                when lower(Source) like '%google%' then 'google'
+                else lower(Source)
+            end source
+            ,Content content
+            ,Term term
+            ,Description description
+        FROM `base-datateam.airbyte_ads.mssql_Campaigns`
+    )
+
+SELECT distinct
+    MD5(source) source_id
+    ,campaign_id
+    ,name
+    ,medium
+    ,source
+    ,content
+    ,description
+FROM campaign

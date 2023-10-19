@@ -1,0 +1,129 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH 
+    organization_field_option AS (SELECT * FROM ${ref('raw_organization_field')}),
+    
+    org AS (
+        SELECT distinct
+            cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) org_id, 
+            JSON_EXTRACT_SCALAR(data, '$.name') name,
+            of1.label location,
+            of2.label size,
+            JSON_EXTRACT_SCALAR(data, '$.86aee7c697aaf161d55cdf1b390f3059da1a375d') category,
+            of3.label partnership_category,
+            of4.label type,
+            of6.label partnership_type,
+            of5.label field,
+            of7.label industry,
+            DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
+            MAX(DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR)) update_time
+        FROM `base-datateam.airbyte_pipedrive.organization` org
+        LEFT JOIN organization_field_option of1 ON of1.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND of1.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.41c48ba0a3590d935a2130d18a6d0846ebf58102') as int64)
+        LEFT JOIN organization_field_option of2 ON of2.key = '02c2235f2970ec1b3537676cd4dfdcead536d375' AND of2.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.02c2235f2970ec1b3537676cd4dfdcead536d375') as int64)
+        LEFT JOIN organization_field_option of3 ON of3.key = '302d3174f5d276253bc757eabe1a03d2b588471d' AND of3.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.302d3174f5d276253bc757eabe1a03d2b588471d') as int64)
+        LEFT JOIN organization_field_option of4 ON of4.key = '889f949126fc899b7c2a6b197eb44af57cc1bc96' AND of4.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.889f949126fc899b7c2a6b197eb44af57cc1bc96') as int64)
+        LEFT JOIN organization_field_option of5 ON of5.key = 'e3d331500177698d4931689b866c08c234d39aac' AND of5.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.e3d331500177698d4931689b866c08c234d39aac') as int64)
+        LEFT JOIN organization_field_option of6 ON of6.key = 'eafff329b5a3a4dec079ed3ef70c2b540219221a' AND of6.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.eafff329b5a3a4dec079ed3ef70c2b540219221a') as int64)
+        LEFT JOIN organization_field_option of7 ON of7.key = 'cd38b6a4591ac1d1f99ba791d5972b45d0a98faf' AND of6.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.cd38b6a4591ac1d1f99ba791d5972b45d0a98faf') as int64)
+        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+        GROUP BY
+            cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64), 
+            JSON_EXTRACT_SCALAR(data, '$.name'),
+            of1.label,
+            of2.label,
+            JSON_EXTRACT_SCALAR(data, '$.86aee7c697aaf161d55cdf1b390f3059da1a375d'),
+            of3.label,
+            of4.label,
+            of6.label,
+            of5.label,
+            of7.label,
+            DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR)
+    ),
+
+    old_org_pivot_raw AS (
+        select
+            org_id,
+            of1.label location,
+            of2.label size,
+            `86aee7c697aaf161d55cdf1b390f3059da1a375d` category,
+            of3.label partnership_category,
+            of4.label type,
+            of6.label partnership_type,
+            of5.label field,
+            of7.label industry,
+            log_time
+        from (select
+                organization_id org_id
+                ,field_key
+                ,new_value
+                ,log_time
+            from `base-datateam.airbyte_pipedrive.old_organizationChanges`) org_change
+        pivot (max(new_value) for field_key in ('41c48ba0a3590d935a2130d18a6d0846ebf58102','02c2235f2970ec1b3537676cd4dfdcead536d375','302d3174f5d276253bc757eabe1a03d2b588471d','889f949126fc899b7c2a6b197eb44af57cc1bc96','e3d331500177698d4931689b866c08c234d39aac','eafff329b5a3a4dec079ed3ef70c2b540219221a','cd38b6a4591ac1d1f99ba791d5972b45d0a98faf','86aee7c697aaf161d55cdf1b390f3059da1a375d'))
+        LEFT JOIN organization_field_option of1 ON of1.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND of1.id = safe_cast(replace(`41c48ba0a3590d935a2130d18a6d0846ebf58102`,'.0','') as int64)
+        LEFT JOIN organization_field_option of2 ON of2.key = '02c2235f2970ec1b3537676cd4dfdcead536d375' AND of2.id = safe_cast(replace(`02c2235f2970ec1b3537676cd4dfdcead536d375`,'.0','') as int64)
+        LEFT JOIN organization_field_option of3 ON of3.key = '302d3174f5d276253bc757eabe1a03d2b588471d' AND of3.id = safe_cast(replace(`302d3174f5d276253bc757eabe1a03d2b588471d`,'.0','') as int64)
+        LEFT JOIN organization_field_option of4 ON of4.key = '889f949126fc899b7c2a6b197eb44af57cc1bc96' AND of4.id = safe_cast(replace(`889f949126fc899b7c2a6b197eb44af57cc1bc96`,'.0','') as int64)
+        LEFT JOIN organization_field_option of5 ON of5.key = 'e3d331500177698d4931689b866c08c234d39aac' AND of5.id = safe_cast(replace(`e3d331500177698d4931689b866c08c234d39aac`,'.0','') as int64)
+        LEFT JOIN organization_field_option of6 ON of6.key = 'eafff329b5a3a4dec079ed3ef70c2b540219221a' AND of6.id = safe_cast(replace(`eafff329b5a3a4dec079ed3ef70c2b540219221a`,'.0','') as int64)
+        LEFT JOIN organization_field_option of7 ON of7.key = 'cd38b6a4591ac1d1f99ba791d5972b45d0a98faf' AND of6.id = safe_cast(replace(`cd38b6a4591ac1d1f99ba791d5972b45d0a98faf`,'.0','') as int64)
+    ),
+
+    old_org_pivot AS (
+        SELECT DISTINCT * EXCEPT(row_number)
+        FROM (
+            SELECT *,
+                ROW_NUMBER() OVER (PARTITION BY org_id ORDER BY log_time DESC) AS row_number
+            FROM (SELECT distinct
+                    org_id,
+                    LAST_VALUE(location IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY log_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as location,
+                    LAST_VALUE(size IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY log_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as size,
+                    LAST_VALUE(category IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY log_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as category,
+                    LAST_VALUE(partnership_category IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY log_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as partnership_category,
+                    LAST_VALUE(type IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY log_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as type,
+                    LAST_VALUE(partnership_type IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY log_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as partnership_type,
+                    LAST_VALUE(field IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY log_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as field,
+                    LAST_VALUE(industry IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY log_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as industry,
+                    MAX(log_time) OVER(PARTITION BY org_id) as log_time
+                FROM old_org_pivot_raw
+                WHERE org_id is not null) org_
+            ) t
+        WHERE t.row_number = 1
+    ),
+
+    old_org AS (
+        SELECT
+            org_.id org_id,
+            org_.name,
+            org_change.location,
+            org_change.size,
+            org_change.category,
+            org_change.partnership_category,
+            org_change.type,
+            org_change.partnership_type,
+            org_change.field,
+            org_change.industry,
+            DATETIME_ADD(cast(add_time as DATETIME), INTERVAL 7 HOUR) add_time,
+            MAX(DATETIME_ADD(cast(update_time as DATETIME), INTERVAL 7 HOUR)) update_time
+        FROM `base-datateam.airbyte_pipedrive.old_organizations` org_
+        LEFT JOIN (select * from old_org_pivot) org_change on org_.id = org_change.org_id
+        WHERE org_id NOT IN (SELECT distinct org_id from org)
+        GROUP BY
+            org_.id,
+            org_.name,
+            org_change.location,
+            org_change.size,
+            org_change.category,
+            org_change.partnership_category,
+            org_change.type,
+            org_change.partnership_type,
+            org_change.field,
+            org_change.industry,
+            DATETIME_ADD(cast(add_time as DATETIME), INTERVAL 7 HOUR)
+    )
+
+SELECT * FROM org
+-- UNION ALL
+-- SELECT * FROM old_org

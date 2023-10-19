@@ -1,0 +1,102 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH
+    facebook_cost AS (
+        SELECT DISTINCT
+            account_id
+            ,CAST(NULL AS STRING) marketer
+            ,ad_id
+            ,date_start date
+            ,cost
+            ,click
+            ,impression
+            ,reach
+            ,MD5('facebook') source_id
+        FROM ${ref('raw_ads_facebook')} facebook
+    ),
+
+    coccoc_cost AS (
+        SELECT distinct
+            CAST(NULL AS INT64) account_id
+            ,CAST(account_name AS STRING) marketer
+            ,ad_id
+            ,MAX(cast(JSON_EXTRACT_SCALAR(json, '$.date') AS date)) AS date
+            ,MAX(cast(JSON_EXTRACT_SCALAR(json, '$.spendings') AS FLOAT64)) AS cost
+            ,MAX(cast(JSON_EXTRACT_SCALAR(json, '$.clicks') AS INT64)) AS click
+            ,MAX(cast(JSON_EXTRACT_SCALAR(json, '$.impressions') AS INT64)) AS impression
+            ,cast(NULL as INT64) reach
+            ,MD5('coc_coc') source_id
+        FROM `base-datateam.airbyte_ads.coccoc_advert_statistic` ads,
+            UNNEST(JSON_EXTRACT_ARRAY(statsDetail)) AS json
+        INNER JOIN ${ref('raw_ads_coccoc')} ad ON ad.ad_id = ads.advertId
+        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+        GROUP BY
+            CAST(NULL AS INT64)
+            ,CAST(account_name AS STRING)
+            ,ad_id
+            ,cast(NULL as INT64)
+            ,MD5('coc_coc')
+    ),
+
+    google_cost AS (
+        SELECT
+            cast(customer_id as int64) account_id
+            ,CAST(NULL AS STRING) marketer
+            ,ad_id
+            ,date
+            ,cost
+            ,click
+            ,impression
+            ,cast(NULL as INT64) reach
+            ,MD5('google') source_id
+        FROM ${ref('raw_ads_google')} google
+        -- LEFT JOIN google_marketer ON google_marketer.campaign_id = google.campaign_id
+    ),
+
+    zalo_raw_split AS (
+        SELECT
+            phone_account,
+            ad_id,
+            REPLACE(SPLIT(reports, '":{"')[OFFSET(0)], '{"', '') AS create_date,
+            CONCAT('{"', REPLACE(REPLACE(SPLIT(reports, '":{"')[OFFSET(1)], '}}', '}'), "'", '"')) AS json_str
+        FROM ${ref('raw_ads_zalo')} zalo
+        WHERE reports is not null and LENGTH(reports) > 20
+    ),
+
+    zalo_raw AS (
+        SELECT
+            zalo_raw_split.ad_id,
+            CASE WHEN phone_account like '%0901706233%' THEN 'phuongluong02' ELSE 'thaonguyen06' END marketer,
+            cast(phone_account as int64) account_id,
+            DATE(TIMESTAMP_SECONDS(cast(create_date as int64) + 25200)) date,
+            cast(JSON_EXTRACT(json_str, '$.cost') as FLOAT64) AS cost,
+            cast(JSON_EXTRACT(json_str, '$.impression') as int64) AS impression,
+            cast(JSON_EXTRACT(json_str, '$.click') as int64) AS click,
+        FROM zalo_raw_split
+    ),
+
+    zalo_cost AS (
+        SELECT 
+            account_id, 
+            marketer, 
+            ad_id, 
+            date, 
+            cost, 
+            impression, 
+            click, 
+            cast(NULL as int64) reach, 
+            MD5('zalo') source_id 
+        FROM zalo_raw 
+    )
+
+
+SELECT DISTINCT * FROM facebook_cost
+UNION ALL
+SELECT DISTINCT * FROM google_cost
+UNION ALL
+SELECT DISTINCT * FROM zalo_cost
+UNION ALL
+SELECT DISTINCT * FROM coccoc_cost

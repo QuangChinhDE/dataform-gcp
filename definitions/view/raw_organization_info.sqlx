@@ -1,0 +1,92 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH
+    deal_org_raw AS (
+        SELECT 
+        org_id,
+        LAST_VALUE(category IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY update_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as category,
+        LAST_VALUE(field IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY update_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as field,
+        LAST_VALUE(industry IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY update_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as industry,
+        LAST_VALUE(segmentation IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY update_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as segmentation,
+        LAST_VALUE(size IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY update_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as size,
+        LAST_VALUE(tax_code IGNORE NULLS) OVER(PARTITION BY org_id ORDER BY update_time ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as tax_code,
+        MAX(update_time) OVER(PARTITION BY org_id) as update_time
+        FROM ${ref('raw_deal')}
+        WHERE org_id is not null
+    ),
+
+    deal_org AS (
+        SELECT
+        org_id
+        ,category
+        ,field
+        ,df1.label industry
+        ,segmentation
+        ,size
+        ,tax_code
+        FROM deal_org_raw, UNNEST(SPLIT(industry, ',')) AS industry
+        LEFT JOIN ${ref('raw_deal_field')} df1 ON df1.key = '433393a17d7d4d66fad7fea01c611906aa554327' AND df1.id = cast(industry as int64)
+    ),
+
+    org_info AS (
+        SELECT
+            org_id, 
+            location,
+            size,
+            of1.label category,
+            partnership_category,
+            type,
+            partnership_type,
+            field,
+            industry,
+            update_time        
+        FROM ${ref('raw_organization')}, UNNEST(SPLIT(category, ',')) AS category
+        LEFT JOIN ${ref('raw_organization_field')} of1 ON of1.key = '86aee7c697aaf161d55cdf1b390f3059da1a375d' AND of1.id = cast(replace(category, ' ','') as int64)
+    ),
+
+    done AS (
+        SELECT
+        org_info.org_id
+        ,org_info.location
+        ,case
+            when org_info.size is null then deal_org.size
+            else org_info.size
+        end size
+        ,case
+            when org_info.field is null then deal_org.field
+            else org_info.field
+        end field
+        ,case
+            when org_info.industry is null then deal_org.industry
+            else org_info.industry
+        end industry
+        ,case
+            when org_info.category is null then deal_org.category
+            else org_info.category
+        end category
+        ,partnership_category
+        ,type
+        ,partnership_type
+        ,segmentation
+        ,tax_code
+        FROM org_info
+        LEFT JOIN deal_org ON deal_org.org_id = org_info.org_id
+    )
+
+SELECT * FROM done
+WHERE location is not null
+    or size is not null
+    or field is not null
+    or industry is not null
+    or category is not null
+    or partnership_category is not null
+    or type is not null
+    or partnership_type is not null
+    or segmentation is not null
+    or tax_code is not null
+
+
+

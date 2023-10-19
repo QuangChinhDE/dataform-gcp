@@ -1,0 +1,50 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+
+WITH
+    facebook_marketer AS (
+        SELECT
+            marketer
+            ,code
+            ,account_id
+            ,status
+            ,start_date
+            ,update_at
+            ,MD5('facebook') source_id
+        FROM ${ref('raw_ads_marketer_facebook')}
+    ),
+
+    google_marketer AS (
+        SELECT distinct
+            marketer
+            ,code
+            ,account_id
+            ,status
+            ,start_date
+            ,update_at
+            ,MD5('google') source_id
+        FROM ${ref('raw_ads_marketer_google')}
+    ),
+
+    zalo_marketer AS (
+        SELECT distinct
+            marketer
+            ,code
+            ,CASE WHEN marketer = 'Phương B596' THEN 0901706233 ELSE 0782013387 END account_id
+            ,CAST(NULL as STRING) status
+            ,CAST(NULL as DATE) start_date
+            ,CAST(NULL as DATE) update_at
+            ,MD5('zalo') source_id
+        FROM ${ref('raw_ads_marketer_zalo')}
+    )
+
+SELECT DISTINCT * FROM facebook_marketer
+UNION ALL
+SELECT DISTINCT * FROM google_marketer
+UNION ALL
+SELECT DISTINCT * FROM zalo_marketer
+
+

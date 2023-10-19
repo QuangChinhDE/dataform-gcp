@@ -1,0 +1,15 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT DISTINCT
+    customer_id
+    ,person_id
+    ,org_id
+    ,max(last_update) last_update
+FROM ${ref('raw_customer_person')}
+GROUP BY
+    customer_id
+    ,person_id
+    ,org_id

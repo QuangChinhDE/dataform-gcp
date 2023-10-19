@@ -1,0 +1,7 @@
+config {
+  type: "incremental",
+  uniqueKey: ["user_id"],
+  schema: "marketing"
+}
+
+SELECT * FROM ${ref('raw_saleman')}

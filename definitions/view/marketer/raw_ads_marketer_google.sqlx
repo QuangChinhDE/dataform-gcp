@@ -1,0 +1,14 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT 
+  MKTer marketer
+  ,MKTer_code code
+  ,cast(customer_id as int64) account_id
+  ,cast(campaign_id as int64) campaign_id
+  ,status
+  ,date(start_date) start_date
+  ,date(Last_update) update_at
+FROM `base-datateam.airbyte_ads.marketer_google`

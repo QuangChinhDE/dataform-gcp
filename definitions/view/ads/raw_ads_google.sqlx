@@ -1,0 +1,24 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT distinct
+    customer_id
+    ,ad_group_ad_ad_id ad_id
+    ,segments_date date
+    ,CASE 
+        WHEN MAX(customer_currency_code) = 'USD' THEN MAX(metrics_cost_micros)/1000000*25000
+        ELSE MAX(metrics_cost_micros)/1000000
+    END cost
+    ,MAX(metrics_impressions) impression
+    ,MAX(metrics_clicks) click
+FROM `base-datateam.airbyte_ads.google_ad_group_ad_report`
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+-- AND customer_id = 9582920772 and campaign_id = 18140698997 AND string(segments_date) like '%2023-01%'
+GROUP BY
+    customer_id
+    ,ad_group_ad_ad_id
+    ,segments_date
+
+

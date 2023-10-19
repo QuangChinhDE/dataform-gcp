@@ -1,0 +1,7 @@
+config {
+  type: "incremental",
+  uniqueKey: ["source_id"],
+  schema: "marketing"
+}
+
+SELECT * FROM ${ref('raw_source')}

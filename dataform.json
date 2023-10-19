@@ -1,5 +1,5 @@
 {
-  "defaultSchema": "query",
+  "defaultSchema": "marketing",
   "assertionSchema": "query",
   "warehouse": "bigquery",
   "defaultDatabase": "base-data-analyst",

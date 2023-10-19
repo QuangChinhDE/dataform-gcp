@@ -1,0 +1,71 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH
+  person_in_pipedrive_raw AS (
+    SELECT DISTINCT *
+    FROM ${ref('raw_customer_person')}
+  ),
+
+  customer_in_pipedrive_raw AS (
+    SELECT DISTINCT * EXCEPT(row_number)
+    FROM (
+      SELECT *,
+          ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY last_update DESC) AS row_number
+      FROM person_in_pipedrive_raw
+      ) t
+    WHERE t.row_number = 1
+  ), 
+
+  customer_in_lead_raw AS (
+    SELECT DISTINCT * EXCEPT(row_number)
+    FROM (
+      SELECT *,
+          ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY create_date,phone DESC) AS row_number
+      FROM (SELECT DISTINCT customer_id,name,email,phone,title,create_date FROM ${ref('raw_lead')})
+      ) t
+    WHERE t.row_number = 1
+  )
+
+SELECT 
+    customer_in_lead_raw.customer_id
+    ,customer_in_lead_raw.name
+    ,customer_in_lead_raw.email
+    ,customer_in_lead_raw.phone
+    ,customer_in_pipedrive_raw.birthday
+    ,CASE WHEN customer_in_lead_raw.title IS NULL OR customer_in_lead_raw.title = '' THEN customer_in_pipedrive_raw.title ELSE customer_in_lead_raw.title END title
+    ,customer_in_pipedrive_raw.position
+    ,customer_in_pipedrive_raw.last_update
+    ,customer_in_lead_raw.create_date
+    ,customer_in_pipedrive_raw.last_activity_date
+    ,customer_in_pipedrive_raw.person_id
+    ,customer_in_pipedrive_raw.org_id
+    ,CASE WHEN customer_in_pipedrive_raw.org_id IS NULL THEN 0 ELSE 1 END status
+FROM customer_in_lead_raw
+LEFT JOIN customer_in_pipedrive_raw ON customer_in_pipedrive_raw.customer_id = customer_in_lead_raw.customer_id
+UNION ALL
+SELECT
+    customer_in_pipedrive_raw.customer_id
+    ,customer_in_pipedrive_raw.name
+    ,customer_in_pipedrive_raw.email
+    ,cast(NULL as STRING) phone
+    ,customer_in_pipedrive_raw.birthday
+    ,customer_in_pipedrive_raw.title
+    ,customer_in_pipedrive_raw.position
+    ,customer_in_pipedrive_raw.last_update
+    ,customer_in_pipedrive_raw.create_date
+    ,customer_in_pipedrive_raw.last_activity_date
+    ,customer_in_pipedrive_raw.person_id
+    ,customer_in_pipedrive_raw.org_id
+    ,1 status
+FROM customer_in_pipedrive_raw
+WHERE customer_id NOT IN (SELECT DISTINCT customer_id FROM customer_in_lead_raw)
+
+
+
+
+
+
+

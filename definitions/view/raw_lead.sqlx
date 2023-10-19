@@ -1,0 +1,27 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+    lead.ContactEventID lead_id
+    ,lead.Name name
+    ,MD5(lower(Replace(lead.Email, ' ', ''))) customer_id
+    ,lower(Replace(lead.Email, ' ', '')) email
+    ,lead.Phone phone
+    ,lead.Title title
+    ,lead.CompanyName company_name
+    ,lead.CompanySize company_size
+    ,lead.CompanyAddress company_address
+    ,lead.ProductId product_id
+    -- ,lower(lead.Source) source
+    ,lead.SourceGroup source_group
+    ,ce.CampaignID campaign_id
+    ,DATE_ADD(DATETIME(lead.CreatedDate), INTERVAL 7 HOUR) create_date 
+    ,lead.Note note
+    ,lead.Status status
+    ,lead.HubSpotID deal_id
+    ,lead.DisqualifiedReason disqualified_reason
+FROM `base-datateam.airbyte_ads.mssql_Leads` lead
+INNER JOIN (SELECT ID, CampaignID FROM `base-datateam.airbyte_ads.mssql_ContactEvents` WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())) ce ON ce.ID = lead.ContactEventID
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
