@@ -1,0 +1,14 @@
+config {
+  type: "incremental",
+  uniqueKey: ['system_id'],
+  schema: "customer_onboarding"
+}
+
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT distinct *,
+        ROW_NUMBER() OVER (PARTITION BY system_id ORDER BY last_update DESC) AS row_number
+    FROM ${ref('raw_system')} a
+  ) t
+WHERE t.row_number = 1  

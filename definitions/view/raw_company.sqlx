@@ -1,0 +1,38 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH job_form_pivot AS (
+    SELECT * FROM ${ref('raw_job_form')}
+    PIVOT(MAX(value) FOR keys IN (
+        -- company
+        'companypath'
+        ,'ben_su_dung_dich_vu_ben_a'
+        ,'size_cong_ty'
+        ,'ma_so_thue'
+        ,'linh_vuc'
+        --pic
+        ,'pic_ho_va_ten'
+        ,'pic_chuc_vu'
+        ,'pic_sdt'
+        ,'pic_email'
+        ))
+    )
+
+select distinct
+    MD5(ma_so_thue) company_id
+    ,MAX(companypath) path
+    ,MAX(ben_su_dung_dich_vu_ben_a) name
+    ,MAX(size_cong_ty) size
+    ,ma_so_thue tax_code
+    ,MAX(linh_vuc) field
+    ,MAX(case
+        when length(ma_so_thue) between 10 and 13 then 'correct'
+        else 'incorrect'
+    end) status
+from job_form_pivot 
+group by
+    MD5(ma_so_thue)
+    ,ma_so_thue
+

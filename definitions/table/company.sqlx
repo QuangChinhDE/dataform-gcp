@@ -1,0 +1,7 @@
+config {
+  type: "incremental",
+  uniqueKey: ['company_id'],
+  schema: "customer_onboarding"
+}
+
+SELECT * FROM ${ref('raw_company')}

@@ -1,0 +1,38 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+  MD5(CONCAT(
+        IFNULL(cast(job_id AS STRING), ''),
+        IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.stage_id') as int64) AS STRING), ''),
+        IFNULL(cast(last_update AS STRING), ''),
+        IFNULL(cast(workflow_id AS STRING), ''),
+        IFNULL(cast(CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(json, '$.stage_start'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) AS STRING), '')
+    )) job_move_id
+  ,job_id
+  ,last_update
+  ,workflow_id
+  ,cast(JSON_EXTRACT_SCALAR(json, '$.stage_id') as int64)  stage_id
+  ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(json, '$.stage_start'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) stage_start
+FROM ${ref('raw_job')},
+  UNNEST(JSON_EXTRACT_ARRAY(moves)) AS json
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

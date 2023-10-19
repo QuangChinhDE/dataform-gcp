@@ -1,0 +1,25 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH
+    identifies AS (
+        SELECT * FROM ${ref('javascript')}
+        UNION ALL
+        SELECT * FROM ${ref('react_native')}
+        UNION ALL
+        SELECT * FROM ${ref('react_native_base_me')}
+        UNION ALL
+        SELECT * FROM ${ref('rn_request')}
+        UNION ALL
+        SELECT * FROM ${ref('rn_wework')}
+        UNION ALL
+        SELECT * FROM ${ref('rn_workflow')}
+        UNION ALL
+        SELECT * FROM ${ref('php_production')}
+    )
+
+SELECT DISTINCT
+    *
+FROM identifies

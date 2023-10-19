@@ -1,0 +1,50 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT * EXCEPT(row_number)
+  FROM (
+      SELECT *,
+          ROW_NUMBER() OVER (PARTITION BY job_id ORDER BY last_update DESC) AS row_number
+      FROM (SELECT  
+              cast(replace(id, '.0', '') as int64) job_id
+              ,cast(replace(workflow_id, '.0', '') as int64) workflow_id
+              ,cast(replace(stage_id, '.0', '') as int64) stage_id
+              ,cast(replace(user_id, '.0', '') as int64) user_id
+              ,cast(replace(first_assignee, '.0', '') as int64) first_assignee_id
+              ,cast(replace(creator_id, '.0', '') as int64) creator_id
+              ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(since, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) since
+              ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
+              ,CASE
+                WHEN safe_cast(replace(finish_at, '.0', '') as int64) = 0 or safe_cast(replace(finish_at, '.0', '') as int64) IS NULL THEN CAST(NULL AS DATETIME)
+                ELSE CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(finish_at, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME)
+              END finish_at
+              ,CASE
+                WHEN safe_cast(replace(deadline, '.0', '') as int64) = 0 or safe_cast(replace(deadline, '.0', '') as int64) IS NULL THEN CAST(NULL AS DATETIME)
+                ELSE CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(deadline, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME)
+              END deadline
+              ,form
+              ,moves
+              ,todos
+              ,SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.gen_prev.id') AS INT64) from_id
+              ,SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.gen_prev.type') AS STRING) from_type
+              ,name
+              -- ,case
+              --     when status = '10' then 'done'
+              --     when status = '-10' then 'failed'
+              --     else 'active'
+              -- end status
+              ,state status                  
+              ,JSON_EXTRACT_SCALAR(on_failed, '$.failed_name') failed_name
+              ,JSON_EXTRACT_SCALAR(on_failed, '$.note') failed_note
+              ,CASE
+                WHEN safe_cast(replace(JSON_EXTRACT_SCALAR(on_failed, '$.since'), '.0', '') as int64) = 0 or safe_cast(replace(JSON_EXTRACT_SCALAR(on_failed, '$.since'), '.0', '') as int64) IS NULL THEN CAST(NULL AS DATETIME)
+                ELSE CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(on_failed, '$.since'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME)
+              END failed_since
+          FROM `base-datateam.airbyte_base_workflow.job` 
+          WHERE cast(replace(workflow_id, '.0', '') as int64) IN (3940, 4536, 3942, 4085, 4088, 5469, 2069, 4132, 4131, 3950, 11, 31, 5555, 3421)
+            AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+      ) a
+  ) t
+WHERE t.row_number = 1 

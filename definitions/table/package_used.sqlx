@@ -1,0 +1,7 @@
+config {
+  type: "incremental",
+  uniqueKey: ['package_used_id'],
+  schema: "customer_onboarding"
+}
+
+SELECT * FROM ${ref('raw_package_used')}

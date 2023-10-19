@@ -1,0 +1,7 @@
+config {
+  type: "incremental",
+  uniqueKey: ['request_id'],
+  schema: "customer_onboarding"
+}
+
+SELECT * FROM ${ref('raw_request')}

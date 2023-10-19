@@ -1,0 +1,58 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH job_form_pivot AS (
+    SELECT * FROM ${ref('raw_job_form')}
+    PIVOT(MAX(value) FOR keys IN (
+        -- company
+        'companypath'
+        ,'ben_su_dung_dich_vu_ben_a'
+        ,'size_cong_ty'
+        ,'ma_so_thue'
+        ,'linh_vuc'
+        --pic
+        ,'pic_ho_va_ten'
+        ,'pic_chuc_vu'
+        ,'pic_sdt'
+        ,'pic_email'
+        ))
+    )
+
+select distinct
+    MD5(lower(replace(pic_email, " ", ""))) customer_id
+    ,MAX(pic_ho_va_ten) name
+    ,MAX(pic_chuc_vu) title
+    ,MAX(replace(replace(replace(replace(pic_sdt, ",", ""), ".", ""), "-", ""), " ", "")) phone
+    ,MAX(case
+        when length(replace(replace(replace(replace(pic_sdt, ",", ""), ".", ""), "-", ""), " ", "")) between 9 and 15 then 'correct'
+        else 'incorrect'
+    end) phone_status
+    ,lower(replace(pic_email, " ", "")) email
+    ,MAX(CASE 
+        WHEN REGEXP_CONTAINS(replace(pic_email, " ", ""), r'^[A-Za-z0-9._%+-]+@') THEN 'correct'
+        ELSE 'incorrect'
+    END) email_status
+from job_form_pivot
+group by
+    MD5(lower(replace(pic_email, " ", "")))
+    ,lower(replace(pic_email, " ", ""))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

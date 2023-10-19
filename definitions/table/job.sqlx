@@ -1,0 +1,132 @@
+config {
+  type: "incremental",
+  uniqueKey: ['job_id'],
+  schema: "customer_onboarding"
+}
+
+WITH
+  job AS (
+    SELECT * FROM ${ref('raw_job')}
+  ),
+
+  job_form_pivot AS (
+      SELECT * FROM ${ref('raw_job_form')}
+      PIVOT(MAX(value) FOR keys IN (
+          -- company
+          'companypath'
+          ,'ben_su_dung_dich_vu_ben_a'
+          ,'size_cong_ty'
+          ,'ma_so_thue'
+          ,'linh_vuc'
+          --pic
+          ,'pic_ho_va_ten'
+          ,'pic_chuc_vu'
+          ,'pic_sdt'
+          ,'pic_email'
+          -- -- info company
+          -- ,'ten_nguoi_dai_dien'
+          -- ,'sdt_nguoi_dai_dien'
+          -- ,'chuc_vu'
+          -- ,'admin_username'
+          -- ,'thanh_toan_chi_phi_training'
+          -- ,'cac_cong_nghe_kh_da_su_dung'
+          -- ,'van_de_cua_khach_hang'
+          -- ,'khach_hang_ky_vong_gi_o_san_pham'
+          -- ,'tai_sao_khach_hang_quyet_dinh_su'
+          ,'request_id'
+          -- ,'ghi_chu'
+          -- ,'email_kich_hoat'
+          ,'id_system'
+          ,'system_id'
+          -- ,'loai_hop_dong'
+          ,'planhat_id'
+          ,'deal_id'
+          ,'link_job'
+          ,'link_income'
+          -- ,'solution_fit_hand_off_bc'
+          -- ,'DM_involvement_hand_off_bc'
+          -- ,'PIC_competence_hand_off_bc'
+          -- ,'phan_loai_khach_hang'
+          -- ,'gia_tri_hop_dong_bang_so'
+          -- -- trien khai - follow up
+          -- ,'ty_le_doi_chieu'
+          -- ,'ngay_tiep_nhan'
+          -- ,'ngay_danh_gia' , 'thoi_diem_keo_danh_gia'
+          -- ,'ngay_danh_gia_1_thang' , 'danh_gia_hieu_qua_su_dung_tuan_5'
+          -- ,'ngay_danh_gia_thang_2'
+          -- ,'ngay_danh_gia_thang_3'
+          -- ,'ngay_danh_gia_thang_4'
+          -- ,'ti_le_active_thang_1'
+          -- ,'ti_le_active_thang_2'
+          -- ,'ti_le_active_thang_3'
+          -- ,'ti_le_active_thang_4'
+          -- ,'username_co' , 'email_co'
+          -- ,'co_trien_khai_thang_2' , 'cs_thang_2'
+          -- ,'co_trien_khai_thang_3' , 'cs_thang_3'
+          -- ,'co_trien_khai_thang_4' , 'cs_thang_4'
+          ))
+  ),
+
+  pivot_ AS (
+    SELECT
+      job_id
+      ,max(companypath) companypath
+      ,max(ben_su_dung_dich_vu_ben_a) ben_su_dung_dich_vu_ben_a
+      ,max(size_cong_ty) size_cong_ty
+      ,max(ma_so_thue) ma_so_thue
+      ,max(linh_vuc) linh_vuc
+      ,max(pic_ho_va_ten) pic_ho_va_ten
+      ,max(pic_chuc_vu) pic_chuc_vu
+      ,max(pic_sdt) pic_sdt
+      ,max(pic_email) pic_email
+      ,max(request_id) request_id
+      ,max(id_system) id_system
+      ,max(system_id) system_id
+      ,max(planhat_id) planhat_id
+      ,max(deal_id) deal_id
+      ,max(link_job) link_job
+      ,max(link_income) link_income
+    FROM job_form_pivot
+    group by job_id
+  )
+
+SELECT DISTINCT
+  job.job_id
+  ,MD5(lower(replace(pic_email, " ", ""))) customer_id
+  ,MD5(lower(ma_so_thue)) company_id
+  ,safe_cast(request_id as int64) request_id
+  ,job.stage_id
+  ,case 
+    when safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64) is null then job.from_id
+    else safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64)
+  end from_id
+  ,case
+    when job.from_type is null and safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64) is not null then 'workflowjobs'
+    when job.from_type is null and safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64) is null then null
+    else job.from_type
+  end from_app
+  ,safe_cast(replace(pivot_.link_income, 'https://income.base.vn/incomes?show=income&id=', '') as int64) income_id
+  ,case 
+    when safe_cast(id_system as int64) is null then safe_cast(system_id as int64)
+    else safe_cast(id_system as int64)
+  end system_id
+  ,case
+    when planhat_id = '' or planhat_id is null then null
+    else planhat_id
+  end planhat_id
+  ,safe_cast(deal_id as int64) deal_id
+  ,workflow_id
+  ,user_id
+  ,creator_id
+  ,first_assignee_id
+  ,name
+  ,status
+  ,since
+  ,last_update
+  ,finish_at
+  ,deadline
+  ,failed_name
+  ,failed_note
+  ,failed_since
+FROM job
+LEFT JOIN pivot_ ON pivot_.job_id = job.job_id

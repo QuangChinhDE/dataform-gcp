@@ -1,0 +1,19 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+    cast(replace(user_base_uid, '.0','') as int64) AS user_id,
+    product_id AS product,
+    CAST(TIMESTAMP_ADD(timestamp, INTERVAL 7 HOUR) AS Date) date,
+    COUNT(cast(replace(user_base_uid, '.0','') as int64)) AS count_login,
+    'react_native_base_me' source
+FROM
+    `base-datateam.react_native_base_me.identifies`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    cast(replace(user_base_uid, '.0','') as int64),
+    product_id,
+    CAST(TIMESTAMP_ADD(timestamp, INTERVAL 7 HOUR) AS Date)

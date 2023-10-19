@@ -1,0 +1,7 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+
+SELECT distinct package_used, package_used_id FROM ${ref('raw_job_app_info')} WHERE package_used_id is not null

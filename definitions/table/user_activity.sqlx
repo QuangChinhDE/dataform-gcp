@@ -1,0 +1,17 @@
+config {
+  type: "incremental",
+  uniqueKey: ['user_id', 'product', 'date', 'source'],
+  schema: "customer_onboarding"
+}
+
+
+WITH
+    user_activity AS (
+        SELECT * FROM ${ref('raw_user_activity')}
+    )
+
+SELECT DISTINCT
+    *
+FROM user_activity
+WHERE (user_id is not null or count_login != 0) 
+and (date < "2000-01-01" or date > DATE(DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY)))

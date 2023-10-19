@@ -1,0 +1,7 @@
+config {
+  type: "incremental",
+  uniqueKey: ['training_session_id'],
+  schema: "customer_onboarding"
+}
+
+SELECT DISTINCT * FROM ${ref('raw_job_training_session')}

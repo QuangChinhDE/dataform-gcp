@@ -1,0 +1,12 @@
+config {
+  type: "incremental",
+  uniqueKey: ['user_id','deactivated_since','reactivated_since'],
+  schema: "customer_onboarding"
+}
+
+SELECT DISTINCT
+  user_id
+  ,deactivated_since
+  ,reactivated_since
+FROM ${ref('raw_user')}
+WHERE reactivated_since is not null or deactivated_since is not null

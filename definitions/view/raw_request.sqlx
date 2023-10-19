@@ -1,0 +1,25 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT * EXCEPT(row_number)
+FROM (
+    SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY request_id ORDER BY since DESC) AS row_number
+    FROM (SELECT
+            safe_cast(ma_de_xuat as int64) request_id
+            ,safe_cast(replace(link_workflow_request_trien_khai,'https://workflow.base.vn/job/','') as int64) job_id
+            ,safe_cast(replace(link_planhat,'https://app-eu3.planhat.com/profile/','') as int64) planhat_id
+            ,safe_cast(workflow_id as int64) workflow_id
+            ,lower(nguoi_tao) creator
+            ,ten_cong_ty_khach_hang customer_name
+            ,log_churn
+            ,ly_do reason
+            ,chi_tiet note
+            ,CAST(DATE_ADD(safe_cast(ngay_tao as DATETIME), INTERVAL 7 HOUR) AS DATETIME) since
+          FROM `base-datateam.airbyte_google_sheet_request_co.raw` 
+        ) a
+) t
+WHERE t.row_number = 1
+
