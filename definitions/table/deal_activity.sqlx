@@ -1,0 +1,20 @@
+config {
+  type: "incremental",
+  uniqueKey: ["activity_id"],
+  schema: "marketing"
+}
+
+
+WITH
+    activity AS (
+        SELECT *
+        FROM ${ ref('raw_deal_activity')}
+    )
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY activity_id ORDER BY update_time DESC) AS row_number
+FROM activity
+) t
+WHERE t.row_number = 1

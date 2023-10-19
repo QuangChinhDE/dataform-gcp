@@ -1,0 +1,13 @@
+config {
+  type: "incremental",
+  uniqueKey: ["org_id"],
+  schema: "marketing"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT org_id,name,add_time,update_time,
+    ROW_NUMBER() OVER (PARTITION BY org_id ORDER BY update_time DESC) AS row_number
+FROM ${ref('raw_organization')} a
+) t
+WHERE t.row_number = 1

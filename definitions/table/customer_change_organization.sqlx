@@ -1,0 +1,19 @@
+config {
+  type: "incremental",
+  uniqueKey: ["cus_change_org_id"],
+  schema: "marketing"
+}
+
+WITH a AS (SELECT *FROM ${ref('raw_customer_change_organization')})
+SELECT
+    MD5(CONCAT(
+        IFNULL(cast(TO_BASE64(customer_id) AS STRING), ''),
+        IFNULL(cast(person_id AS STRING), ''),
+        IFNULL(cast(org_id AS STRING), ''),
+        IFNULL(cast(last_update AS STRING), '')
+    )) cus_change_org_id
+    ,customer_id
+    ,person_id
+    ,org_id
+    ,last_update
+FROM a

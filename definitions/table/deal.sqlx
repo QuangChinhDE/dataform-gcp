@@ -1,0 +1,19 @@
+config {
+  type: "incremental",
+  uniqueKey: ["deal_id"],
+  schema: "marketing"
+}
+
+WITH 
+    new_deal_raw AS (SELECT DISTINCT * EXCEPT(category,field,industry,segmentation,size,tax_code) FROM ${ ref('raw_deal') }),
+    lead_deal AS (SELECT distinct deal_id FROM ${ ref('raw_lead') })
+
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY deal_id ORDER BY update_time DESC) AS row_number
+    FROM new_deal_raw
+    ) t
+WHERE t.row_number = 1
+    AND deal_id in (SELECT DISTINCT deal_id from lead_deal)

@@ -1,0 +1,14 @@
+config {
+  type: "table",
+  schema: "marketing"
+}
+
+SELECT DISTINCT
+    marketer
+    ,code
+    ,account_id
+    ,status
+    ,start_date
+    ,update_at
+    ,source_id
+FROM ${ref('raw_marketer')}

@@ -1,0 +1,33 @@
+config {
+  type: "incremental",
+  uniqueKey: ["deal_change_id"],
+  schema: "marketing"
+}
+
+WITH 
+    deal_change AS (
+        SELECT distinct
+            MD5(CONCAT(
+                    IFNULL(cast(deal_id AS STRING), ''),
+                    IFNULL(cast(user_id AS STRING), ''),
+                    IFNULL(field_name, ''),
+                    IFNULL(old_value, ''),
+                    IFNULL(new_value, ''),
+                    IFNULL(cast(log_time AS STRING), '')
+                )) deal_change_id
+            ,deal_id
+            ,user_id
+            ,field_name
+            ,old_value
+            ,new_value
+            ,log_time
+        FROM ${ ref('raw_deal_change') }
+    )
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY deal_change_id ORDER BY log_time DESC) AS row_number
+    FROM deal_change
+    ) t
+WHERE t.row_number = 1

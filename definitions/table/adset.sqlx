@@ -1,0 +1,18 @@
+config {
+  type: "incremental",
+  uniqueKey: ["adset_id","source_id"],
+  schema: "marketing"
+}
+
+WITH 
+    adset AS (
+        SELECT * FROM ${ref('raw_adset')}
+    )
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT distinct *,
+        ROW_NUMBER() OVER (PARTITION BY adset_id,source_id ORDER BY adset_id DESC) AS row_number
+    FROM adset
+    ) t
+WHERE t.row_number = 1

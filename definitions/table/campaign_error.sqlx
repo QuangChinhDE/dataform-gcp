@@ -1,0 +1,8 @@
+config {
+  type: "incremental",
+  uniqueKey: ["campaign_id"],
+  schema: "marketing"
+}
+
+
+SELECT DISTINCT * EXCEPT(source) FROM ${ref('raw_campaign_error')}

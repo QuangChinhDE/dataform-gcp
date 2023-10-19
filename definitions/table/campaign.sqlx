@@ -1,0 +1,19 @@
+config {
+  type: "incremental",
+  uniqueKey: ["campaign_id","source_id"],
+  schema: "marketing"
+}
+
+
+WITH
+    campaign AS (
+        SELECT * FROM ${ref('raw_campaign')}
+    )
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT distinct *,
+        ROW_NUMBER() OVER (PARTITION BY campaign_id,source_id ORDER BY campaign_id DESC) AS row_number
+    FROM campaign
+    ) t
+WHERE t.row_number = 1

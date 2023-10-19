@@ -1,0 +1,6 @@
+config {
+  type: "incremental",
+  uniqueKey: ["product_id"],
+  schema: "marketing"
+}
+SELECT * FROM ${ref('raw_product')}

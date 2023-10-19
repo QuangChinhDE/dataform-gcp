@@ -1,0 +1,13 @@
+config {
+  type: "incremental",
+  uniqueKey: ["customer_id"],
+  schema: "marketing"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY last_update DESC) AS row_number
+FROM ${ref('raw_customer')}
+) t
+WHERE t.row_number = 1

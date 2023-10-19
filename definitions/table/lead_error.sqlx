@@ -1,0 +1,35 @@
+config {
+  type: "incremental",
+  uniqueKey: ["lead_id"],
+  schema: "marketing"
+}
+
+WITH
+    lead AS (
+        SELECT 
+            lead_id
+            ,customer_id
+            ,deal_id
+            ,campaign_id
+            ,product_id
+            ,name
+            ,source_group
+            ,company_name
+            ,company_size
+            ,company_address
+            ,create_date
+            ,note
+            ,status
+            ,disqualified_reason
+        FROM ${ref('raw_lead')}
+        WHERE lead_id NOT IN (SELECT lead_id FROM ${ref('lead')})
+    )
+
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT distinct *,
+        ROW_NUMBER() OVER (PARTITION BY lead_id ORDER BY create_date DESC) AS row_number
+    FROM lead
+    ) t
+WHERE t.row_number = 1

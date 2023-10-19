@@ -1,0 +1,34 @@
+config {
+  type: "incremental",
+  uniqueKey: ["ad_performance_id"],
+  schema: "marketing"
+}
+
+WITH 
+    performance AS (
+        SELECT DISTINCT
+            MD5(CONCAT(
+                    IFNULL(cast(account_id AS STRING), ''),
+                    IFNULL(cast(ad_id AS STRING), ''),
+                    IFNULL(cast(date AS STRING), ''),
+                    IFNULL(cast(TO_BASE64(source_id) AS STRING), '')
+                )) ad_performance_id,
+            account_id, 
+            marketer, 
+            ad_id, 
+            date, 
+            cost, 
+            impression, 
+            click, 
+            reach, 
+            source_id 
+        FROM ${ref('raw_ads_performance')}
+    )
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT distinct *,
+        ROW_NUMBER() OVER (PARTITION BY ad_performance_id ORDER BY ad_performance_id DESC) AS row_number
+    FROM performance
+    ) t
+WHERE t.row_number = 1

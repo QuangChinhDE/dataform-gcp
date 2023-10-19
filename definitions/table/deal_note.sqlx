@@ -1,0 +1,14 @@
+config {
+  type: "incremental",
+  uniqueKey: ["note_id"],
+  schema: "marketing"
+}
+
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY note_id ORDER BY update_time DESC) AS row_number
+FROM ${ ref('raw_deal_note')}
+) t
+WHERE t.row_number = 1
