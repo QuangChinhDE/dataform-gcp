@@ -1,0 +1,42 @@
+config {
+  type: "incremental",
+  uniqueKey: ['user_id'],
+  schema: "customer_onboarding"
+}
+
+WITH 
+    user AS (
+        SELECT DISTINCT * EXCEPT(row_number)
+        FROM (
+            SELECT distinct *,
+                ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY last_update DESC) AS row_number
+            FROM ${ref('raw_user')} AS a)  t
+        WHERE t.row_number = 1
+    )
+
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT distinct *,
+        ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY last_update DESC) AS row_number
+    FROM (SELECT 
+            user.user_id,
+            system_id, 
+            username, 
+            first_name,
+            last_name,
+            IF(REGEXP_CONTAINS(email, r'removed.'), email_data, email) email,
+            REPLACE(IF(REGEXP_CONTAINS(phone_data, r'\d') OR REGEXP_CONTAINS(phone_data, r'/'), phone_data, NULL), '.', '') phone,
+            SAFE.PARSE_DATE('%d-%m-%Y', CONCAT(dob_day, '-', dob_month, '-', dob_year)) birthday,
+            replace(address_data, '', null) address,
+            status,
+            metatype,
+            since,
+            last_update
+        FROM user) a
+  ) t
+WHERE t.row_number = 1  
+
+
+
+
