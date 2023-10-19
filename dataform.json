@@ -1,8 +1,8 @@
 {
-  "defaultSchema": "dataform",
-  "assertionSchema": "dataform_assertions",
+  "defaultSchema": "query",
+  "assertionSchema": "query",
   "warehouse": "bigquery",
   "defaultDatabase": "base-data-analyst",
-  "defaultLocation": "US"
+  "defaultLocation": "us-central1"
 }
     
