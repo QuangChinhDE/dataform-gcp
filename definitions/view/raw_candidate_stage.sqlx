@@ -1,0 +1,17 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY stage_id ORDER BY stage_name DESC) AS row_number
+    FROM (SELECT
+            cast(id as int64) stage_id
+            ,name stage_name
+        FROM `base-datateam.airbyte_base_hiring.stage`
+        -- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+        ) a
+    ) t
+WHERE t.row_number = 1

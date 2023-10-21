@@ -1,0 +1,26 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+    cast(id as int64) candidate_id,
+    JSON_EXTRACT_SCALAR(json_column, '$.action') AS action,
+    JSON_EXTRACT_SCALAR(json_column, '$.data.opening_id') AS opening_id,
+    JSON_EXTRACT_SCALAR(json_column, '$.data.reason') AS reason,
+    JSON_EXTRACT_SCALAR(json_column, '$.data.stage_in_name') AS stage_in_name,
+    JSON_EXTRACT_SCALAR(json_column, '$.data.stage_out_name') AS stage_out_name,
+    JSON_EXTRACT_SCALAR(json_column, '$.name') AS name,
+    JSON_EXTRACT_SCALAR(json_column, '$.note') AS note,
+    CASE WHEN
+        JSON_EXTRACT_SCALAR(json_column, '$.since') = '0' then NULL
+        ELSE CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(JSON_EXTRACT_SCALAR(json_column, '$.since') as int64)), INTERVAL 7 HOUR) AS DATETIME)
+    END since,
+    CASE WHEN
+        JSON_EXTRACT_SCALAR(json_column, '$.time') = '0' then NULL
+        ELSE CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(JSON_EXTRACT_SCALAR(json_column, '$.time') as int64)), INTERVAL 7 HOUR) AS DATETIME)
+    END time,
+    JSON_EXTRACT_SCALAR(json_column, '$.username') AS username
+FROM 
+  `base-datateam.airbyte_base_hiring.candidate`,
+  UNNEST(JSON_EXTRACT_ARRAY(changelogs)) as json_column

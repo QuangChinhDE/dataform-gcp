@@ -1,0 +1,12 @@
+config {
+  type: "table",
+  schema: "human_resource"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY opening_id ORDER BY last_update DESC) AS row_number
+FROM ${ref('raw_candidate_opening')}
+) t
+WHERE t.row_number = 1

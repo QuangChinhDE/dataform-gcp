@@ -1,0 +1,6 @@
+config {
+  type: "table",
+  schema: "human_resource"
+}
+
+SELECT DISTINCT * FROM FROM ${ref('raw_candidate_interview')}

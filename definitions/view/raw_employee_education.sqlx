@@ -1,0 +1,14 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT DISTINCT
+    cast(employee_id as int64) employee_id
+    ,degree
+    ,school
+    ,duration
+    ,location
+    ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
+FROM `base-datateam.airbyte_base_hrm.employee_education`
+-- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())

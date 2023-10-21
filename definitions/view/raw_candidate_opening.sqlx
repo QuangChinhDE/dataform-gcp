@@ -1,0 +1,51 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH
+    office AS (
+        SELECT
+            cast(id as int64) office_id
+            ,name
+        FROM `base-datateam.airbyte_base_hrm.office` office
+    ),
+
+    dept AS (
+        SELECT DISTINCT
+            cast(id as int64) dept_id
+            ,name
+        FROM `base-datateam.airbyte_base_hiring.dept`
+    ),
+
+    pool AS (
+        SELECT DISTINCT
+            cast(id as int64) pool_id
+            ,name
+        FROM `base-datateam.airbyte_base_hiring.pool`
+    )
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY opening_id ORDER BY last_update DESC) AS row_number
+    FROM (SELECT  
+            cast(id as int64) opening_id
+            ,opening.name
+            ,office.name office
+            ,dept.name department
+            ,pool.name pool
+            ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(stime as int64)), INTERVAL 7 HOUR) as DATETIME) start_date
+            ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(etime as int64)), INTERVAL 7 HOUR) as DATETIME) end_date
+            ,status
+            ,cast(num_positions as int64) num_position
+            ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(since as int64)), INTERVAL 7 HOUR) as DATETIME) since
+            ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
+        FROM `base-datateam.airbyte_base_hiring.opening` opening
+        left join office on office.office_id = cast(REPLACE(REPLACE(REPLACE(SPLIT(TO_JSON_STRING(offices), ",")[OFFSET(0)], '["',''), '"]',''), '"','') as int64)
+        left join dept on dept.dept_id = cast(opening.dept_id as int64)
+        left join pool on pool.pool_id = cast(opening.talent_pool_id as int64)
+        ) a
+    ) t
+WHERE t.row_number = 1
+

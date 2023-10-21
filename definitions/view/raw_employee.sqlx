@@ -1,0 +1,31 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT DISTINCT
+    cast(id as int64) employee_id
+    ,cast(user_id as int64) user_id
+    ,cast(office_id as int64) office_id
+    ,cast(position_id as int64) position_id
+    ,cast(team_id as int64) team_id
+    ,code
+    ,name
+    ,CASE WHEN
+        email like '%@%' then LOWER(email)
+        ELSE NULL END email
+    ,CASE
+        WHEN REGEXP_CONTAINS(phone, r'^\+?[0-9-]+$') THEN phone
+        ELSE NULL END AS phone
+    ,SAFE.PARSE_DATE('%Y-%m-%d', CONCAT(dob_year, '-', dob_month, '-', dob_day)) AS date_of_birth
+    ,CASE
+        WHEN CAST(gender as int64) = 0 THEN 'male' 
+        WHEN CAST(gender as int64) = 1 THEN 'female'
+        ELSE 'other'
+    END gender
+    ,cast(salary as float64) salary
+    ,CASE
+        WHEN JSON_EXTRACT_SCALAR(profile, '$.address') != '' THEN JSON_EXTRACT_SCALAR(profile, '$.address')
+        ELSE NULL END AS address 
+    ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
+FROM `base-datateam.airbyte_base_hrm.employee`

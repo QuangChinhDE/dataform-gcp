@@ -1,0 +1,54 @@
+config {
+  type: "view",
+  schema: "query"
+}
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY area_id ORDER BY last_update DESC) AS row_number
+    FROM (SELECT 
+            cast(id as int64) candidate_id
+            ,INITCAP(name) name
+            ,CASE WHEN
+                email like '%@%' then LOWER(email)
+                ELSE NULL END email
+            ,CASE
+                WHEN REGEXP_CONTAINS(phone, r'^\+?[0-9-]+$') THEN phone
+                ELSE NULL END AS phone
+            ,CASE
+                WHEN gender != '' THEN gender
+                ELSE 'Other' END AS gender
+            ,SAFE.PARSE_DATE('%Y-%m-%d', CONCAT(dob_year, '-', dob_month, '-', dob_day)) AS date_of_birth
+            -- ,JSON_EXTRACT_SCALAR(fields, '$.value') university
+            ,cast(candidate.opening_id as int64) opening_id
+            ,stage.stage_name
+            ,CASE
+                WHEN source != '' THEN source
+                ELSE NULL END AS source
+            ,CASE WHEN
+                time_apply = '0' then NULL
+                ELSE TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(time_apply as int64)), INTERVAL 7 HOUR) END time_apply
+            ,CASE WHEN
+                time_offered = '0' then NULL
+                ELSE TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(time_offered as int64)), INTERVAL 7 HOUR) END time_offered
+            ,CASE WHEN
+                time_hired = '0' then NULL
+                ELSE TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(time_hired as int64)), INTERVAL 7 HOUR) END time_hired
+            ,CASE WHEN
+                time_rejected = '0' then NULL
+                ELSE TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(time_rejected as int64)), INTERVAL 7 HOUR) END time_rejected
+            ,CASE
+                WHEN reason != '' THEN reason
+                ELSE NULL END AS reason
+            ,cast(score as float64) score
+            ,CASE
+                WHEN assign_username != '' THEN assign_username
+                ELSE NULL 
+            END AS assign_username
+            ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
+        FROM `base-datateam.airbyte_base_hiring.candidate` candidate
+        LEFT JOIN ${ref('raw_candidate_stage')} stage ON stage.stage_id = cast(candidate.stage_id as int64)
+        ) a
+    ) t
+WHERE t.row_number = 1
+

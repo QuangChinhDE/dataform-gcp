@@ -1,0 +1,13 @@
+config {
+  type: "incremental",
+  uniqueKey: ["position_id"],
+  schema: "human_resource"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY position_id ORDER BY last_update DESC) AS row_number
+FROM ${ref('raw_position')}
+) t
+WHERE t.row_number = 1

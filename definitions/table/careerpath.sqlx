@@ -1,0 +1,15 @@
+config {
+  type: "incremental",
+  uniqueKey: ["employee_id","user_id","office_id","position_id","team_id","code","last_update"],
+  schema: "human_resource"
+}
+
+SELECT DISTINCT
+  employee_id
+  ,user_id
+  ,office_id
+  ,position_id
+  ,team_id
+  ,code
+  ,last_update
+FROM ${ref('raw_employee')}

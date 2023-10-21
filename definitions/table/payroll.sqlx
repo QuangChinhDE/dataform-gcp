@@ -1,0 +1,7 @@
+config {
+  type: "incremental",
+  uniqueKey: ["name","value","column","year","month","employee_id"],
+  schema: "human_resource"
+}
+
+SELECT DISTINCT * FROM ${ref('raw_payroll')}

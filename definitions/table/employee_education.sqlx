@@ -1,0 +1,14 @@
+config {
+  type: "incremental",
+  uniqueKey: ["employee_id","degree","school","duration","location","last_update"],
+  schema: "human_resource"
+}
+
+SELECT DISTINCT
+  employee_id
+  ,degree
+  ,school
+  ,duration
+  ,location
+  ,last_update
+FROM ${ref('raw_employee_education')}

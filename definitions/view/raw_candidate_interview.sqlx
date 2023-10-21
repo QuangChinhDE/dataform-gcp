@@ -1,0 +1,19 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT distinct
+    cast(candidate_id as int64) candidate_id
+    ,metatype
+    ,CASE WHEN
+        date = 0.0 then NULL
+        ELSE CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(date as int64)), INTERVAL 7 HOUR) AS DATE) 
+    END interview_date
+    ,CASE
+        WHEN questions != '' THEN questions
+        ELSE NULL 
+    END AS question
+    ,username interviewer
+FROM `base-datateam.airbyte_base_hiring.interview` 
+-- WHERE cast(candidate_id as int64) IN (SELECT candidate_id FROM candidate)
