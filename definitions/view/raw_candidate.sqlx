@@ -5,7 +5,7 @@ config {
 SELECT DISTINCT * EXCEPT(row_number)
 FROM (
     SELECT *,
-        ROW_NUMBER() OVER (PARTITION BY area_id ORDER BY last_update DESC) AS row_number
+        ROW_NUMBER() OVER (PARTITION BY candidate_id ORDER BY last_update DESC) AS row_number
     FROM (SELECT 
             cast(id as int64) candidate_id
             ,INITCAP(name) name

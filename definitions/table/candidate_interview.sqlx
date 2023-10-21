@@ -3,4 +3,4 @@ config {
   schema: "human_resource"
 }
 
-SELECT DISTINCT * FROM FROM ${ref('raw_candidate_interview')}
+SELECT DISTINCT * FROM ${ref('raw_candidate_interview')}
