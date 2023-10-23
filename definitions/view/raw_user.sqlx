@@ -3,30 +3,10 @@ config {
   schema: "query"
 }
 
-WITH
-  user_base_ AS (
-    SELECT
-      id base_user_id
-      ,username
-      ,email
-      ,status
-      ,MAX(DATETIME_ADD(SAFE_CAST(TIMESTAMP_SECONDS(last_update) as DATETIME), INTERVAL 7 HOUR)) update_time
-    FROM `base-datateam.airbyte_base_system.v_users`
-    GROUP BY
-      id
-      ,username
-      ,email
-      ,status
-  )
-
-SELECT DISTINCT * EXCEPT(row_number)
-FROM (
-SELECT *,
-    ROW_NUMBER() OVER (PARTITION BY base_user_id ORDER BY update_time DESC) AS row_number
-FROM user_base_
-) t
-WHERE t.row_number = 1
-
+SELECT
+  cast(id as int64) user_id
+  ,email
+FROM `base-datateam.airbyte_pipedrive.user` user
 
 
 
