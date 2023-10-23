@@ -1,0 +1,16 @@
+config {
+  type: "incremental",
+  uniqueKey: ["_id_"],
+  schema: "sale"
+}
+
+-- SELECT distinct *
+-- FROM {{ ref('raw_deal_company') }}
+ 
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY _id_ ORDER BY _id_) AS row_number
+FROM ${ref('raw_deal_company')}
+) t
+WHERE t.row_number = 1

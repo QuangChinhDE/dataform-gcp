@@ -1,0 +1,86 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+
+WITH
+  deal_field_option AS (
+      SELECT * FROM ${ref('raw_deal_field')}
+  )
+
+--   deal_old AS (
+--     SELECT *
+--     FROM (
+--         SELECT deal_id, value, field_key 
+--         FROM `base-datateam.airbyte_pipedrive.old_dealFields_value`
+--         WHERE
+--           TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) = TIMESTAMP("2023-07-31")
+--           AND field_key IN ('ba7758126eaf7a1c291050d38314f3ef6caac23a',
+--                     '03cb33c8f645c1cb6c4b5663060f5be62bd45b47',
+--                     '433393a17d7d4d66fad7fea01c611906aa554327',
+--                     '4bc6995517793efb195df2de43629b79fa001818',
+--                     '803427a7bbfc4dc909c52469688b2a2a2d07a941',
+--                     'b6959119fb956cf44fb680045abb3a66994cda25')
+--     )
+--     PIVOT (
+--         MAX(value)
+--         FOR field_key IN ('ba7758126eaf7a1c291050d38314f3ef6caac23a',
+--                         '03cb33c8f645c1cb6c4b5663060f5be62bd45b47',
+--                         '433393a17d7d4d66fad7fea01c611906aa554327',
+--                         '4bc6995517793efb195df2de43629b79fa001818',
+--                         '803427a7bbfc4dc909c52469688b2a2a2d07a941',
+--                         'b6959119fb956cf44fb680045abb3a66994cda25')
+--     )
+--   )
+
+-- SELECT distinct
+--     MD5(CONCAT(
+--             IFNULL(CAST(deal_id AS STRING), ''),
+--             IFNULL(category.label, ''),
+--             IFNULL(field.label, ''),
+--             IFNULL(industry_.label, ''),
+--             IFNULL(segmentation.label, ''),
+--             IFNULL(size.label, ''),
+--             IFNULL(REPLACE(`b6959119fb956cf44fb680045abb3a66994cda25`, ' ', ''), '')
+--         )) _id_,
+--   deal_id,
+--   category.label category,
+--   field.label field,
+--   industry_.label industry,
+--   segmentation.label segmentation,
+--   size.label size,
+--   REPLACE(`b6959119fb956cf44fb680045abb3a66994cda25`, ' ','') tax_code
+-- FROM deal_old,
+-- UNNEST(SPLIT(`433393a17d7d4d66fad7fea01c611906aa554327`, ',')) AS industry
+-- LEFT JOIN (SELECT id, max(label) label FROM deal_field_option WHERE key = 'ba7758126eaf7a1c291050d38314f3ef6caac23a' GROUP BY id) category ON category.id = safe_cast(`ba7758126eaf7a1c291050d38314f3ef6caac23a` as int64)
+-- LEFT JOIN (SELECT id, max(label) label FROM deal_field_option WHERE key = '03cb33c8f645c1cb6c4b5663060f5be62bd45b47' GROUP BY id) field ON field.id = safe_cast(`03cb33c8f645c1cb6c4b5663060f5be62bd45b47` as int64)
+-- LEFT JOIN (SELECT id, max(label) label FROM deal_field_option WHERE key = '433393a17d7d4d66fad7fea01c611906aa554327' GROUP BY id) industry_ ON industry_.id = safe_cast(industry AS int64)
+-- LEFT JOIN (SELECT id, max(label) label FROM deal_field_option WHERE key = '4bc6995517793efb195df2de43629b79fa001818' GROUP BY id) segmentation ON segmentation.id = safe_cast(`4bc6995517793efb195df2de43629b79fa001818` as int64)
+-- LEFT JOIN (SELECT id, max(label) label FROM deal_field_option WHERE key = '803427a7bbfc4dc909c52469688b2a2a2d07a941' GROUP BY id) size ON size.id = safe_cast(`803427a7bbfc4dc909c52469688b2a2a2d07a941` as int64)
+
+
+SELECT DISTINCT
+    MD5(CONCAT(
+            IFNULL(cast(deal_id AS STRING), ''),
+            IFNULL(category.label, ''),
+            IFNULL(field.label, ''),
+            IFNULL(industry_.label, ''),
+            IFNULL(segmentation.label, ''),
+            IFNULL(size.label, ''),
+            IFNULL(tax_code, '')
+        )) _id_,
+    deal_id,
+    category.label category,
+    field.label field,
+    industry_.label industry,
+    segmentation.label segmentation,
+    size.label size,
+    tax_code tax_code
+FROM ${ref('raw_deal')} new_deal_raw,
+UNNEST(SPLIT(industry, ',')) AS industry
+LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = 'ba7758126eaf7a1c291050d38314f3ef6caac23a' GROUP BY cast(id as int64)) category ON category.id = safe_cast(new_deal_raw.category as int64)
+LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '03cb33c8f645c1cb6c4b5663060f5be62bd45b47' GROUP BY cast(id as int64)) field ON field.id = safe_cast(new_deal_raw.field as int64)
+LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '433393a17d7d4d66fad7fea01c611906aa554327' GROUP BY cast(id as int64)) industry_ ON industry_.id = safe_cast(new_deal_raw.industry AS int64)
+LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '4bc6995517793efb195df2de43629b79fa001818' GROUP BY cast(id as int64)) segmentation ON segmentation.id = safe_cast(new_deal_raw.segmentation as int64)
+LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '803427a7bbfc4dc909c52469688b2a2a2d07a941' GROUP BY cast(id as int64)) size ON size.id = safe_cast(new_deal_raw.size as int64)

@@ -1,0 +1,33 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH
+  deal_field AS (
+    SELECT key, options 
+    FROM `base-datateam.airbyte_pipedrive.deal_field` 
+    WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+  ),
+
+  deal_field_ AS (
+      SELECT 
+        key
+        ,ARRAY(
+          SELECT JSON_EXTRACT_SCALAR(x, '$.id')
+          FROM UNNEST(JSON_EXTRACT_ARRAY(options, '$')) x
+        ) AS id
+        ,ARRAY(
+          SELECT JSON_EXTRACT_SCALAR(x, '$.label')
+          FROM UNNEST(JSON_EXTRACT_ARRAY(options, '$')) x
+        ) AS label
+      FROM deal_field
+  ),
+
+  deal_field_option AS (
+    SELECT key, id, label
+    FROM deal_field_, UNNEST (id) id WITH OFFSET o1 
+    LEFT JOIN UNNEST (label) label WITH OFFSET o2 ON o1 = o2
+  )
+
+SELECT * FROM deal_field_option

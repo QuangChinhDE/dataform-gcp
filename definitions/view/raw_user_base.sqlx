@@ -1,0 +1,42 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+-- SELECT
+--     cast(id as int64) stage_id,
+--     cast(pipeline_id as int64) pipeline_id, 
+--     cast(order_nr as int64) ord,
+--     name,
+--     DATETIME_ADD(SAFE_CAST(add_time as DATETIME), INTERVAL 7 HOUR) add_time,
+--     DATETIME_ADD(SAFE_CAST(update_time as DATETIME), INTERVAL 7 HOUR) update_time,
+--     MAX(_airbyte_extracted_at) _airbyte_extracted_at
+-- FROM `base-datateam.airbyte_pipedrive.old_stages` 
+-- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) < TIMESTAMP("2023-08-01")
+-- GROUP BY
+--     cast(id as int64),
+--     cast(pipeline_id as int64),
+--     cast(order_nr as int64), 
+--     name,
+--     DATETIME_ADD(SAFE_CAST(add_time as DATETIME), INTERVAL 7 HOUR),
+--     DATETIME_ADD(SAFE_CAST(update_time as DATETIME), INTERVAL 7 HOUR)
+
+-- UNION ALL
+
+SELECT
+    cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) stage_id,
+    cast(JSON_EXTRACT_SCALAR(data, '$.pipeline_id') as int64) pipeline_id, 
+    cast(JSON_EXTRACT_SCALAR(data, '$.order_nr') as int64) ord,
+    JSON_EXTRACT_SCALAR(data, '$.name') name,
+    DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
+    DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR) update_time,
+    MAX(_airbyte_extracted_at) _airbyte_extracted_at
+FROM `base-datateam.airbyte_pipedrive.stage` 
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+GROUP BY
+    cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64),
+    cast(JSON_EXTRACT_SCALAR(data, '$.pipeline_id') as int64), 
+    cast(JSON_EXTRACT_SCALAR(data, '$.order_nr') as int64),
+    JSON_EXTRACT_SCALAR(data, '$.name'),
+    DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR),
+    DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR)

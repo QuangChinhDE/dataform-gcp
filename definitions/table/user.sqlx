@@ -1,0 +1,24 @@
+config {
+  type: "table",
+  schema: "sale"
+}
+
+
+WITH
+    user_base AS (
+        SELECT * FROM ${ref('raw_user_base')}
+    ),
+
+    user AS (
+        SELECT * FROM ${ref('raw_user')}
+    )
+
+SELECT
+  user_id
+  ,base_user_id
+  ,username
+  ,user.email
+  ,status
+  ,update_time
+FROM user
+LEFT JOIN user_base ON user_base.email = user.email

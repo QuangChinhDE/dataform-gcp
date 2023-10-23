@@ -1,0 +1,72 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+
+WITH
+    raw_activity AS (
+        SELECT  
+            cast(JSON_EXTRACT_SCALAR(data, '$.deal_id') as int64) deal_id,
+            cast(JSON_EXTRACT_SCALAR(data, '$.org_id') as int64) org_id,
+            cast(JSON_EXTRACT_SCALAR(data, '$.person_id') as int64) person_id,
+            cast(JSON_EXTRACT_SCALAR(data, '$.user_id') as int64) user_id,
+            JSON_EXTRACT_SCALAR(data, '$.subject') subject,
+            JSON_EXTRACT_SCALAR(data, '$.type') type,
+            cast(JSON_EXTRACT_SCALAR(data, '$.done') as STRING) done,
+            DATETIME_ADD(safe_cast(JSON_EXTRACT_SCALAR(data, '$.marked_as_done_time') AS DATETIME), INTERVAL 7 HOUR) marked_as_done_time,
+            case 
+                when JSON_EXTRACT_SCALAR(data, '$.due_time') is null or JSON_EXTRACT_SCALAR(data, '$.due_time') != ' ' then PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(replace(JSON_EXTRACT_SCALAR(data, '$.due_date'), ' ', ''), ' 00:00:00'))
+                else PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(replace(JSON_EXTRACT_SCALAR(data, '$.due_date'), ' ', ''), ' ', replace(JSON_EXTRACT_SCALAR(data, '$.due_time'), ' ', ''))) 
+            end due_datetime,
+            DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
+            MAX(DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR)) update_time
+        FROM `base-datateam.airbyte_pipedrive.activity` 
+        -- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) >= TIMESTAMP("2023-08-01")
+        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+            AND (JSON_EXTRACT_SCALAR(data, '$.deal_id') IS NOT NULL
+                OR JSON_EXTRACT_SCALAR(data, '$.org_id') IS NOT NULL
+                OR JSON_EXTRACT_SCALAR(data, '$.person_id') IS NOT NULL
+                OR JSON_EXTRACT_SCALAR(data, '$.user_id') is not null)
+        GROUP BY
+            cast(JSON_EXTRACT_SCALAR(data, '$.deal_id') as int64),
+            cast(JSON_EXTRACT_SCALAR(data, '$.org_id') as int64),
+            cast(JSON_EXTRACT_SCALAR(data, '$.person_id') as int64),
+            cast(JSON_EXTRACT_SCALAR(data, '$.user_id') as int64),
+            JSON_EXTRACT_SCALAR(data, '$.subject'),
+            JSON_EXTRACT_SCALAR(data, '$.type'),
+            cast(JSON_EXTRACT_SCALAR(data, '$.done') as STRING),
+            DATETIME_ADD(safe_cast(JSON_EXTRACT_SCALAR(data, '$.marked_as_done_time') AS DATETIME), INTERVAL 7 HOUR),
+            case 
+                when JSON_EXTRACT_SCALAR(data, '$.due_time') is null or JSON_EXTRACT_SCALAR(data, '$.due_time') != ' ' then PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(replace(JSON_EXTRACT_SCALAR(data, '$.due_date'), ' ', ''), ' 00:00:00'))
+                else PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(replace(JSON_EXTRACT_SCALAR(data, '$.due_date'), ' ', ''), ' ', replace(JSON_EXTRACT_SCALAR(data, '$.due_time'), ' ', ''))) 
+            end,
+            DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR)
+    )
+
+SELECT
+    MD5(CONCAT(
+        IFNULL(cast(deal_id AS STRING), ''),
+        IFNULL(cast(org_id AS STRING), ''),
+        IFNULL(cast(person_id AS STRING), ''),
+        IFNULL(cast(user_id AS STRING), ''),
+        IFNULL(cast(subject AS STRING), ''),
+        IFNULL(cast(type AS STRING), ''),
+        IFNULL(cast(done AS STRING), ''),
+        IFNULL(cast(marked_as_done_time AS STRING), ''),
+        IFNULL(cast(due_datetime AS STRING), ''),
+        IFNULL(cast(add_time AS STRING), ''),
+        IFNULL(cast(update_time AS STRING), '')
+    )) _id_,
+    deal_id,
+    org_id,
+    person_id,
+    user_id,
+    subject,
+    type,
+    done,
+    marked_as_done_time,
+    due_datetime,
+    add_time,
+    update_time
+FROM raw_activity
