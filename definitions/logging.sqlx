@@ -1,0 +1,58 @@
+config {
+  type: "incremental",
+  schema: "logging"
+}
+
+
+SELECT
+* EXCEPT(type)
+FROM 
+(
+-- base-datateam
+  -- airbyte
+  -- select * from `base-datateam.airbyte_ads_facebook.__TABLES__` union all 
+  -- select * from `base-datateam.airbyte_ads_coccoc.__TABLES__` union all 
+  -- select * from `base-datateam.airbyte_ads_google.__TABLES__` union all 
+  -- select * from `base-datateam.airbyte_ads_zalo.__TABLES__` union all 
+  select * from `base-datateam.airbyte_base_hiring.__TABLES__` union all 
+  select * from `base-datateam.airbyte_base_hrm.__TABLES__` union all 
+  select * from `base-datateam.airbyte_base_income.__TABLES__` union all 
+  -- select * from `base-datateam.airbyte_base_payroll.__TABLES__` union all 
+  select * from `base-datateam.airbyte_base_system.__TABLES__` union all 
+  select * from `base-datateam.airbyte_base_workflow.__TABLES__` union all 
+  select * from `base-datateam.airbyte_bizfly.__TABLES__` union all 
+  select * from `base-datateam.airbyte_freshchat.__TABLES__` union all 
+  select * from `base-datateam.airbyte_freshdesk.__TABLES__` union all 
+  -- select * from `base-datateam.airbyte_google_sheet_careerpath.__TABLES__` union all 
+  select * from `base-datateam.airbyte_google_sheet_request_co.__TABLES__` union all 
+  -- select * from `base-datateam.airbyte_internal.__TABLES__` union all 
+  select * from `base-datateam.airbyte_ads.__TABLES__` union all 
+  select * from `base-datateam.airbyte_pipedrive.__TABLES__` union all 
+  -- select * from `base-datateam.airflow_crm_planhat.__TABLES__` union all 
+
+  -- segment
+  select * from `base-datateam.active_campaign.__TABLES__` union all 
+  select * from `base-datateam.ios.__TABLES__` union all 
+  select * from `base-datateam.javascript.__TABLES__` union all 
+  select * from `base-datateam.javascript_staging.__TABLES__` union all 
+  select * from `base-datateam.marketing_sites.__TABLES__` union all 
+  select * from `base-datateam.php_base.__TABLES__` union all 
+  select * from `base-datateam.php_production.__TABLES__` union all 
+  select * from `base-datateam.react_native.__TABLES__` union all 
+  select * from `base-datateam.react_native_base_me.__TABLES__` union all 
+  select * from `base-datateam.react_native_finance.__TABLES__` union all 
+  select * from `base-datateam.rn_request.__TABLES__` union all 
+  select * from `base-datateam.rn_wework.__TABLES__` union all 
+  select * from `base-datateam.rn_workflow.__TABLES__` union all
+
+-- base-data-analyst
+  -- dbt
+  select * from `base-data-analyst.sale.__TABLES__` union all 
+  -- select * from `base-data-analyst.customer_development.__TABLES__` union all 
+  select * from `base-data-analyst.customer_onboarding.__TABLES__` union all 
+  select * from `base-data-analyst.human_resource.__TABLES__` union all 
+  select * from `base-data-analyst.marketing.__TABLES__`
+)
+WHERE
+row_count != 0
+ORDER BY dataset_id, table_id asc
