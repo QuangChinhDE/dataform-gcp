@@ -14,4 +14,4 @@ SELECT DISTINCT
     *
 FROM user_activity
 WHERE (user_id is not null or count_login != 0) 
-and (date < "2000-01-01" or date > DATE(DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY)))
+and (date < "2000-01-01" or date < DATE(DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY)))
