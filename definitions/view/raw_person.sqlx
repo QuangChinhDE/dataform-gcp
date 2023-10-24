@@ -3,24 +3,40 @@ config {
   schema: "query"
 }
 
+SELECT distinct
+  cast(id as int64) person_id, 
+  cast(owner_id as int64) owner_id, 
+  name,
+  JSON_EXTRACT_SCALAR(phone, '$[0].value') phone,
+  JSON_EXTRACT_SCALAR(email, '$[0].value') email,
+  job_title,
+  DATETIME_ADD(SAFE_CAST(add_time as DATETIME), INTERVAL 7 HOUR) add_time,
+  _airbyte_emitted_at _airbyte_extracted_at
+FROM `base-datateam.airbyte_pipedrive.old_persons` 
+
+UNION ALL
+
 SELECT
   cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) person_id, 
   cast(JSON_EXTRACT_SCALAR(data, '$.owner_id') as int64) owner_id, 
   JSON_EXTRACT_SCALAR(data, '$.name') name,
-  JSON_EXTRACT_SCALAR(data, '$.phone[0].value') phone,
-  JSON_EXTRACT_SCALAR(data, '$.email[0].value') email,
+  case
+    when JSON_EXTRACT_SCALAR(data, '$.phone[0].value') = '' then null
+    else JSON_EXTRACT_SCALAR(data, '$.phone[0].value')
+  end phone,
+  case
+    when JSON_EXTRACT_SCALAR(data, '$.email[0].value') = '' then null
+    else JSON_EXTRACT_SCALAR(data, '$.email[0].value')
+  end email,
+  case
+    when JSON_EXTRACT_SCALAR(data, '$.job_title') = '' then null
+    else JSON_EXTRACT_SCALAR(data, '$.job_title')
+  end job_title,
   DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
-  MAX(_airbyte_extracted_at) _airbyte_extracted_at
+  _airbyte_extracted_at
 FROM `base-datateam.airbyte_pipedrive.person` 
-WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
-AND JSON_EXTRACT_SCALAR(data, '$.phone[0].value') is not null
-GROUP BY
-  cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64), 
-  cast(JSON_EXTRACT_SCALAR(data, '$.owner_id') as int64), 
-  JSON_EXTRACT_SCALAR(data, '$.name'),
-  JSON_EXTRACT_SCALAR(data, '$.phone[0].value'),
-  JSON_EXTRACT_SCALAR(data, '$.email[0].value'),
-  DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR)
+-- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+
 
 
 

@@ -7,7 +7,7 @@ config {
 SELECT DISTINCT * EXCEPT(row_number, _airbyte_extracted_at)
 FROM (
 SELECT *,
-    ROW_NUMBER() OVER (PARTITION BY person_id ORDER BY add_time DESC) AS row_number
+    ROW_NUMBER() OVER (PARTITION BY person_id ORDER BY _airbyte_extracted_at DESC) AS row_number
 FROM ${ref('raw_person')}
 ) t
 WHERE t.row_number = 1
