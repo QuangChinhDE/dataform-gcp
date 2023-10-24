@@ -1,6 +1,6 @@
 {
-  "defaultSchema": "query",
-  "assertionSchema": "query",
+  "defaultSchema": "logging",
+  "assertionSchema": "logging",
   "warehouse": "bigquery",
   "defaultDatabase": "base-data-analyst",
   "defaultLocation": "us-central1"
