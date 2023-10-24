@@ -19,7 +19,7 @@ WITH
                 when JSON_EXTRACT_SCALAR(data, '$.due_time') is null or JSON_EXTRACT_SCALAR(data, '$.due_time') != ' ' then PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(replace(JSON_EXTRACT_SCALAR(data, '$.due_date'), ' ', ''), ' 00:00:00'))
                 else PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(replace(JSON_EXTRACT_SCALAR(data, '$.due_date'), ' ', ''), ' ', replace(JSON_EXTRACT_SCALAR(data, '$.due_time'), ' ', ''))) 
             end due_datetime,
-            DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
+            DATETIME_ADD(safe_cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
             MAX(DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR)) update_time
         FROM `base-datateam.airbyte_pipedrive.activity` 
         -- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) >= TIMESTAMP("2023-08-01")
@@ -41,7 +41,7 @@ WITH
                 when JSON_EXTRACT_SCALAR(data, '$.due_time') is null or JSON_EXTRACT_SCALAR(data, '$.due_time') != ' ' then PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(replace(JSON_EXTRACT_SCALAR(data, '$.due_date'), ' ', ''), ' 00:00:00'))
                 else PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(replace(JSON_EXTRACT_SCALAR(data, '$.due_date'), ' ', ''), ' ', replace(JSON_EXTRACT_SCALAR(data, '$.due_time'), ' ', ''))) 
             end,
-            DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR)
+            DATETIME_ADD(safe_cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR)
     )
 
 SELECT

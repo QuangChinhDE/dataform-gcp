@@ -13,12 +13,18 @@ WITH
         SELECT * FROM ${ref('raw_user')}
     )
 
-SELECT
-  user_id
-  ,base_user_id
-  ,username
-  ,user.email
-  ,status
-  ,update_time
-FROM user
-LEFT JOIN user_base ON user_base.email = user.email
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+  SELECT *,
+      ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY update_time DESC) AS row_number
+  FROM (SELECT
+          user_id
+          ,base_user_id
+          ,username
+          ,user.email
+          ,status
+          ,update_time
+        FROM user
+        LEFT JOIN user_base ON user_base.email = user.email) a
+  ) t
+WHERE t.row_number = 1
