@@ -34,7 +34,7 @@ SELECT DISTINCT
     JSON_EXTRACT_SCALAR(data, '$.884fee7fac0121b07b113c49eec9feecb9f1dcbc') tracking_source,
     cast(JSON_EXTRACT_SCALAR(data, '$.expected_close_date') as DATE) expected_close_date,
     JSON_EXTRACT_SCALAR(data, '$.probability') probability,
-    JSON_EXTRACT_SCALAR(data, '$.1385c79d79d114404f9cc23d4326918e4390ae18') churn_info,
+    churn.label churn_info,
     case
       when safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6'),',','') as int64) is not null then safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6'),',','') as int64)
       when safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.46202dc1c0891f11503b3a63640ef9426ce044b1'),',','') as int64) is not null then safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.46202dc1c0891f11503b3a63640ef9426ce044b1'),',','') as int64)
@@ -51,6 +51,7 @@ SELECT DISTINCT
 FROM `base-datateam.airbyte_pipedrive.deal` deal
 LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = 'e4374d513b687b4de35fac6d149a0b75519483dc' GROUP BY cast(id as int64)) event ON event.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.e4374d513b687b4de35fac6d149a0b75519483dc'), ',')[OFFSET(0)] as int64)
 LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' GROUP BY cast(id as int64)) source_group ON source_group.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.41c48ba0a3590d935a2130d18a6d0846ebf58102'), ',')[OFFSET(0)] as int64)
+LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '1385c79d79d114404f9cc23d4326918e4390ae18' GROUP BY cast(id as int64)) churn ON churn.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.1385c79d79d114404f9cc23d4326918e4390ae18'), ',')[OFFSET(0)] as int64)
 WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
 
 
@@ -163,7 +164,7 @@ WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SU
 --     JSON_EXTRACT_SCALAR(data, '$.884fee7fac0121b07b113c49eec9feecb9f1dcbc') tracking_source,
 --     cast(JSON_EXTRACT_SCALAR(data, '$.expected_close_date') as DATE) expected_close_date,
 --     JSON_EXTRACT_SCALAR(data, '$.probability') probability,
---     JSON_EXTRACT_SCALAR(data, '$.1385c79d79d114404f9cc23d4326918e4390ae18') churn_info,
+--     churn.label churn_info,
 --     case
 --       when safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6'),',','') as int64) is not null then safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6'),',','') as int64)
 --       when safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.46202dc1c0891f11503b3a63640ef9426ce044b1'),',','') as int64) is not null then safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.46202dc1c0891f11503b3a63640ef9426ce044b1'),',','') as int64)
@@ -179,6 +180,7 @@ WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SU
 -- FROM `base-datateam.airbyte_pipedrive.deal` deal
 -- LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = 'e4374d513b687b4de35fac6d149a0b75519483dc' GROUP BY cast(id as int64)) event ON event.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.e4374d513b687b4de35fac6d149a0b75519483dc'), ',')[OFFSET(0)] as int64)
 -- LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' GROUP BY cast(id as int64)) source_group ON source_group.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.41c48ba0a3590d935a2130d18a6d0846ebf58102'), ',')[OFFSET(0)] as int64)
+-- LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '1385c79d79d114404f9cc23d4326918e4390ae18' GROUP BY cast(id as int64)) churn ON churn.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.1385c79d79d114404f9cc23d4326918e4390ae18'), ',')[OFFSET(0)] as int64)
 
 
 
