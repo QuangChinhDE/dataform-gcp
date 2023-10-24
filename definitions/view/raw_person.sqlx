@@ -12,7 +12,7 @@ SELECT
   DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
   MAX(_airbyte_extracted_at) _airbyte_extracted_at
 FROM `base-datateam.airbyte_pipedrive.person` 
-WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
 AND JSON_EXTRACT_SCALAR(data, '$.phone[0].value') is not null
 GROUP BY
   cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64), 
