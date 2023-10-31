@@ -1,5 +1,4 @@
 config {
-  type: "incremental",
   schema: "logging"
 }
 
