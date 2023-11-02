@@ -20,7 +20,7 @@ WITH
       JSON_EXTRACT_SCALAR(json, '$.adset_name') AS adset_name,
       cast(JSON_EXTRACT_SCALAR(json, '$.campaign_id') AS INT64) AS campaign_id,
       JSON_EXTRACT_SCALAR(json, '$.campaign_name') AS campaign_name,
-      MAX(cast(JSON_EXTRACT_SCALAR(json, '$.date_start') AS DATE)) AS date_start,
+      cast(JSON_EXTRACT_SCALAR(json, '$.date_start') AS DATE) AS date_start,
       MAX(cast(JSON_EXTRACT_SCALAR(json, '$.spend') AS FLOAT64)) AS cost,
       MAX(cast(JSON_EXTRACT_SCALAR(json, '$.clicks') AS INT64)) AS click,
       MAX(cast(JSON_EXTRACT_SCALAR(json, '$.impressions') AS INT64)) AS impression,
@@ -36,7 +36,8 @@ WITH
       cast(JSON_EXTRACT_SCALAR(json, '$.adset_id') AS INT64),
       JSON_EXTRACT_SCALAR(json, '$.adset_name'),
       cast(JSON_EXTRACT_SCALAR(json, '$.campaign_id') AS INT64),
-      JSON_EXTRACT_SCALAR(json, '$.campaign_name')
+      JSON_EXTRACT_SCALAR(json, '$.campaign_name'),
+      cast(JSON_EXTRACT_SCALAR(json, '$.date_start') AS DATE)
   ),
 
   facebook AS (
