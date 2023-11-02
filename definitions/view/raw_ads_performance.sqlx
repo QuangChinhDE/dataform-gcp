@@ -32,7 +32,7 @@ WITH
         FROM `base-datateam.airbyte_ads.coccoc_advert_statistic` ads,
             UNNEST(JSON_EXTRACT_ARRAY(statsDetail)) AS json
         INNER JOIN ${ref('raw_ads_coccoc')} ad ON ad.ad_id = ads.advertId
-        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
         GROUP BY
             CAST(NULL AS INT64)
             ,CAST(account_name AS STRING)
