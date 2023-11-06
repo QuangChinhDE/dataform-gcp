@@ -3,4 +3,5 @@ config {
   schema: "revenue_cut_off"
 }
 
-SELECT DISTINCT * FROM ${ref('raw_job_training_session')}
+
+SELECT * FROM `base-data-analyst.revenue.subscription`

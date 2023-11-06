@@ -1,9 +1,7 @@
 config {
-  type: "incremental",
-  uniqueKey: ['job_id'],
-  schema: "revenue"
+  type: "table",
+  schema: "revenue_cut_off"
 }
-
 WITH
   job AS (
     SELECT * FROM ${ref('raw_job')}

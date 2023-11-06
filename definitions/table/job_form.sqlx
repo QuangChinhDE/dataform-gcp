@@ -1,7 +1,6 @@
 config {
-  type: "incremental",
-  uniqueKey: ['job_form_id'],
-  schema: "revenue"
+  type: "table",
+  schema: "revenue_cut_off"
 }
 
 SELECT DISTINCT * FROM ${ref('raw_job_form')}

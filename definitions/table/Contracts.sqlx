@@ -1,0 +1,13 @@
+config {
+  type: "table",
+  schema: "revenue_cut_off"
+}
+
+
+SELECT
+*,
+CASE
+WHEN job_id IS NOT NULL THEN job_id
+ELSE -100000 - DENSE_RANK() OVER (ORDER BY first_payment_id)
+END AS job_id_hop_dong
+FROM `base-data-analyst.revenue.contract`

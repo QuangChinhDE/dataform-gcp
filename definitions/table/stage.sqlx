@@ -1,6 +1,6 @@
 config {
   type: "table",
-  schema: "revenue"
+  schema: "revenue_cut_off"
 }
 
 SELECT * FROM ${ref('raw_stage')}
