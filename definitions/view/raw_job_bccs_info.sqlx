@@ -1,0 +1,48 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+
+SELECT
+  MD5(CONCAT(
+        IFNULL(cast(job_id AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[0]') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[1]') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[2]') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[3]') AS STRING), '')
+    )) bccs_info_id
+  ,job_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[0]')
+  end name
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[1]')
+  end phone
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[2]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[2]')
+  end email
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[3]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[3]')
+  end department
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[4]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[4]')
+  end location
+FROM (
+  SELECT
+    (json_extract_array(value)) AS json_array
+    ,job_id
+  FROM (SELECT job_id, CAST(FROM_BASE64(value) AS STRING) value FROM ${ref('raw_job_form')} job_form 
+      WHERE keys = 'thong_tin_bccs' 
+            and type = 'input-table' 
+            AND NOT REGEXP_CONTAINS(cast(value as string), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
+            AND cast(value as string) not like '%{}%'
+            AND (value not like '%{}%') 
+            AND (value not like '% %') 
+            AND (value not like '%1.%'))
+), UNNEST(json_array) AS json

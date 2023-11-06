@@ -1,0 +1,172 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+  job_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[0]')
+  end app
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[1]')
+  end package_used
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else MD5(lower(JSON_EXTRACT_SCALAR(json, '$[1]')))
+  end package_used_id
+  ,CAST(NULL AS STRING) package
+  ,MD5(NULL) package_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[2]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[2]')
+  end total_account
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[3]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[3]')
+  end start_date
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[4]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[4]')
+  end end_date
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[5]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[5]')
+  end end_date_promotion
+  ,case
+    when replace(replace(JSON_EXTRACT_SCALAR(json, '$[6]'), ',', ''), '.', '') = '' then NULL
+    else replace(replace(JSON_EXTRACT_SCALAR(json, '$[6]'), ',', ''), '.', '')
+  end amount
+  ,case
+    when replace(replace(JSON_EXTRACT_SCALAR(json, '$[7]'), ',', ''), '.', '') = '' then NULL
+    else replace(replace(JSON_EXTRACT_SCALAR(json, '$[7]'), ',', ''), '.', '')
+  end expense
+  ,'thong_tin_subscription' type
+FROM (
+  SELECT
+    (json_extract_array(value)) AS json_array
+    ,job_id
+  FROM (SELECT job_id, CAST(FROM_BASE64(value) AS STRING) value FROM ${ref('raw_job_form')} job_form 
+      WHERE keys = 'thong_tin_subscription' 
+        and type = 'input-table' 
+        AND NOT REGEXP_CONTAINS(cast(value as string), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
+        AND cast(value as string) not like '%{}%'
+        AND (value not like '%{}%') 
+        AND (value not like '% %') 
+        AND (value not like '%1.%'))
+), UNNEST(json_array) AS json
+
+UNION ALL
+
+SELECT
+  job_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[8]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[8]')
+  end app
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[1]')
+  end package_used
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else MD5(lower(JSON_EXTRACT_SCALAR(json, '$[1]')))
+  end package_used_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[0]')
+  end package
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
+    else MD5(lower(JSON_EXTRACT_SCALAR(json, '$[0]')))
+  end package_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[2]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[2]')
+  end total_account
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[5]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[5]')
+  end start_date
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[6]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[6]')
+  end end_date
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[7]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[7]')
+  end end_date_promotion
+  ,case
+    when replace(replace(JSON_EXTRACT_SCALAR(json, '$[3]'), ',', ''), '.', '') = '' then NULL
+    else replace(replace(JSON_EXTRACT_SCALAR(json, '$[3]'), ',', ''), '.', '')
+  end amount
+  ,case
+    when replace(replace(JSON_EXTRACT_SCALAR(json, '$[4]'), ',', ''), '.', '') = '' then NULL
+    else replace(replace(JSON_EXTRACT_SCALAR(json, '$[4]'), ',', ''), '.', '')
+  end expense
+  ,'thong_tin_package' type
+FROM (
+  SELECT
+    (json_extract_array(value)) AS json_array
+    ,job_id
+  FROM (SELECT job_id, CAST(FROM_BASE64(value) AS STRING) value FROM ${ref('raw_job_form')} job_form
+      WHERE keys = 'thong_tin_package' 
+            and type = 'input-table' 
+            AND NOT REGEXP_CONTAINS(cast(value as string), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
+            AND cast(value as string) not like '%{}%'
+            AND (value not like '%{}%') 
+            AND (value not like '% %') 
+            AND (value not like '%1.%'))
+), UNNEST(json_array) AS json
+
+UNION ALL
+
+SELECT
+  job_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[0]')
+  end app
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[1]')
+  end package_used
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else MD5(lower(JSON_EXTRACT_SCALAR(json, '$[1]')))
+  end package_used_id
+  ,CAST(NULL AS STRING) package
+  ,MD5(NULL) package_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[2]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[2]')
+  end total_account
+  ,CAST(NULL AS STRING) start_date
+  ,CAST(NULL AS STRING) end_date
+  ,CAST(NULL AS STRING) end_date_promotion
+  ,case
+    when replace(replace(JSON_EXTRACT_SCALAR(json, '$[3]'), ',', ''), '.', '') = '' then NULL
+    else replace(replace(JSON_EXTRACT_SCALAR(json, '$[3]'), ',', ''), '.', '')
+  end amount
+  ,case
+    when replace(replace(JSON_EXTRACT_SCALAR(json, '$[4]'), ',', ''), '.', '') = '' then NULL
+    else replace(replace(JSON_EXTRACT_SCALAR(json, '$[4]'), ',', ''), '.', '')
+  end expense
+  ,'fpt_product' type
+FROM (
+  SELECT
+    (json_extract_array(value)) AS json_array
+    ,job_id
+  FROM (SELECT job_id, CAST(FROM_BASE64(value) AS STRING) value FROM ${ref('raw_job_form')} job_form 
+      WHERE keys = 'fpt_product' 
+            and type = 'input-table' 
+            AND NOT REGEXP_CONTAINS(cast(value as string), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
+            AND cast(value as string) not like '%{}%'
+            AND (value not like '%{}%') 
+            AND (value not like '% %') 
+            AND (value not like '%1.%'))
+), UNNEST(json_array) AS json
+
+

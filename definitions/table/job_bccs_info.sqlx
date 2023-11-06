@@ -1,0 +1,7 @@
+config {
+  type: "incremental",
+  uniqueKey: ['bccs_info_id'],
+  schema: "revenue"
+}
+
+SELECT DISTINCT * FROM ${ref('raw_job_bccs_info')}

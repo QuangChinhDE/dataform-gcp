@@ -1,0 +1,7 @@
+config {
+  type: "incremental",
+  uniqueKey: ['workflow_id'],
+  schema: "revenue"
+}
+
+SELECT * FROM ${ref('raw_workflow')}

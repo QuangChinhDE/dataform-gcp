@@ -1,0 +1,6 @@
+config {
+  type: "table",
+  schema: "revenue"
+}
+
+SELECT * FROM ${ref('raw_stage')}

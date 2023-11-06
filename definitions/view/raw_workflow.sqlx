@@ -1,0 +1,40 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT * EXCEPT(row_number)
+FROM (
+    SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY workflow_id ORDER BY last_update DESC) AS row_number
+    FROM (SELECT  
+            cast(replace(id, '.0', '') as int64) workflow_id
+            ,name
+            ,cast(JSON_EXTRACT_SCALAR(stats, '$.active') as int64) total_active
+            ,cast(JSON_EXTRACT_SCALAR(stats, '$.done') as int64) total_done
+            ,cast(JSON_EXTRACT_SCALAR(stats, '$.failed') as int64) total_failed
+            ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
+            ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(since, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) since
+          FROM `base-datateam.airbyte_base_workflow.workflow`
+          WHERE  cast(replace(id, '.0', '') as int64) in (3930
+,3938
+,6157
+,6158
+,11
+,3940
+,4536
+,5469
+,3942
+,31
+,4088
+,4085
+,4132
+,4131
+,3950
+,2069
+,5555
+,5308
+)
+        ) a
+) t
+WHERE t.row_number = 1
