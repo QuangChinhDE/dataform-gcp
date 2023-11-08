@@ -1,0 +1,9 @@
+config {
+  type: "table",
+  schema: "revenue_cut_off"
+}
+
+
+SELECT DISTINCT
+* EXCEPT(_airbyte_extracted_at, _airbyte_meta, _airbyte_raw_id)
+FROM `base-data-analyst.careerpath.BC_info`
