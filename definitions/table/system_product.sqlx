@@ -1,0 +1,16 @@
+config {
+  type: "table",
+  schema: "customer_onboarding"
+}
+
+
+SELECT DISTINCT
+  system_id,
+  JSON_EXTRACT_SCALAR(json, '$.app') app,
+  JSON_EXTRACT_SCALAR(json, '$.sub') sub,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(JSON_EXTRACT_SCALAR(json, '$.expired') as int64)), INTERVAL 7 HOUR) AS DATETIME) expired,
+  JSON_EXTRACT_SCALAR(json, '$.status') status,
+  JSON_EXTRACT_SCALAR(json, '$.limit') `limit`,
+  last_update
+FROM ${ref('raw_system')},
+  UNNEST(JSON_EXTRACT_ARRAY(subs)) AS json
