@@ -23,5 +23,7 @@ SELECT
     ,lead.HubSpotID deal_id
     ,lead.DisqualifiedReason disqualified_reason
 FROM `base-datateam.airbyte_ads.mssql_Leads` lead
-INNER JOIN (SELECT ID, CampaignID FROM `base-datateam.airbyte_ads.mssql_ContactEvents` WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())) ce ON ce.ID = lead.ContactEventID
+INNER JOIN (SELECT ID, CampaignID FROM `base-datateam.airbyte_ads.mssql_ContactEvents` 
+            WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+            ) ce ON ce.ID = lead.ContactEventID
 WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())

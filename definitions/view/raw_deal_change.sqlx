@@ -1,129 +1,125 @@
-config {
-  type: "view",
-  schema: "query"
-}
 
-WITH
-    deal_field_option AS (
-        SELECT * FROM ${ref('raw_deal_field')}
-    ),
+-- WITH
+--     deal_field_option AS (
+--         SELECT * FROM ${ref('raw_deal_field')}
+--     ),
 
-    deal_change AS (
-        SELECT
-        cast(JSON_EXTRACT_SCALAR(json, '$.data.item_id') as int64) deal_id
-        ,cast(JSON_EXTRACT_SCALAR(json, '$.data.user_id') as int64) user_id
+--     deal_change AS (
+--         SELECT
+--         cast(JSON_EXTRACT_SCALAR(json, '$.data.item_id') as int64) deal_id
+--         ,cast(JSON_EXTRACT_SCALAR(json, '$.data.user_id') as int64) user_id
 
-        ,CASE 
-            WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '01ba13f47bddc6f6edf7fcb26af2a02b8621357e'THEN 'tracking_campaign_name'
-            WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '0cba272b8feb43724fcc8d64c2fee8790d711277'THEN 'tracking_appendix'
-            WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6'THEN 'tracking_referral'
-            WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6'THEN 'tracking_content'
-            WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '884fee7fac0121b07b113c49eec9feecb9f1dcbc'THEN 'tracking_source'
-            WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e'THEN 'tracking_medium'
-            WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = 'da767c03989c02f5088529c717dee6cb5da9b767'THEN 'tracking_content_link'
-            WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = 'fbfadd21eb74d60f934ef0247d9ebe844ec66772'THEN 'tracking_term'
-            WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN 'source_group'
-            ELSE JSON_EXTRACT_SCALAR(json, '$.data.field_key')
-        END field_name
+--         ,CASE 
+--             WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '01ba13f47bddc6f6edf7fcb26af2a02b8621357e'THEN 'tracking_campaign_name'
+--             WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '0cba272b8feb43724fcc8d64c2fee8790d711277'THEN 'tracking_appendix'
+--             WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6'THEN 'tracking_referral'
+--             WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6'THEN 'tracking_content'
+--             WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '884fee7fac0121b07b113c49eec9feecb9f1dcbc'THEN 'tracking_source'
+--             WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e'THEN 'tracking_medium'
+--             WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = 'da767c03989c02f5088529c717dee6cb5da9b767'THEN 'tracking_content_link'
+--             WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = 'fbfadd21eb74d60f934ef0247d9ebe844ec66772'THEN 'tracking_term'
+--             WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN 'source_group'
+--             ELSE JSON_EXTRACT_SCALAR(json, '$.data.field_key')
+--         END field_name
 
-        ,CASE 
-            WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN dfm10.label
-            ELSE JSON_EXTRACT_SCALAR(json, '$.data.old_value')
-        END old_value
+--         ,CASE 
+--             WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN dfm10.label
+--             ELSE JSON_EXTRACT_SCALAR(json, '$.data.old_value')
+--         END old_value
         
-        ,CASE 
-            WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN dfo10.label
-            ELSE JSON_EXTRACT_SCALAR(json, '$.data.new_value')
-        END new_value
+--         ,CASE 
+--             WHEN JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN dfo10.label
+--             ELSE JSON_EXTRACT_SCALAR(json, '$.data.new_value')
+--         END new_value
 
-        ,DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(json, '$.data.log_time') as DATETIME), INTERVAL 7 HOUR) log_time
-        FROM `base-datateam.airbyte_pipedrive.deal_change`, UNNEST(JSON_EXTRACT_ARRAY(json, '$.data')) AS json
-        LEFT JOIN deal_field_option dfm10 ON dfm10.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND dfm10.id = safe_cast(JSON_EXTRACT_SCALAR(json, '$.data.old_value') as int64) AND JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '41c48ba0a3590d935a2130d18a6d0846ebf58102'
-        LEFT JOIN deal_field_option dfo10 ON dfo10.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND dfo10.id = safe_cast(JSON_EXTRACT_SCALAR(json, '$.data.new_value') as int64) AND JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '41c48ba0a3590d935a2130d18a6d0846ebf58102'
-        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
-            AND cast(JSON_EXTRACT_SCALAR(json, '$.data.item_id') as int64) is not null 
-            AND JSON_EXTRACT_SCALAR(json, '$.data.field_key') IN ('01ba13f47bddc6f6edf7fcb26af2a02b8621357e','0cba272b8feb43724fcc8d64c2fee8790d711277','1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6','6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6','884fee7fac0121b07b113c49eec9feecb9f1dcbc','9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e','da767c03989c02f5088529c717dee6cb5da9b767','fbfadd21eb74d60f934ef0247d9ebe844ec66772', '41c48ba0a3590d935a2130d18a6d0846ebf58102', 'add_time','expected_close_date','status','stage_id','value','user_id','pipeline')
-    ),
+--         ,DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(json, '$.data.log_time') as DATETIME), INTERVAL 7 HOUR) log_time
+--         FROM `base-datateam.airbyte_pipedrive.deal_change`, UNNEST(JSON_EXTRACT_ARRAY(json, '$.data')) AS json
+--         LEFT JOIN deal_field_option dfm10 ON dfm10.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND dfm10.id = safe_cast(JSON_EXTRACT_SCALAR(json, '$.data.old_value') as int64) AND JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '41c48ba0a3590d935a2130d18a6d0846ebf58102'
+--         LEFT JOIN deal_field_option dfo10 ON dfo10.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND dfo10.id = safe_cast(JSON_EXTRACT_SCALAR(json, '$.data.new_value') as int64) AND JSON_EXTRACT_SCALAR(json, '$.data.field_key') = '41c48ba0a3590d935a2130d18a6d0846ebf58102'
+--         WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+--             AND cast(JSON_EXTRACT_SCALAR(json, '$.data.item_id') as int64) is not null 
+--             AND JSON_EXTRACT_SCALAR(json, '$.data.field_key') IN ('01ba13f47bddc6f6edf7fcb26af2a02b8621357e','0cba272b8feb43724fcc8d64c2fee8790d711277','1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6','6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6','884fee7fac0121b07b113c49eec9feecb9f1dcbc','9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e','da767c03989c02f5088529c717dee6cb5da9b767','fbfadd21eb74d60f934ef0247d9ebe844ec66772', '41c48ba0a3590d935a2130d18a6d0846ebf58102', 'add_time','expected_close_date','status','stage_id','value','user_id','pipeline')
+--     ),
 
-    deal_change_ AS (
-        SELECT
-            deal_id
-            ,user_id
-            ,field_name
-            ,old_value
-            ,new_value
-            ,MAX(log_time) log_time
-        FROM deal_change
-        GROUP BY
-            deal_id
-            ,user_id
-            ,field_name
-            ,old_value
-            ,new_value
-    ),
+--     deal_change_ AS (
+--         SELECT
+--             deal_id
+--             ,user_id
+--             ,field_name
+--             ,old_value
+--             ,new_value
+--             ,MAX(log_time) log_time
+--         FROM deal_change
+--         GROUP BY
+--             deal_id
+--             ,user_id
+--             ,field_name
+--             ,old_value
+--             ,new_value
+--     ),
 
-    old_deal_change AS (
-        SELECT
-            deal_id
-            ,user_id
-            ,CASE 
-                WHEN field_key = '01ba13f47bddc6f6edf7fcb26af2a02b8621357e'THEN 'tracking_campaign_name'
-                WHEN field_key = '0cba272b8feb43724fcc8d64c2fee8790d711277'THEN 'tracking_appendix'
-                WHEN field_key = '1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6'THEN 'tracking_referral'
-                WHEN field_key = '6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6'THEN 'tracking_content'
-                WHEN field_key = '884fee7fac0121b07b113c49eec9feecb9f1dcbc'THEN 'tracking_source'
-                WHEN field_key = '9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e'THEN 'tracking_medium'
-                WHEN field_key = 'da767c03989c02f5088529c717dee6cb5da9b767'THEN 'tracking_content_link'
-                WHEN field_key = 'fbfadd21eb74d60f934ef0247d9ebe844ec66772'THEN 'tracking_term'
-                WHEN field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN 'source_group'
-                ELSE field_key
-            END field_name
+--     old_deal_change AS (
+--         SELECT
+--             deal_id
+--             ,user_id
+--             ,CASE 
+--                 WHEN field_key = '01ba13f47bddc6f6edf7fcb26af2a02b8621357e'THEN 'tracking_campaign_name'
+--                 WHEN field_key = '0cba272b8feb43724fcc8d64c2fee8790d711277'THEN 'tracking_appendix'
+--                 WHEN field_key = '1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6'THEN 'tracking_referral'
+--                 WHEN field_key = '6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6'THEN 'tracking_content'
+--                 WHEN field_key = '884fee7fac0121b07b113c49eec9feecb9f1dcbc'THEN 'tracking_source'
+--                 WHEN field_key = '9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e'THEN 'tracking_medium'
+--                 WHEN field_key = 'da767c03989c02f5088529c717dee6cb5da9b767'THEN 'tracking_content_link'
+--                 WHEN field_key = 'fbfadd21eb74d60f934ef0247d9ebe844ec66772'THEN 'tracking_term'
+--                 WHEN field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN 'source_group'
+--                 ELSE field_key
+--             END field_name
 
-            ,CASE 
-                WHEN field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN dfm10.label
-                ELSE old_value
-            END old_value
+--             ,CASE 
+--                 WHEN field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN dfm10.label
+--                 ELSE old_value
+--             END old_value
             
-            ,CASE 
-                WHEN field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN dfo10.label
-                ELSE new_value
-            END new_value
+--             ,CASE 
+--                 WHEN field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN dfo10.label
+--                 ELSE new_value
+--             END new_value
 
-            ,MAX(DATETIME_ADD(SAFE_CAST(log_time as DATETIME), INTERVAL 7 HOUR)) log_time
-        FROM `base-datateam.airbyte_pipedrive.old_dealChanges`
-        LEFT JOIN deal_field_option dfm10 ON dfm10.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND dfm10.id = safe_cast(old_value as int64) AND field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'
-        LEFT JOIN deal_field_option dfo10 ON dfo10.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND dfo10.id = safe_cast(new_value as int64) AND field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'
-        WHERE 
-            deal_id not in (SELECT deal_id from deal_change_)
-            AND field_key IN ('01ba13f47bddc6f6edf7fcb26af2a02b8621357e','0cba272b8feb43724fcc8d64c2fee8790d711277','1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6','6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6','884fee7fac0121b07b113c49eec9feecb9f1dcbc','9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e','da767c03989c02f5088529c717dee6cb5da9b767','fbfadd21eb74d60f934ef0247d9ebe844ec66772', '41c48ba0a3590d935a2130d18a6d0846ebf58102', 'add_time','expected_close_date','status','stage_id','value','user_id','pipeline')
-        GROUP BY
-            deal_id
-            ,user_id
-            ,CASE 
-                WHEN field_key = '01ba13f47bddc6f6edf7fcb26af2a02b8621357e'THEN 'tracking_campaign_name'
-                WHEN field_key = '0cba272b8feb43724fcc8d64c2fee8790d711277'THEN 'tracking_appendix'
-                WHEN field_key = '1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6'THEN 'tracking_referral'
-                WHEN field_key = '6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6'THEN 'tracking_content'
-                WHEN field_key = '884fee7fac0121b07b113c49eec9feecb9f1dcbc'THEN 'tracking_source'
-                WHEN field_key = '9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e'THEN 'tracking_medium'
-                WHEN field_key = 'da767c03989c02f5088529c717dee6cb5da9b767'THEN 'tracking_content_link'
-                WHEN field_key = 'fbfadd21eb74d60f934ef0247d9ebe844ec66772'THEN 'tracking_term'
-                WHEN field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN 'source_group'
-                ELSE field_key
-            END
-            ,CASE 
-                WHEN field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN dfm10.label
-                ELSE old_value
-            END
-            ,CASE 
-                WHEN field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN dfo10.label
-                ELSE new_value
-            END
-    )
+--             ,MAX(DATETIME_ADD(SAFE_CAST(log_time as DATETIME), INTERVAL 7 HOUR)) log_time
+--         FROM `base-datateam.airbyte_pipedrive.old_dealChanges`
+--         LEFT JOIN deal_field_option dfm10 ON dfm10.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND dfm10.id = safe_cast(old_value as int64) AND field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'
+--         LEFT JOIN deal_field_option dfo10 ON dfo10.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND dfo10.id = safe_cast(new_value as int64) AND field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'
+--         WHERE 
+--             deal_id not in (SELECT deal_id from deal_change_)
+--             AND field_key IN ('01ba13f47bddc6f6edf7fcb26af2a02b8621357e','0cba272b8feb43724fcc8d64c2fee8790d711277','1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6','6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6','884fee7fac0121b07b113c49eec9feecb9f1dcbc','9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e','da767c03989c02f5088529c717dee6cb5da9b767','fbfadd21eb74d60f934ef0247d9ebe844ec66772', '41c48ba0a3590d935a2130d18a6d0846ebf58102', 'add_time','expected_close_date','status','stage_id','value','user_id','pipeline')
+--         GROUP BY
+--             deal_id
+--             ,user_id
+--             ,CASE 
+--                 WHEN field_key = '01ba13f47bddc6f6edf7fcb26af2a02b8621357e'THEN 'tracking_campaign_name'
+--                 WHEN field_key = '0cba272b8feb43724fcc8d64c2fee8790d711277'THEN 'tracking_appendix'
+--                 WHEN field_key = '1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6'THEN 'tracking_referral'
+--                 WHEN field_key = '6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6'THEN 'tracking_content'
+--                 WHEN field_key = '884fee7fac0121b07b113c49eec9feecb9f1dcbc'THEN 'tracking_source'
+--                 WHEN field_key = '9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e'THEN 'tracking_medium'
+--                 WHEN field_key = 'da767c03989c02f5088529c717dee6cb5da9b767'THEN 'tracking_content_link'
+--                 WHEN field_key = 'fbfadd21eb74d60f934ef0247d9ebe844ec66772'THEN 'tracking_term'
+--                 WHEN field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN 'source_group'
+--                 ELSE field_key
+--             END
+--             ,CASE 
+--                 WHEN field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN dfm10.label
+--                 ELSE old_value
+--             END
+--             ,CASE 
+--                 WHEN field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102'THEN dfo10.label
+--                 ELSE new_value
+--             END
+--     )
 
-SELECT * FROM deal_change_
--- UNION ALL
--- SELECT * FROM old_deal_change
+-- SELECT * FROM deal_change_
+-- -- UNION ALL
+-- -- SELECT * FROM old_deal_change
 
 
 

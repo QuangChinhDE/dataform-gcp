@@ -1,0 +1,93 @@
+config {
+  type: "incremental",
+  uniqueKey: ["deal_transaction_id"],
+  schema: "marketing",
+  bigquery: {
+    partitionBy: "DATE(update_time)"
+  }
+}
+
+SELECT DISTINCT
+  MD5(CONCAT(
+        IFNULL(cast(deal_id AS STRING), ''),
+        IFNULL(cast(update_time AS STRING), ''),
+        IFNULL(cast(user_id AS STRING), ''),
+        IFNULL(cast(pipeline_id AS STRING), ''),
+        IFNULL(cast(stage_id AS STRING), ''),
+        IFNULL(cast(add_time AS STRING), ''),
+        IFNULL(cast(stage_change_time AS STRING), ''),
+        IFNULL(cast(close_time AS STRING), ''),
+        IFNULL(cast(won_time AS STRING), ''),
+        IFNULL(cast(first_won_time AS STRING), ''),
+        IFNULL(cast(lost_time AS STRING), ''),
+        IFNULL(cast(lost_reason AS STRING), ''),
+        IFNULL(cast(status AS STRING), ''),
+        IFNULL(cast(expected_close_date AS STRING), ''),
+        IFNULL(cast(value AS STRING), ''),
+        IFNULL(cast(probability AS STRING), ''),
+        IFNULL(cast(tracking_campaign_name AS STRING), ''),
+        IFNULL(cast(tracking_appendix AS STRING), ''),
+        IFNULL(cast(tracking_referral AS STRING), ''),
+        IFNULL(cast(tracking_content AS STRING), ''),
+        IFNULL(cast(tracking_source AS STRING), ''),
+        IFNULL(cast(tracking_medium AS STRING), ''),
+        IFNULL(cast(tracking_content_link AS STRING), ''),
+        IFNULL(cast(tracking_term AS STRING), ''),
+        IFNULL(cast(source_group AS STRING), ''),
+        IFNULL(cast(challenge AS STRING), ''),
+        IFNULL(cast(goal AS STRING), ''),
+        IFNULL(cast(competitor AS STRING), ''),
+        IFNULL(cast(note_from_marketing AS STRING), ''),
+        IFNULL(cast(budget AS STRING), ''),
+        IFNULL(cast(lead_score AS STRING), ''),
+        IFNULL(cast(priority_score AS STRING), ''),
+        IFNULL(cast(customer_need AS STRING), ''),
+        IFNULL(cast(customer_problem AS STRING), ''),
+        IFNULL(cast(stakeholder_engagement AS STRING), ''),
+        IFNULL(cast(brand_awareness AS STRING), ''),
+        IFNULL(cast(price_sensitive AS STRING), ''),
+        IFNULL(cast(gtm_type AS STRING), ''),
+        IFNULL(cast(partner_owner AS STRING), ''),
+        IFNULL(cast(partner_id AS STRING), '')
+    )) deal_transaction_id
+  ,deal_id
+  ,update_time
+  ,user_id
+  ,pipeline_id
+  ,stage_id
+  ,add_time
+  ,stage_change_time
+  ,close_time
+  ,won_time
+  ,first_won_time
+  ,lost_time
+  ,lost_reason
+  ,status
+  ,expected_close_date
+  ,value
+  ,probability
+  ,tracking_campaign_name
+  ,tracking_appendix
+  ,tracking_referral
+  ,tracking_content
+  ,tracking_source
+  ,tracking_medium
+  ,tracking_content_link
+  ,tracking_term
+  ,source_group
+  ,challenge
+  ,goal
+  ,competitor
+  ,note_from_marketing
+  ,budget
+  ,lead_score
+  ,priority_score
+  ,customer_need
+  ,customer_problem
+  ,stakeholder_engagement
+  ,brand_awareness
+  ,price_sensitive
+  ,gtm_type
+  ,partner_owner
+  ,partner_id 
+FROM ${ref('raw_deal_transaction')}
