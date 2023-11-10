@@ -1,0 +1,61 @@
+config {
+  type: "incremental",
+  uniqueKey: ["deal_transaction_id"],
+  schema: "marketing",
+  bigquery: {
+    partitionBy: "DATE(update_time)"
+  }
+}
+
+SELECT DISTINCT
+  MD5(CONCAT(
+        IFNULL(cast(deal_id AS STRING), ''),
+        IFNULL(cast(update_time AS STRING), ''),
+        IFNULL(cast(user_id AS STRING), ''),
+        IFNULL(cast(pipeline_id AS STRING), ''),
+        IFNULL(cast(stage_id AS STRING), ''),
+        IFNULL(cast(add_time AS STRING), ''),
+        IFNULL(cast(stage_change_time AS STRING), ''),
+        IFNULL(cast(close_time AS STRING), ''),
+        IFNULL(cast(won_time AS STRING), ''),
+        IFNULL(cast(first_won_time AS STRING), ''),
+        IFNULL(cast(lost_time AS STRING), ''),
+        IFNULL(cast(lost_reason AS STRING), ''),
+        IFNULL(cast(status AS STRING), ''),
+        IFNULL(cast(expected_close_date AS STRING), ''),
+        IFNULL(cast(value AS STRING), ''),
+        IFNULL(cast(weighted_value AS STRING), ''),
+        IFNULL(cast(probability AS STRING), ''),
+        IFNULL(cast(tracking_source AS STRING), ''),
+        IFNULL(cast(source_group AS STRING), ''),
+        IFNULL(cast(system_id AS STRING), ''),
+        IFNULL(cast(partner_owner AS STRING), ''),
+        IFNULL(cast(partner_id AS STRING), ''),
+        IFNULL(cast(event AS STRING), ''),
+        IFNULL(cast(churn_info AS STRING), '')
+    )) deal_transaction_id
+    ,deal_id
+    ,update_time
+    ,user_id
+    ,pipeline_id
+    ,stage_id
+    ,add_time
+    ,stage_change_time
+    ,close_time
+    ,won_time
+    ,first_won_time
+    ,lost_time
+    ,lost_reason
+    ,status
+    ,expected_close_date
+    ,value
+    ,weighted_value
+    ,probability
+    ,tracking_source
+    ,source_group
+    ,system_id
+    ,partner_owner
+    ,partner_id
+    ,event
+    ,churn_info
+FROM ${ref('raw_deal_transaction')}

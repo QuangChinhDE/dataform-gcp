@@ -1,0 +1,191 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH
+  deal_field_option AS (
+      SELECT * FROM ${ref('raw_deal_field')}
+  ),
+
+  deal_done AS (
+    SELECT DISTINCT * FROM ${ref('raw_deal')}
+  ),
+
+  deal_change_raw AS (
+      SELECT
+      cast(JSON_EXTRACT_SCALAR(json, '$.data.item_id') as int64) deal_id
+      ,JSON_EXTRACT_SCALAR(json, '$.data.field_key') field_name
+      ,Case
+        when JSON_EXTRACT_SCALAR(json, '$.data.new_value') is null then JSON_EXTRACT_SCALAR(json, '$.data.old_value')
+        else JSON_EXTRACT_SCALAR(json, '$.data.new_value')
+        end value
+      ,DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(json, '$.data.log_time') as DATETIME), INTERVAL 7 HOUR) update_time
+      FROM `base-datateam.airbyte_pipedrive.deal_change`,
+        UNNEST(JSON_EXTRACT_ARRAY(json, '$.data')) AS json
+      WHERE cast(JSON_EXTRACT_SCALAR(json, '$.data.item_id') as int64) is not null
+        -- AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+      UNION ALL
+      SELECT
+        cast(deal_id as int64) deal_id
+        ,field_key field_name
+        ,Case
+          when new_value is not null then new_value
+          else old_value
+          end value
+        ,DATETIME_ADD(SAFE_CAST(log_time as DATETIME), INTERVAL 7 HOUR) update_time
+      FROM `base-datateam.airbyte_pipedrive.old_dealChanges`
+  ),
+
+  deal_change_pivot as (
+    SELECT distinct
+      deal_id
+      ,update_time
+      ,`884fee7fac0121b07b113c49eec9feecb9f1dcbc` tracking_source
+      ,`41c48ba0a3590d935a2130d18a6d0846ebf58102` source_group
+      ,case
+        when safe_cast(replace(`2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6`,',','') as int64) is not null then safe_cast(replace(`2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6`,',','') as int64)
+        when safe_cast(replace(`46202dc1c0891f11503b3a63640ef9426ce044b1`,',','') as int64) is not null then safe_cast(replace(`46202dc1c0891f11503b3a63640ef9426ce044b1`,',','') as int64)
+        else safe_cast(replace(`8b62d8841d2f21b3237b5682260da238ad7debdc`,',','') as int64)
+        end system_id
+      ,`b7c205797fc745d3b7619146603d27568b5055ac` partner_owner
+      ,`09fae946b918159745b5ad3a3ee7b079afe8f143` partner_id
+      ,`e4374d513b687b4de35fac6d149a0b75519483dc` event
+      ,`1385c79d79d114404f9cc23d4326918e4390ae18` churn_info
+      ,`add_time` add_time
+      ,`expected_close_date` expected_close_date
+      ,`status` status
+      ,`stage_id` stage_id
+      ,`value` value
+      ,`user_id` user_id
+      ,`pipeline` pipeline_id
+      ,`won_time` won_time
+      ,`stage_change_time` stage_change_time
+      ,`lost_time` lost_time
+      ,`lost_reason` lost_reason
+      ,probability
+      ,first_won_time
+      ,close_time
+      ,weighted_value
+    FROM deal_change_raw
+    pivot(max(value) for field_name in ('884fee7fac0121b07b113c49eec9feecb9f1dcbc'
+                                      ,'41c48ba0a3590d935a2130d18a6d0846ebf58102'
+                                      ,'2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6'
+                                      ,'46202dc1c0891f11503b3a63640ef9426ce044b1'
+                                      ,'8b62d8841d2f21b3237b5682260da238ad7debdc'
+                                      ,'b7c205797fc745d3b7619146603d27568b5055ac'
+                                      ,'09fae946b918159745b5ad3a3ee7b079afe8f143'
+                                      ,'e4374d513b687b4de35fac6d149a0b75519483dc'
+                                      ,'1385c79d79d114404f9cc23d4326918e4390ae18'
+                                      ,'add_time'
+                                      ,'expected_close_date'
+                                      ,'status'
+                                      ,'stage_id'
+                                      ,'value'
+                                      ,'user_id'
+                                      ,'pipeline'
+                                      ,'won_time'
+                                      ,'stage_change_time'
+                                      ,'lost_time'
+                                      ,'lost_reason'
+                                      ,'label'
+                                      ,'probability'
+                                      ,'first_won_time'
+                                      ,'close_time'
+                                      ,'weighted_value')
+          )
+  ),
+
+  deal_change AS (
+    SELECT
+      deal_id
+      ,update_time
+      ,cast(user_id as int64) user_id
+      ,cast(pipeline_id as int64) pipeline_id
+      ,cast(stage_id as int64) stage_id
+      ,DATETIME_ADD(cast(add_time as DATETIME), INTERVAL 7 HOUR) add_time
+      ,DATETIME_ADD(cast(stage_change_time as DATETIME), INTERVAL 7 HOUR) stage_change_time
+      ,DATETIME_ADD(cast(close_time as DATETIME), INTERVAL 7 HOUR) close_time
+      ,DATETIME_ADD(cast(won_time as DATETIME), INTERVAL 7 HOUR) won_time
+      ,DATETIME_ADD(cast(first_won_time as DATETIME), INTERVAL 7 HOUR) first_won_time
+      ,DATETIME_ADD(cast(lost_time as DATETIME), INTERVAL 7 HOUR) lost_time
+      ,lost_reason
+      ,status
+      ,safe_cast(expected_close_date as DATE) expected_close_date
+      ,cast(value as FLOAT64) value
+      ,cast(weighted_value as FLOAT64) weighted_value
+      ,probability
+      ,tracking_source
+      ,s.label source_group
+      ,system_id
+      ,cast(partner_owner as int64) partner_owner
+      ,cast(partner_id as int64) partner_id
+      ,e.label event
+      ,c.label churn_info
+    FROM deal_change_pivot
+    LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = 'e4374d513b687b4de35fac6d149a0b75519483dc' GROUP BY cast(id as int64)) e 
+      ON e.id = safe_cast(SPLIT(event, ',')[OFFSET(0)] as int64)
+    LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' GROUP BY cast(id as int64)) s 
+      ON s.id = safe_cast(SPLIT(source_group, ',')[OFFSET(0)] as int64)
+    LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '1385c79d79d114404f9cc23d4326918e4390ae18' GROUP BY cast(id as int64)) c 
+      ON c.id = safe_cast(SPLIT(churn_info, ',')[OFFSET(0)] as int64)
+  ),
+
+  deal_transaction AS (
+    SELECT DISTINCT
+      deal_change.deal_id
+      ,case when deal_change.update_time is not null then deal_change.update_time when deal_.update_time is not null then deal_.update_time else add_time end update_time
+      ,user_id
+      ,pipeline_id
+      ,stage_id
+      ,add_time
+      ,stage_change_time
+      ,close_time
+      ,won_time
+      ,first_won_time
+      ,lost_time
+      ,lost_reason
+      ,status
+      ,expected_close_date
+      ,value
+      ,weighted_value
+      ,probability
+      ,tracking_source
+      ,source_group
+      ,system_id
+      ,partner_owner
+      ,partner_id
+      ,event
+      ,churn_info
+    FROM deal_change
+    LEFT JOIN (select deal_id, update_time from deal_done) deal_ ON deal_.deal_id = deal_change.deal_id
+    UNION ALL
+    SELECT DISTINCT
+      deal_id
+      ,update_time
+      ,user_id
+      ,pipeline_id
+      ,stage_id
+      ,add_time
+      ,stage_change_time
+      ,close_time
+      ,won_time
+      ,first_won_time
+      ,lost_time
+      ,lost_reason
+      ,status
+      ,expected_close_date
+      ,value
+      ,weighted_value
+      ,probability
+      ,tracking_source
+      ,source_group
+      ,system_id
+      ,partner_owner
+      ,partner_id
+      ,event
+      ,churn_info
+    FROM deal_done 
+  )
+
+SELECT DISTINCT * FROM deal_transaction

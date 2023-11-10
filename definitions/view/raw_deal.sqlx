@@ -3,204 +3,146 @@ config {
   schema: "query"
 }
 
-
 WITH
   deal_field_option AS (
       SELECT * FROM ${ref('raw_deal_field')}
+  ),
+
+  deal AS (
+    SELECT DISTINCT
+      cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) deal_id
+      ,cast(JSON_EXTRACT_SCALAR(data, '$.creator_user_id') as int64) creator_user_id
+      ,cast(JSON_EXTRACT_SCALAR(data, '$.org_id') as int64) org_id
+      ,JSON_EXTRACT_SCALAR(data, '$.title') title
+      ,cast(JSON_EXTRACT_SCALAR(data, '$.person_id') as int64) person_id
+      ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR) update_time
+
+      ,cast(JSON_EXTRACT_SCALAR(data, '$.user_id') as int64) user_id
+      ,cast(JSON_EXTRACT_SCALAR(data, '$.pipeline_id') as int64) pipeline_id
+      ,cast(JSON_EXTRACT_SCALAR(data, '$.stage_id') as int64) stage_id
+      ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time
+      ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.stage_change_time') as DATETIME), INTERVAL 7 HOUR) stage_change_time
+      ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.close_time') as DATETIME), INTERVAL 7 HOUR) close_time
+      ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.won_time') as DATETIME), INTERVAL 7 HOUR) won_time
+      ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.first_won_time') as DATETIME), INTERVAL 7 HOUR) first_won_time
+      ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.lost_time') as DATETIME), INTERVAL 7 HOUR) lost_time
+      ,JSON_EXTRACT_SCALAR(data, '$.lost_reason') lost_reason
+      ,JSON_EXTRACT_SCALAR(data, '$.status' ) status
+      ,cast(JSON_EXTRACT_SCALAR(data, '$.expected_close_date') as DATE) expected_close_date
+      ,safe_cast(JSON_EXTRACT_SCALAR(data, '$.value') as INT64) value
+      ,cast(JSON_EXTRACT_SCALAR(data, '$.weighted_value') as float64) weighted_value
+      ,JSON_EXTRACT_SCALAR(data, '$.probability') probability
+      ,JSON_EXTRACT_SCALAR(data, '$.884fee7fac0121b07b113c49eec9feecb9f1dcbc') tracking_source
+      ,source_group.label source_group
+      ,case
+        when safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6'),',','') as int64) is not null then safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6'),',','') as int64)
+        when safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.46202dc1c0891f11503b3a63640ef9426ce044b1'),',','') as int64) is not null then safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.46202dc1c0891f11503b3a63640ef9426ce044b1'),',','') as int64)
+        else safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.8b62d8841d2f21b3237b5682260da238ad7debdc'),',','') as int64)
+        end system_id
+      ,SAFE_CAST(replace(JSON_EXTRACT_SCALAR(data, '$.b7c205797fc745d3b7619146603d27568b5055ac'),'.0','') AS INT64) partner_owner
+      ,SAFE_CAST(replace(JSON_EXTRACT_SCALAR(data, '$.09fae946b918159745b5ad3a3ee7b079afe8f143'),'.0','') AS INT64) partner_id
+      ,event.label event
+      ,churn.label churn_info
+
+      -- Thông tin company của deal -----------------------------------------------------------------------
+      ,replace(JSON_EXTRACT_SCALAR(data, '$.ba7758126eaf7a1c291050d38314f3ef6caac23a'),'.0','') category
+      ,replace(JSON_EXTRACT_SCALAR(data, '$.03cb33c8f645c1cb6c4b5663060f5be62bd45b47'),'.0','') field
+      ,replace(JSON_EXTRACT_SCALAR(data, '$.433393a17d7d4d66fad7fea01c611906aa554327'),'.0','') industry
+      ,replace(JSON_EXTRACT_SCALAR(data, '$.4bc6995517793efb195df2de43629b79fa001818'),'.0','') segmentation
+      ,replace(JSON_EXTRACT_SCALAR(data, '$.803427a7bbfc4dc909c52469688b2a2a2d07a941'),'.0','') size
+      ,REPLACE(JSON_EXTRACT_SCALAR(data, '$.b6959119fb956cf44fb680045abb3a66994cda25'),' ','') tax_code
+      -----------------------------------------------------------------------------------------------------
+
+    FROM `base-datateam.airbyte_pipedrive.deal` deal
+    LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = 'e4374d513b687b4de35fac6d149a0b75519483dc' GROUP BY cast(id as int64)) event 
+      ON event.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.e4374d513b687b4de35fac6d149a0b75519483dc'), ',')[OFFSET(0)] as int64)
+    LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' GROUP BY cast(id as int64)) source_group 
+      ON source_group.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.41c48ba0a3590d935a2130d18a6d0846ebf58102'), ',')[OFFSET(0)] as int64)
+    LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '1385c79d79d114404f9cc23d4326918e4390ae18' GROUP BY cast(id as int64)) churn 
+      ON churn.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.1385c79d79d114404f9cc23d4326918e4390ae18'), ',')[OFFSET(0)] as int64)
+    -- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())  
+  ),
+
+  old_deal_field_raw AS (
+      SELECT deal_id,field_key,value FROM `base-datateam.airbyte_pipedrive.old_dealFields_value`
+  ),
+
+  old_deal_field_pivot AS (
+      select
+          deal_id
+          ,`884fee7fac0121b07b113c49eec9feecb9f1dcbc` tracking_source
+          ,source_group.label source_group
+          ,case
+            when safe_cast(replace(`2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6`,',','') as int64) is not null then safe_cast(replace(`2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6`,',','') as int64)
+            when safe_cast(replace(`46202dc1c0891f11503b3a63640ef9426ce044b1`,',','') as int64) is not null then safe_cast(replace(`46202dc1c0891f11503b3a63640ef9426ce044b1`,',','') as int64)
+            else safe_cast(replace(`8b62d8841d2f21b3237b5682260da238ad7debdc`,',','') as int64)
+            end system_id
+          ,SAFE_CAST(replace(`b7c205797fc745d3b7619146603d27568b5055ac`,'.0','') AS INT64) partner_owner
+          ,SAFE_CAST(replace(`09fae946b918159745b5ad3a3ee7b079afe8f143`,'.0','') AS INT64) partner_id
+          ,event.label event
+          ,churn.label churn_info
+          ,`ba7758126eaf7a1c291050d38314f3ef6caac23a` category
+          ,`03cb33c8f645c1cb6c4b5663060f5be62bd45b47` field
+          ,`433393a17d7d4d66fad7fea01c611906aa554327` industry
+          ,`4bc6995517793efb195df2de43629b79fa001818` segmentation
+          ,`803427a7bbfc4dc909c52469688b2a2a2d07a941` size
+          ,REPLACE(`b6959119fb956cf44fb680045abb3a66994cda25`,' ','') tax_code
+      from old_deal_field_raw
+      pivot(max(value) for field_key in ('e4374d513b687b4de35fac6d149a0b75519483dc'
+                                        ,'41c48ba0a3590d935a2130d18a6d0846ebf58102'
+                                        ,'1385c79d79d114404f9cc23d4326918e4390ae18'
+                                        ,'b7c205797fc745d3b7619146603d27568b5055ac'
+                                        ,'09fae946b918159745b5ad3a3ee7b079afe8f143'
+                                        ,'ba7758126eaf7a1c291050d38314f3ef6caac23a'
+                                        ,'03cb33c8f645c1cb6c4b5663060f5be62bd45b47'
+                                        ,'433393a17d7d4d66fad7fea01c611906aa554327'
+                                        ,'4bc6995517793efb195df2de43629b79fa001818'
+                                        ,'803427a7bbfc4dc909c52469688b2a2a2d07a941'
+                                        ,'b6959119fb956cf44fb680045abb3a66994cda25'
+                                        ,'8b62d8841d2f21b3237b5682260da238ad7debdc'
+                                        ,'46202dc1c0891f11503b3a63640ef9426ce044b1'
+                                        ,'2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6'
+                                        ,'884fee7fac0121b07b113c49eec9feecb9f1dcbc')) 
+      LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = 'e4374d513b687b4de35fac6d149a0b75519483dc' GROUP BY cast(id as int64)) event 
+        ON event.id = safe_cast(SPLIT(`e4374d513b687b4de35fac6d149a0b75519483dc`, ',')[OFFSET(0)] as int64)
+      LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' GROUP BY cast(id as int64)) source_group 
+        ON source_group.id = safe_cast(SPLIT(`41c48ba0a3590d935a2130d18a6d0846ebf58102`, ',')[OFFSET(0)] as int64)
+      LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '1385c79d79d114404f9cc23d4326918e4390ae18' GROUP BY cast(id as int64)) churn 
+        ON churn.id = safe_cast(SPLIT(`1385c79d79d114404f9cc23d4326918e4390ae18`, ',')[OFFSET(0)] as int64)
+  ),
+
+  old_deal_raw as (
+    SELECT DISTINCT
+      cast(id as int64) deal_id
+      ,cast(creator_user_id as int64)creator_user_id
+      ,cast(org_id as int64)org_id
+      ,title
+      ,cast(person_id as int64)person_id
+      ,DATETIME_ADD(safe_cast(update_time as DATETIME), INTERVAL 7 HOUR) update_time
+
+      ,cast(user_id as int64)user_id
+      ,cast(pipeline_id as int64)pipeline_id
+      ,cast(stage_id as int64)stage_id
+      ,DATETIME_ADD(safe_cast(add_time as DATETIME), INTERVAL 7 HOUR) add_time
+      ,DATETIME_ADD(safe_cast(stage_change_time as DATETIME), INTERVAL 7 HOUR) stage_change_time
+      ,DATETIME_ADD(safe_cast(close_time as DATETIME), INTERVAL 7 HOUR) close_time
+      ,DATETIME_ADD(safe_cast(won_time as DATETIME), INTERVAL 7 HOUR) won_time
+      ,DATETIME_ADD(safe_cast(first_won_time as DATETIME), INTERVAL 7 HOUR) first_won_time
+      ,DATETIME_ADD(safe_cast(lost_time as DATETIME), INTERVAL 7 HOUR) lost_time
+      ,lost_reason
+      ,cast(status as string) status
+      ,safe_cast(expected_close_date as DATE) expected_close_date
+      ,safe_cast(value as FLOAT64) value
+      ,safe_cast(weighted_value as FLOAT64) weighted_value
+      ,probability
+      FROM `base-datateam.airbyte_pipedrive.old_deals`
   )
 
-SELECT DISTINCT
-    cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) deal_id,
-    cast(JSON_EXTRACT_SCALAR(data, '$.user_id') as int64) user_id,
-    cast(JSON_EXTRACT_SCALAR(data, '$.creator_user_id') as int64) creator_user_id,
-    cast(JSON_EXTRACT_SCALAR(data, '$.org_id') as int64) org_id,
-    cast(JSON_EXTRACT_SCALAR(data, '$.person_id') as int64) person_id,
-    cast(JSON_EXTRACT_SCALAR(data, '$.pipeline_id') as int64) pipeline_id,
-    cast(JSON_EXTRACT_SCALAR(data, '$.stage_id') as int64) stage_id,
-    DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.stage_change_time') as DATETIME), INTERVAL 7 HOUR) stage_change_time,
-    DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
-    DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR) update_time,
-    DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.expected_close_date') as DATETIME), INTERVAL 7 HOUR) close_time,
-    DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.won_time') as DATETIME), INTERVAL 7 HOUR) won_time,
-    DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.first_won_time') as DATETIME), INTERVAL 7 HOUR) first_won_time,
-    DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.lost_time') as DATETIME), INTERVAL 7 HOUR) lost_time,
-    JSON_EXTRACT_SCALAR(data, '$.lost_reason') lost_reason,
-    JSON_EXTRACT_SCALAR(data, '$.status' )status,
-    JSON_EXTRACT_SCALAR(data, '$.title') title,
-    cast(JSON_EXTRACT_SCALAR(data, '$.value') as float64) value,
-    cast(JSON_EXTRACT_SCALAR(data, '$.weighted_value') as float64) weighted_value,
-    event.label event,
-    source_group.label source_group,
-    JSON_EXTRACT_SCALAR(data, '$.884fee7fac0121b07b113c49eec9feecb9f1dcbc') tracking_source,
-    cast(JSON_EXTRACT_SCALAR(data, '$.expected_close_date') as DATE) expected_close_date,
-    JSON_EXTRACT_SCALAR(data, '$.probability') probability,
-    churn.label churn_info,
-    case
-      when safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6'),',','') as int64) is not null then safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6'),',','') as int64)
-      when safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.46202dc1c0891f11503b3a63640ef9426ce044b1'),',','') as int64) is not null then safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.46202dc1c0891f11503b3a63640ef9426ce044b1'),',','') as int64)
-      else safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.8b62d8841d2f21b3237b5682260da238ad7debdc'),',','') as int64)
-    end system_id,
-
-    JSON_EXTRACT_SCALAR(data, '$.ba7758126eaf7a1c291050d38314f3ef6caac23a') category,
-    JSON_EXTRACT_SCALAR(data, '$.03cb33c8f645c1cb6c4b5663060f5be62bd45b47') field,
-    JSON_EXTRACT_SCALAR(data, '$.433393a17d7d4d66fad7fea01c611906aa554327') industry,
-    JSON_EXTRACT_SCALAR(data, '$.4bc6995517793efb195df2de43629b79fa001818') segmentation,
-    JSON_EXTRACT_SCALAR(data, '$.803427a7bbfc4dc909c52469688b2a2a2d07a941') size,
-    REPLACE(JSON_EXTRACT_SCALAR(data, '$.b6959119fb956cf44fb680045abb3a66994cda25'),' ','') tax_code
-
-FROM `base-datateam.airbyte_pipedrive.deal` deal
-LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = 'e4374d513b687b4de35fac6d149a0b75519483dc' GROUP BY cast(id as int64)) event ON event.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.e4374d513b687b4de35fac6d149a0b75519483dc'), ',')[OFFSET(0)] as int64)
-LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' GROUP BY cast(id as int64)) source_group ON source_group.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.41c48ba0a3590d935a2130d18a6d0846ebf58102'), ',')[OFFSET(0)] as int64)
-LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '1385c79d79d114404f9cc23d4326918e4390ae18' GROUP BY cast(id as int64)) churn ON churn.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.1385c79d79d114404f9cc23d4326918e4390ae18'), ',')[OFFSET(0)] as int64)
-WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
-
-
--- WITH
---   deal_field AS (
---     SELECT key, options 
---     FROM `base-datateam.airbyte_pipedrive.deal_field` 
---     WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
---   ),
-
---   deal_field_ AS (
---       SELECT 
---         key
---         ,ARRAY(
---           SELECT JSON_EXTRACT_SCALAR(x, '$.id')
---           FROM UNNEST(JSON_EXTRACT_ARRAY(options, '$')) x
---         ) AS id
---         ,ARRAY(
---           SELECT JSON_EXTRACT_SCALAR(x, '$.label')
---           FROM UNNEST(JSON_EXTRACT_ARRAY(options, '$')) x
---         ) AS label
---       FROM deal_field
---   ),
-
---   deal_field_option AS (
---     SELECT key, id, label
---     FROM deal_field_, UNNEST (id) id WITH OFFSET o1 
---     LEFT JOIN UNNEST (label) label WITH OFFSET o2 ON o1 = o2
---   ),
-
---   old_dealFields_value AS (
---       SELECT distinct field_key, cast(deal_id as int64) deal_id, label, value, max(_airbyte_emitted_at) _airbyte_emitted_at
---       FROM `base-datateam.airbyte_pipedrive.old_dealFields_value` old_dealFields_value
---       LEFT JOIN deal_field_option ON SAFE_CAST(deal_field_option.id as int64) = SAFE_CAST(old_dealFields_value.value as int64)
---       WHERE field_key IN ('e4374d513b687b4de35fac6d149a0b75519483dc', 
---                         '41c48ba0a3590d935a2130d18a6d0846ebf58102', 
---                         '884fee7fac0121b07b113c49eec9feecb9f1dcbc',
---                         -- Churn
---                         '1385c79d79d114404f9cc23d4326918e4390ae18',
---                         -- System
---                         '2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6',
---                         '46202dc1c0891f11503b3a63640ef9426ce044b1',
---                         '8b62d8841d2f21b3237b5682260da238ad7debdc')
---       GROUP BY
---         field_key, cast(deal_id as int64), label, value
---   )
-
--- SELECT distinct
---       cast(deal.id as int64) deal_id,
---       cast(user_id as int64) user_id,
---       cast(creator_user_id as int64) creator_user_id,
---       cast(org_id as int64) org_id,
---       cast(person_id as int64) person_id,
---       cast(pipeline_id as int64) pipeline_id,
---       cast(stage_id as int64) stage_id,
---       DATETIME_ADD(SAFE_CAST(replace(stage_change_time,  "0000-00-00 00:00:00", NULL) as DATETIME), INTERVAL 7 HOUR) stage_change_time,
---       DATETIME_ADD(SAFE_CAST(add_time as DATETIME), INTERVAL 7 HOUR) add_time,
---       DATETIME_ADD(SAFE_CAST(update_time as DATETIME), INTERVAL 7 HOUR) update_time,
---       DATETIME_ADD(SAFE_CAST(close_time as DATETIME), INTERVAL 7 HOUR) close_time,
---       DATETIME_ADD(SAFE_CAST(won_time as DATETIME), INTERVAL 7 HOUR) won_time,
---       DATETIME_ADD(SAFE_CAST(first_won_time as DATETIME), INTERVAL 7 HOUR) first_won_time,
---       DATETIME_ADD(SAFE_CAST(lost_time as DATETIME), INTERVAL 7 HOUR) lost_time,
---       lost_reason,
---       status,
---       title,
---       cast(deal.value as float64) value,
---       cast(weighted_value as float64) weighted_value,
---       event.label event,
---       source_group.label source_group,
---       tracking_source.value tracking_source,
---       expected_close_date,
---       probability,
---       churn.value churn_info,
---       case 
---         when safe_cast(replace(system1.value,',','') as int64) is not null then safe_cast(replace(system1.value,',','') as int64)
---         when safe_cast(replace(system2.value,',','') as int64) is not null then safe_cast(replace(system2.value,',','') as int64)
---         else safe_cast(replace(system3.value,',','') as int64)
---       end system_id
---     FROM `base-datateam.airbyte_pipedrive.old_deals` AS deal
---     LEFT JOIN (SELECT max(label) label, deal_id FROM old_dealFields_value WHERE field_key = 'e4374d513b687b4de35fac6d149a0b75519483dc' GROUP BY deal_id) event ON event.deal_id = cast(deal.id as int64)
---     LEFT JOIN (SELECT max(label) label, deal_id FROM old_dealFields_value WHERE field_key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' GROUP BY deal_id) source_group ON source_group.deal_id = cast(deal.id as int64)
---     LEFT JOIN (SELECT max(value) value, deal_id FROM old_dealFields_value WHERE field_key = '884fee7fac0121b07b113c49eec9feecb9f1dcbc' GROUP BY deal_id) tracking_source ON tracking_source.deal_id = cast(deal.id as int64)
---     LEFT JOIN (SELECT max(value) value, deal_id FROM old_dealFields_value WHERE field_key = '1385c79d79d114404f9cc23d4326918e4390ae18' GROUP BY deal_id) churn ON churn.deal_id = cast(deal.id as int64)
---     LEFT JOIN (SELECT max(value) value, deal_id FROM old_dealFields_value WHERE field_key = '2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6' GROUP BY deal_id) system1 ON system1.deal_id = cast(deal.id as int64)
---     LEFT JOIN (SELECT max(value) value, deal_id FROM old_dealFields_value WHERE field_key = '46202dc1c0891f11503b3a63640ef9426ce044b1' GROUP BY deal_id) system2 ON system2.deal_id = cast(deal.id as int64)
---     LEFT JOIN (SELECT max(value) value, deal_id FROM old_dealFields_value WHERE field_key = '8b62d8841d2f21b3237b5682260da238ad7debdc' GROUP BY deal_id) system3 ON system3.deal_id = cast(deal.id as int64)
--- UNION ALL
--- SELECT DISTINCT
---     cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) deal_id,
---     cast(JSON_EXTRACT_SCALAR(data, '$.user_id') as int64) user_id,
---     cast(JSON_EXTRACT_SCALAR(data, '$.creator_user_id') as int64) creator_user_id,
---     cast(JSON_EXTRACT_SCALAR(data, '$.org_id') as int64) org_id,
---     cast(JSON_EXTRACT_SCALAR(data, '$.person_id') as int64) person_id,
---     cast(JSON_EXTRACT_SCALAR(data, '$.pipeline_id') as int64) pipeline_id,
---     cast(JSON_EXTRACT_SCALAR(data, '$.stage_id') as int64) stage_id,
---     DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.stage_change_time') as DATETIME), INTERVAL 7 HOUR) stage_change_time,
---     DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
---     DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR) update_time,
---     DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.expected_close_date') as DATETIME), INTERVAL 7 HOUR) close_time,
---     DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.won_time') as DATETIME), INTERVAL 7 HOUR) won_time,
---     DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.first_won_time') as DATETIME), INTERVAL 7 HOUR) first_won_time,
---     DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.lost_time') as DATETIME), INTERVAL 7 HOUR) lost_time,
---     JSON_EXTRACT_SCALAR(data, '$.lost_reason') lost_reason,
---     JSON_EXTRACT_SCALAR(data, '$.status' )status,
---     JSON_EXTRACT_SCALAR(data, '$.title') title,
---     cast(JSON_EXTRACT_SCALAR(data, '$.value') as float64) value,
---     cast(JSON_EXTRACT_SCALAR(data, '$.weighted_value') as float64) weighted_value,
---     event.label event,
---     source_group.label source_group,
---     JSON_EXTRACT_SCALAR(data, '$.884fee7fac0121b07b113c49eec9feecb9f1dcbc') tracking_source,
---     cast(JSON_EXTRACT_SCALAR(data, '$.expected_close_date') as DATE) expected_close_date,
---     JSON_EXTRACT_SCALAR(data, '$.probability') probability,
---     churn.label churn_info,
---     case
---       when safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6'),',','') as int64) is not null then safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.2a4dfb04f68e9ea1bfa9bc366d74ef1d7225c7d6'),',','') as int64)
---       when safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.46202dc1c0891f11503b3a63640ef9426ce044b1'),',','') as int64) is not null then safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.46202dc1c0891f11503b3a63640ef9426ce044b1'),',','') as int64)
---       else safe_cast(replace(JSON_EXTRACT_SCALAR(data, '$.8b62d8841d2f21b3237b5682260da238ad7debdc'),',','') as int64)
---     end system_id,
-
---     -- JSON_EXTRACT_SCALAR(data, '$.ba7758126eaf7a1c291050d38314f3ef6caac23a') category,
---     -- JSON_EXTRACT_SCALAR(data, '$.03cb33c8f645c1cb6c4b5663060f5be62bd45b47') field,
---     -- JSON_EXTRACT_SCALAR(data, '$.433393a17d7d4d66fad7fea01c611906aa554327') industry,
---     -- JSON_EXTRACT_SCALAR(data, '$.4bc6995517793efb195df2de43629b79fa001818') segmentation,
---     -- JSON_EXTRACT_SCALAR(data, '$.803427a7bbfc4dc909c52469688b2a2a2d07a941') size,
---     -- REPLACE(JSON_EXTRACT_SCALAR(data, '$.b6959119fb956cf44fb680045abb3a66994cda25'),' ','') tax_code
--- FROM `base-datateam.airbyte_pipedrive.deal` deal
--- LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = 'e4374d513b687b4de35fac6d149a0b75519483dc' GROUP BY cast(id as int64)) event ON event.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.e4374d513b687b4de35fac6d149a0b75519483dc'), ',')[OFFSET(0)] as int64)
--- LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' GROUP BY cast(id as int64)) source_group ON source_group.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.41c48ba0a3590d935a2130d18a6d0846ebf58102'), ',')[OFFSET(0)] as int64)
--- LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '1385c79d79d114404f9cc23d4326918e4390ae18' GROUP BY cast(id as int64)) churn ON churn.id = safe_cast(SPLIT(JSON_EXTRACT_SCALAR(data, '$.1385c79d79d114404f9cc23d4326918e4390ae18'), ',')[OFFSET(0)] as int64)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+SELECT * FROM deal
+UNION ALL
+SELECT DISTINCT old_deal_raw.*, old_deal_field_pivot.* EXCEPT(deal_id) FROM old_deal_raw
+INNER JOIN old_deal_field_pivot ON old_deal_field_pivot.deal_id = old_deal_raw.deal_id
+WHERE old_deal_raw.deal_id not in (select distinct deal_id from deal)
 
 
 
