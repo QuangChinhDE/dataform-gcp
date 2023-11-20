@@ -7,29 +7,29 @@ config {
 
 WITH
     raw_activity AS (
-        SELECT DISTINCT
-          cast(id as int64) activity_id,
-          cast(deal_id as int64) deal_id,
-          cast(org_id as int64) org_id,
-          cast(person_id as int64) person_id,
-          cast(user_id as int64) user_id,
-          subject,
-          type,
-          done,
-          DATETIME_ADD(DATETIME(marked_as_done_time), INTERVAL 7 HOUR) marked_as_done_time,
-          case 
-              when due_time is null then PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(due_date, ' 00:00:00'))
-              else PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(due_date, ' ', due_time)) 
-          end due_datetime,
-          DATETIME_ADD(cast(add_time as DATETIME), INTERVAL 7 HOUR) add_time,
-          DATETIME_ADD(cast(update_time as DATETIME), INTERVAL 7 HOUR) update_time
-        FROM `base-datateam.airbyte_pipedrive.old_activities` 
-        WHERE (deal_id IS NOT NULL
-              OR org_id IS NOT NULL
-              OR person_id IS NOT NULL
-              OR user_id is not null)
+        -- SELECT DISTINCT
+        --   cast(id as int64) activity_id,
+        --   cast(deal_id as int64) deal_id,
+        --   cast(org_id as int64) org_id,
+        --   cast(person_id as int64) person_id,
+        --   cast(user_id as int64) user_id,
+        --   subject,
+        --   type,
+        --   done,
+        --   DATETIME_ADD(DATETIME(marked_as_done_time), INTERVAL 7 HOUR) marked_as_done_time,
+        --   case 
+        --       when due_time is null then PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(due_date, ' 00:00:00'))
+        --       else PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(due_date, ' ', due_time)) 
+        --   end due_datetime,
+        --   DATETIME_ADD(cast(add_time as DATETIME), INTERVAL 7 HOUR) add_time,
+        --   DATETIME_ADD(cast(update_time as DATETIME), INTERVAL 7 HOUR) update_time
+        -- FROM `base-datateam.airbyte_pipedrive.old_activities` 
+        -- WHERE (deal_id IS NOT NULL
+        --       OR org_id IS NOT NULL
+        --       OR person_id IS NOT NULL
+        --       OR user_id is not null)
 
-        UNION ALL
+        -- UNION ALL
 
         SELECT DISTINCT
           cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) activity_id,
