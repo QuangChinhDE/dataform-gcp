@@ -1,7 +1,10 @@
 config {
   type: "incremental",
-  uniqueKey: ["activity_id"],
-  schema: "sale"
+  uniqueKey: ["activity_transaction_id"],
+  schema: "sale",
+  bigquery: {
+    partitionBy: "DATE(update_time)"
+  }
 }
 
 
@@ -14,7 +17,7 @@ WITH
 SELECT DISTINCT * EXCEPT(row_number)
 FROM (
 SELECT *,
-    ROW_NUMBER() OVER (PARTITION BY activity_id ORDER BY update_time DESC) AS row_number
+    ROW_NUMBER() OVER (PARTITION BY activity_transaction_id ORDER BY update_time DESC) AS row_number
 FROM activity
 ) t
 WHERE t.row_number = 1
