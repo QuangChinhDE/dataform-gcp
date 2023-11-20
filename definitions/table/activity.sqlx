@@ -11,7 +11,7 @@ WITH
         FROM ${ref('raw_activity')}
     )
 
-SELECT DISTINCT * EXCEPT(row_number)
+SELECT DISTINCT * EXCEPT(row_number,activity_transaction_id)
 FROM (
 SELECT *,
     ROW_NUMBER() OVER (PARTITION BY activity_id ORDER BY update_time DESC) AS row_number
