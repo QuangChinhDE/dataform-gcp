@@ -4,32 +4,63 @@ config {
 }
 
 
-
 WITH
     raw_activity AS (
-        -- SELECT DISTINCT
-        --   cast(id as int64) activity_id,
-        --   cast(deal_id as int64) deal_id,
-        --   cast(org_id as int64) org_id,
-        --   cast(person_id as int64) person_id,
-        --   cast(user_id as int64) user_id,
-        --   subject,
-        --   type,
-        --   done,
-        --   DATETIME_ADD(DATETIME(marked_as_done_time), INTERVAL 7 HOUR) marked_as_done_time,
-        --   case 
-        --       when due_time is null then PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(due_date, ' 00:00:00'))
-        --       else PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(due_date, ' ', due_time)) 
-        --   end due_datetime,
-        --   DATETIME_ADD(cast(add_time as DATETIME), INTERVAL 7 HOUR) add_time,
-        --   DATETIME_ADD(cast(update_time as DATETIME), INTERVAL 7 HOUR) update_time
-        -- FROM `base-datateam.airbyte_pipedrive.old_activities` 
-        -- WHERE (deal_id IS NOT NULL
-        --       OR org_id IS NOT NULL
-        --       OR person_id IS NOT NULL
-        --       OR user_id is not null)
+        SELECT DISTINCT
+          cast(id as int64) activity_id,
+          cast(deal_id as int64) deal_id,
+          cast(org_id as int64) org_id,
+          cast(person_id as int64) person_id,
+          cast(user_id as int64) user_id,
+          subject,
+          type,
+          done,
+          DATETIME_ADD(DATETIME(marked_as_done_time), INTERVAL 7 HOUR) marked_as_done_time,
+          case 
+              when due_time is null then PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(due_date, ' 00:00:00'))
+              else PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(due_date, ' ', due_time)) 
+          end due_datetime,
+          DATETIME_ADD(cast(add_time as DATETIME), INTERVAL 7 HOUR) add_time,
+          DATETIME_ADD(cast(update_time as DATETIME), INTERVAL 7 HOUR) update_time,
+          case
+            when note not like "%(i): Nội dung trao đổi với khách<%" then 
+              case 
+                when note like "%<div>%" then REGEXP_EXTRACT(SPLIT(note, "(i): Nội dung trao đổi với khách")[SAFE_OFFSET(1)], r':\s*(.*)</div>')
+                else REGEXP_EXTRACT(SPLIT(note, "(i): Nội dung trao đổi với khách")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
+                end
+              else null
+          end content
+          ,case
+            when note not like "%(ii): Lí do khách rời bỏ<%" then 
+              case 
+                when note like "%<div>%" then REGEXP_EXTRACT(SPLIT(note, "(ii): Lí do khách rời bỏ")[SAFE_OFFSET(1)], r':\s*(.*)</div>')
+                else REGEXP_EXTRACT(SPLIT(note, "(ii): Lí do khách rời bỏ")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
+                end
+            else null
+          end reason
+          ,case
+            when note not like "%(iii): Phần mềm khách sẽ dùng sau khi rời Base<%" then 
+              case 
+                when note like "%<div>%" then REGEXP_EXTRACT(SPLIT(note, "(iii): Phần mềm khách sẽ dùng sau khi rời Base")[SAFE_OFFSET(1)], r':\s*(.*)</div>')
+                else REGEXP_EXTRACT(SPLIT(note, "(iii): Phần mềm khách sẽ dùng sau khi rời Base")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
+                end
+            else null
+          end other_app
+          ,case
+            when note not like "%(iv): Có cơ hội resale không (Có/Không)<%" then 
+              case 
+                when note like "%<div>%" then replace(REGEXP_EXTRACT(SPLIT(note, "(iv): Có cơ hội resale không (Có/Không)")[SAFE_OFFSET(1)], r':\s*(.*)</div>'), ":", "")
+                else replace(REGEXP_EXTRACT(SPLIT(note, "(iv): Có cơ hội resale không (Có/Không)")[SAFE_OFFSET(1)], r'\s*(.*)</p>'), ":", "")
+                end
+            else null
+          end resale
+        FROM `base-datateam.airbyte_pipedrive.old_activities` 
+        WHERE (deal_id IS NOT NULL
+              OR org_id IS NOT NULL
+              OR person_id IS NOT NULL
+              OR user_id is not null)
 
-        -- UNION ALL
+        UNION ALL
 
         SELECT DISTINCT
           cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) activity_id,
@@ -46,11 +77,42 @@ WITH
               else PARSE_DATETIME('%Y-%m-%d %H:%M:%S', CONCAT(replace(JSON_EXTRACT_SCALAR(data, '$.due_date'), ' ', ''), ' ', replace(JSON_EXTRACT_SCALAR(data, '$.due_time'), ' ', ''))) 
           end due_datetime,
           DATETIME_ADD(safe_cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
-          DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR) update_time
+          DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR) update_time,
+          case
+            when cast(JSON_EXTRACT_SCALAR(data, '$.note') as string) not like "%(i): Nội dung trao đổi với khách<%" then 
+              case 
+                when cast(JSON_EXTRACT_SCALAR(data, '$.note') as string) like "%<div>%" then REGEXP_EXTRACT(SPLIT(cast(JSON_EXTRACT_SCALAR(data, '$.note') as string), "(i): Nội dung trao đổi với khách")[SAFE_OFFSET(1)], r':\s*(.*)</div>')
+                else REGEXP_EXTRACT(SPLIT(cast(JSON_EXTRACT_SCALAR(data, '$.note') as string), "(i): Nội dung trao đổi với khách")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
+                end
+              else null
+          end content
+          ,case
+            when cast(JSON_EXTRACT_SCALAR(data, '$.note') as string) not like "%(ii): Lí do khách rời bỏ<%" then 
+              case 
+                when cast(JSON_EXTRACT_SCALAR(data, '$.note') as string) like "%<div>%" then REGEXP_EXTRACT(SPLIT(cast(JSON_EXTRACT_SCALAR(data, '$.note') as string), "(ii): Lí do khách rời bỏ")[SAFE_OFFSET(1)], r':\s*(.*)</div>')
+                else REGEXP_EXTRACT(SPLIT(cast(JSON_EXTRACT_SCALAR(data, '$.note') as string), "(ii): Lí do khách rời bỏ")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
+                end
+            else null
+          end reason
+          ,case
+            when cast(JSON_EXTRACT_SCALAR(data, '$.note') as string) not like "%(iii): Phần mềm khách sẽ dùng sau khi rời Base<%" then 
+              case 
+                when cast(JSON_EXTRACT_SCALAR(data, '$.note') as string) like "%<div>%" then REGEXP_EXTRACT(SPLIT(cast(JSON_EXTRACT_SCALAR(data, '$.note') as string), "(iii): Phần mềm khách sẽ dùng sau khi rời Base")[SAFE_OFFSET(1)], r':\s*(.*)</div>')
+                else REGEXP_EXTRACT(SPLIT(cast(JSON_EXTRACT_SCALAR(data, '$.note') as string), "(iii): Phần mềm khách sẽ dùng sau khi rời Base")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
+                end
+            else null
+          end other_app
+          ,case
+            when cast(JSON_EXTRACT_SCALAR(data, '$.note') as string) not like "%(iv): Có cơ hội resale không (Có/Không)<%" then 
+              case 
+                when cast(JSON_EXTRACT_SCALAR(data, '$.note') as string) like "%<div>%" then replace(REGEXP_EXTRACT(SPLIT(cast(JSON_EXTRACT_SCALAR(data, '$.note') as string), "(iv): Có cơ hội resale không (Có/Không)")[SAFE_OFFSET(1)], r':\s*(.*)</div>'), ":", "")
+                else replace(REGEXP_EXTRACT(SPLIT(cast(JSON_EXTRACT_SCALAR(data, '$.note') as string), "(iv): Có cơ hội resale không (Có/Không)")[SAFE_OFFSET(1)], r'\s*(.*)</p>'), ":", "")
+                end
+            else null
+          end resale
         FROM `base-datateam.airbyte_pipedrive.activity` 
         -- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) >= TIMESTAMP("2023-08-01")
-        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
-              AND (JSON_EXTRACT_SCALAR(data, '$.deal_id') IS NOT NULL
+        WHERE (JSON_EXTRACT_SCALAR(data, '$.deal_id') IS NOT NULL
                 OR JSON_EXTRACT_SCALAR(data, '$.org_id') IS NOT NULL
                 OR JSON_EXTRACT_SCALAR(data, '$.person_id') IS NOT NULL
                 OR JSON_EXTRACT_SCALAR(data, '$.user_id') is not null)
@@ -69,7 +131,11 @@ SELECT DISTINCT
       IFNULL(cast(marked_as_done_time AS STRING), ''),
       IFNULL(cast(due_datetime AS STRING), ''),
       IFNULL(cast(add_time AS STRING), ''),
-      IFNULL(cast(update_time AS STRING), '')
+      IFNULL(cast(update_time AS STRING), ''),
+      IFNULL(cast(content AS STRING), ''),
+      IFNULL(cast(reason AS STRING), ''),
+      IFNULL(cast(other_app AS STRING), ''),
+      IFNULL(cast(resale AS STRING), '')
     )) activity_transaction_id,
     activity_id,
     deal_id,
@@ -82,5 +148,9 @@ SELECT DISTINCT
     marked_as_done_time,
     due_datetime,
     add_time,
-    update_time
+    update_time,
+    content,
+    reason,
+    other_app,
+    resale
 FROM raw_activity
