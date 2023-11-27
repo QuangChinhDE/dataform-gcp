@@ -1,7 +1,10 @@
 config {
   type: "incremental",
   uniqueKey: ["person_id"],
-  schema: "sale"
+  schema: "sale",
+  bigquery: {
+    partitionBy: "DATE(update_time)"
+  }
 }
 
 SELECT DISTINCT * EXCEPT(row_number, _airbyte_extracted_at)

@@ -20,9 +20,9 @@ FROM (
   FROM (SELECT
           user_id
           ,base_user_id
-          ,username
+          ,user_base.username
           ,user.email
-          ,status
+          ,user_base.status
           ,update_time
         FROM user
         LEFT JOIN user_base ON user_base.email = user.email) a

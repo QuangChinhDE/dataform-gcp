@@ -14,6 +14,7 @@ config {
 --     else job_title
 --   end job_title,
 --   DATETIME_ADD(SAFE_CAST(add_time as DATETIME), INTERVAL 7 HOUR) add_time,
+--   DATETIME_ADD(SAFE_CAST(update_time as DATETIME), INTERVAL 7 HOUR) update_time,
 --   _airbyte_emitted_at _airbyte_extracted_at
 -- FROM `base-datateam.airbyte_pipedrive.old_persons` 
 
@@ -36,6 +37,7 @@ SELECT
     else JSON_EXTRACT_SCALAR(data, '$.job_title')
   end job_title,
   DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
+  DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR) update_time,
   _airbyte_extracted_at
 FROM `base-datateam.airbyte_pipedrive.person` 
 WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())

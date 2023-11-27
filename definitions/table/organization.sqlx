@@ -1,7 +1,10 @@
 config {
   type: "incremental",
   uniqueKey: ["org_id"],
-  schema: "sale"
+  schema: "sale",
+  bigquery: {
+    partitionBy: "DATE(update_time)"
+  }
 }
 
 WITH

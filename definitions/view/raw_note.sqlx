@@ -7,18 +7,7 @@ SELECT DISTINCT * EXCEPT(row_number)
 FROM (
   SELECT *,
       ROW_NUMBER() OVER (PARTITION BY note_id ORDER BY update_time) AS row_number
-  FROM (SELECT  
-          cast(id as int64) note_id
-          ,cast(user_id as int64)user_id
-          ,cast(deal_id as int64)deal_id
-          ,cast(person_id as int64)person_id
-          ,cast(org_id as int64)org_id
-          ,content
-          ,cast(add_time as datetime)add_time
-          ,cast(update_time as datetime)update_time
-          ,active_flag
-        FROM `base-datateam.airbyte_pipedrive.old_notes`
-        UNION ALL
+  FROM (
         SELECT  
           cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) note_id
           ,cast(JSON_EXTRACT_SCALAR(data, '$.user_id') as int64) user_id
@@ -34,3 +23,17 @@ FROM (
       ) a
   ) t
 WHERE t.row_number = 1
+
+
+-- SELECT  
+--           cast(id as int64) note_id
+--           ,cast(user_id as int64)user_id
+--           ,cast(deal_id as int64)deal_id
+--           ,cast(person_id as int64)person_id
+--           ,cast(org_id as int64)org_id
+--           ,content
+--           ,cast(add_time as datetime)add_time
+--           ,cast(update_time as datetime)update_time
+--           ,active_flag
+--         FROM `base-datateam.airbyte_pipedrive.old_notes`
+--         UNION ALL
