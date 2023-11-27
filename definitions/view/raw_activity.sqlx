@@ -29,7 +29,7 @@ WITH
         --         else REGEXP_EXTRACT(SPLIT(note, "(i): Nội dung trao đổi với khách")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
         --         end
         --       else null
-        --   end content
+        --   end churn_conversation
         --   ,case
         --     when note not like "%(ii): Lí do khách rời bỏ<%" then 
         --       case 
@@ -37,7 +37,7 @@ WITH
         --         else REGEXP_EXTRACT(SPLIT(note, "(ii): Lí do khách rời bỏ")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
         --         end
         --     else null
-        --   end reason
+        --   end churn_reason
         --   ,case
         --     when note not like "%(iii): Phần mềm khách sẽ dùng sau khi rời Base<%" then 
         --       case 
@@ -45,7 +45,7 @@ WITH
         --         else REGEXP_EXTRACT(SPLIT(note, "(iii): Phần mềm khách sẽ dùng sau khi rời Base")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
         --         end
         --     else null
-        --   end other_app
+        --   end post_churn_software
         --   ,case
         --     when note not like "%(iv): Có cơ hội resale không (Có/Không)<%" then 
         --       case 
@@ -53,7 +53,7 @@ WITH
         --         else replace(REGEXP_EXTRACT(SPLIT(note, "(iv): Có cơ hội resale không (Có/Không)")[SAFE_OFFSET(1)], r'\s*(.*)</p>'), ":", "")
         --         end
         --     else null
-        --   end resale
+        --   end resale_opportunity
         -- FROM `base-datateam.airbyte_pipedrive.old_activities` 
         -- WHERE (deal_id IS NOT NULL
         --       OR org_id IS NOT NULL
@@ -85,7 +85,7 @@ WITH
                 else REGEXP_EXTRACT(SPLIT(cast(JSON_EXTRACT_SCALAR(data, '$.note') as string), "(i): Nội dung trao đổi với khách")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
                 end
               else null
-          end content
+          end churn_conversation
           ,case
             when cast(JSON_EXTRACT_SCALAR(data, '$.note') as string) not like "%(ii): Lí do khách rời bỏ<%" then 
               case 
@@ -93,7 +93,7 @@ WITH
                 else REGEXP_EXTRACT(SPLIT(cast(JSON_EXTRACT_SCALAR(data, '$.note') as string), "(ii): Lí do khách rời bỏ")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
                 end
             else null
-          end reason
+          end churn_reason
           ,case
             when cast(JSON_EXTRACT_SCALAR(data, '$.note') as string) not like "%(iii): Phần mềm khách sẽ dùng sau khi rời Base<%" then 
               case 
@@ -101,7 +101,7 @@ WITH
                 else REGEXP_EXTRACT(SPLIT(cast(JSON_EXTRACT_SCALAR(data, '$.note') as string), "(iii): Phần mềm khách sẽ dùng sau khi rời Base")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
                 end
             else null
-          end other_app
+          end post_churn_software
           ,case
             when cast(JSON_EXTRACT_SCALAR(data, '$.note') as string) not like "%(iv): Có cơ hội resale không (Có/Không)<%" then 
               case 
@@ -109,7 +109,7 @@ WITH
                 else replace(REGEXP_EXTRACT(SPLIT(cast(JSON_EXTRACT_SCALAR(data, '$.note') as string), "(iv): Có cơ hội resale không (Có/Không)")[SAFE_OFFSET(1)], r'\s*(.*)</p>'), ":", "")
                 end
             else null
-          end resale
+          end resale_opportunity
         FROM `base-datateam.airbyte_pipedrive.activity` 
         -- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) >= TIMESTAMP("2023-08-01")
         WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
@@ -133,10 +133,10 @@ SELECT DISTINCT
       IFNULL(cast(due_datetime AS STRING), ''),
       IFNULL(cast(add_time AS STRING), ''),
       IFNULL(cast(update_time AS STRING), ''),
-      IFNULL(cast(content AS STRING), ''),
-      IFNULL(cast(reason AS STRING), ''),
-      IFNULL(cast(other_app AS STRING), ''),
-      IFNULL(cast(resale AS STRING), '')
+      IFNULL(cast(churn_conversation AS STRING), ''),
+      IFNULL(cast(churn_reason AS STRING), ''),
+      IFNULL(cast(post_churn_software AS STRING), ''),
+      IFNULL(cast(resale_opportunity AS STRING), '')
     )) activity_transaction_id,
     activity_id,
     deal_id,
@@ -150,8 +150,8 @@ SELECT DISTINCT
     due_datetime,
     add_time,
     update_time,
-    content,
-    reason,
-    other_app,
-    resale
+    churn_conversation,
+    churn_reason,
+    post_churn_software,
+    resale_opportunity
 FROM raw_activity
