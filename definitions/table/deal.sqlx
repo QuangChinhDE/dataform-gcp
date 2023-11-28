@@ -19,4 +19,4 @@ FROM (
     FROM new_deal_raw
     ) t
 WHERE t.row_number = 1
-    AND deal_id in (SELECT DISTINCT deal_id from lead_deal)
+    -- AND deal_id in (SELECT DISTINCT deal_id from lead_deal)
