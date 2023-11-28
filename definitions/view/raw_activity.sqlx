@@ -150,8 +150,27 @@ SELECT DISTINCT
     due_datetime,
     add_time,
     update_time,
-    churn_conversation,
-    churn_reason,
-    post_churn_software,
-    resale_opportunity
+    replace(replace(replace(replace(replace(replace(churn_conversation, "&nbsp;", " "), "</p>", " "), "<p>", " "), "<br>", " "), "</span>", " "), "<span>", " ") churn_conversation,
+    replace(replace(replace(replace(replace(replace(churn_reason, "&nbsp;", " "), "</p>", " "), "<p>", " "), "<br>", " "), "</span>", " "), "<span>", " ") churn_reason,
+    replace(replace(replace(replace(replace(replace(post_churn_software, "&nbsp;", " "), "</p>", " "), "<p>", " "), "<br>", " "), "</span>", " "), "<span>", " ") post_churn_software,
+    replace(replace(replace(replace(replace(replace(resale_opportunity, "&nbsp;", " "), "</p>", " "), "<p>", " "), "<br>", " "), "</span>", " "), "<span>", " ") resale_opportunity,
 FROM raw_activity
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
