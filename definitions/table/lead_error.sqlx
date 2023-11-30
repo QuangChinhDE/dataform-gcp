@@ -29,7 +29,10 @@ WITH
             ,status
             ,disqualified_reason
         FROM ${ref('raw_lead')}
-        WHERE lead_id NOT IN (SELECT lead_id FROM ${ref('lead')})
+        WHERE (status = 'delete'
+            OR product_id = 220
+            OR note like '%manual%'
+            OR lower(note) like '%sync leads in pipedrive%')
     )
 
 
