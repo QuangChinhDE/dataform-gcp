@@ -1,0 +1,20 @@
+config {
+  type: "incremental",
+  uniqueKey: ["org_id"],
+  schema: "customer_onboarding",
+  bigquery: {
+    partitionBy: "DATE(update_time)"
+  }
+}
+
+WITH
+    raw_organization AS (SELECT DISTINCT * FROM ${ref('raw_deal_organization')})
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY org_id ORDER BY update_time DESC) AS row_number
+FROM raw_organization
+) t
+WHERE t.row_number = 1
+  AND org_id IN (SELECT DISTINCT org_id FROM ${ref('deal')})

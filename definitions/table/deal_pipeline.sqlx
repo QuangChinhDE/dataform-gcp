@@ -1,0 +1,13 @@
+config {
+  type: "incremental",
+  uniqueKey: ["pipeline_id"],
+  schema: "customer_onboarding"
+}
+
+SELECT DISTINCT * EXCEPT(row_number, _airbyte_extracted_at)
+FROM (
+SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY pipeline_id ORDER BY update_time DESC) AS row_number
+FROM ${ref('raw_deal_pipeline')}
+) t
+WHERE t.row_number = 1

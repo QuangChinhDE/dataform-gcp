@@ -1,0 +1,24 @@
+config {
+  type: "incremental",
+  uniqueKey: ["activity_transaction_id"],
+  schema: "customer_onboarding",
+  bigquery: {
+    partitionBy: "DATE(update_time)"
+  }
+}
+
+
+WITH
+    activity AS (
+        SELECT *
+        FROM ${ref('raw_deal_activity')}
+    )
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY activity_transaction_id ORDER BY update_time DESC) AS row_number
+FROM activity
+) t
+WHERE t.row_number = 1
+  AND deal_id IN (SELECT DISTINCT deal_id FROM ${ref('deal')})

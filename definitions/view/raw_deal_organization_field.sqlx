@@ -1,0 +1,34 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+
+WITH
+  organization_field AS (
+      SELECT options, key 
+      FROM `base-datateam.airbyte_pipedrive.organization_field` 
+      WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+  ),
+
+  organization_field_ AS (
+      SELECT 
+        key
+        ,ARRAY(
+          SELECT JSON_EXTRACT_SCALAR(x, '$.id')
+          FROM UNNEST(JSON_EXTRACT_ARRAY(options, '$')) x
+        ) AS id
+        ,ARRAY(
+          SELECT JSON_EXTRACT_SCALAR(x, '$.label')
+          FROM UNNEST(JSON_EXTRACT_ARRAY(options, '$')) x
+        ) AS label
+      FROM organization_field
+  ),
+
+  organization_field_option AS (
+    SELECT key, id, label
+    FROM organization_field_, UNNEST (id) id WITH OFFSET o1 
+    LEFT JOIN UNNEST (label) label WITH OFFSET o2 ON o1 = o2
+  )
+
+SELECT * FROM organization_field_option

@@ -1,0 +1,13 @@
+config {
+  type: "incremental",
+  uniqueKey: ["stage_id"],
+  schema: "customer_onboarding"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY stage_id ORDER BY update_time DESC) AS row_number
+FROM ${ref('raw_deal_stage')}
+) t
+WHERE t.row_number = 1

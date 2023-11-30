@@ -1,0 +1,37 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+  SELECT *,
+      ROW_NUMBER() OVER (PARTITION BY note_id ORDER BY update_time) AS row_number
+  FROM (
+        SELECT  
+          cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) note_id
+          ,cast(JSON_EXTRACT_SCALAR(data, '$.user_id') as int64) user_id
+          ,cast(JSON_EXTRACT_SCALAR(data, '$.deal_id') as int64) deal_id
+          ,cast(JSON_EXTRACT_SCALAR(data, '$.person_id') as int64) person_id
+          ,cast(JSON_EXTRACT_SCALAR(data, '$.org_id') as int64) org_id
+          ,JSON_EXTRACT_SCALAR(data, '$.content') content
+          ,cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as datetime) add_time
+          ,cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as datetime) update_time
+          ,JSON_EXTRACT_SCALAR(data, '$.active_flag') active_flag
+        FROM `base-datateam.airbyte_pipedrive.note`
+        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+        -- UNION ALL
+        -- SELECT  
+        --   cast(id as int64) note_id
+        --   ,cast(user_id as int64)user_id
+        --   ,cast(deal_id as int64)deal_id
+        --   ,cast(person_id as int64)person_id
+        --   ,cast(org_id as int64)org_id
+        --   ,content
+        --   ,cast(add_time as datetime)add_time
+        --   ,cast(update_time as datetime)update_time
+        --   ,active_flag
+        -- FROM `base-datateam.airbyte_pipedrive.old_notes`
+      ) a
+  ) t
+WHERE t.row_number = 1

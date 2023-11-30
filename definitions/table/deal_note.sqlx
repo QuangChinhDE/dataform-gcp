@@ -1,0 +1,23 @@
+config {
+  type: "incremental",
+  uniqueKey: ["note_id"],
+  schema: "customer_onboarding",
+  bigquery: {
+    partitionBy: "DATE(update_time)"
+  }
+}
+
+-- SELECT DISTINCT new_deal_raw.* EXCEPT(category,field,industry,segmentation,size,tax_code)
+-- FROM new_deal_raw
+-- INNER JOIN (SELECT max(update_time) update_time, deal_id FROM new_deal_raw GROUP BY deal_id) new_deal_raw_ 
+--     ON new_deal_raw_.update_time = new_deal_raw.update_time 
+--     AND new_deal_raw_.deal_id = new_deal_raw.deal_id
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY note_id ORDER BY update_time DESC) AS row_number
+FROM ${ref('raw_deal_note')}
+) t
+WHERE t.row_number = 1
+  AND deal_id IN (SELECT DISTINCT deal_id FROM ${ref('deal')})

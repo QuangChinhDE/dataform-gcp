@@ -1,0 +1,295 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH
+  deal_field_option AS (
+      SELECT * FROM ${ref('raw_deal_field')}
+  ),
+
+  deal_done AS (
+    SELECT DISTINCT * FROM ${ref('raw_deal')}
+  ),
+
+  deal_change_raw AS (
+      SELECT
+      cast(JSON_EXTRACT_SCALAR(json, '$.data.item_id') as int64) deal_id
+      ,JSON_EXTRACT_SCALAR(json, '$.data.field_key') field_name
+      ,Case
+        when JSON_EXTRACT_SCALAR(json, '$.data.new_value') is null then JSON_EXTRACT_SCALAR(json, '$.data.old_value')
+        else JSON_EXTRACT_SCALAR(json, '$.data.new_value')
+        end value
+      ,DATETIME_ADD(SAFE_CAST(JSON_EXTRACT_SCALAR(json, '$.data.log_time') as DATETIME), INTERVAL 7 HOUR) update_time
+      FROM `base-datateam.airbyte_pipedrive.deal_change`,
+        UNNEST(JSON_EXTRACT_ARRAY(json, '$.data')) AS json
+      WHERE cast(JSON_EXTRACT_SCALAR(json, '$.data.item_id') as int64) is not null
+        AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+      -- UNION ALL
+      -- SELECT
+      --   cast(deal_id as int64) deal_id
+      --   ,field_key field_name
+      --   ,Case
+      --     when new_value is not null then new_value
+      --     else old_value
+      --     end value
+      --   ,DATETIME_ADD(SAFE_CAST(log_time as DATETIME), INTERVAL 7 HOUR) update_time
+      -- FROM `base-datateam.airbyte_pipedrive.old_dealChanges`
+  ),
+
+  deal_change_pivot as (
+    SELECT distinct
+      deal_id
+      ,update_time
+      ,`01ba13f47bddc6f6edf7fcb26af2a02b8621357e` tracking_campaign_name
+      ,`0cba272b8feb43724fcc8d64c2fee8790d711277` tracking_appendix
+      ,`1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6` tracking_referral
+      ,`6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6` tracking_content
+      ,`884fee7fac0121b07b113c49eec9feecb9f1dcbc` tracking_source
+      ,`9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e` tracking_medium
+      ,`da767c03989c02f5088529c717dee6cb5da9b767` tracking_content_link
+      ,`fbfadd21eb74d60f934ef0247d9ebe844ec66772` tracking_term
+      ,`41c48ba0a3590d935a2130d18a6d0846ebf58102` source_group
+      -- ,`648ba676ed29bd49a766d5099cff5aa2f3b1a8ce` challenge
+      -- ,`7cf4977ae439c865977354da511ae51a56310805` goal
+      -- ,`b9389221ce01ecb6c9a2c014c0cd134b13ddb32c` competitor
+      -- ,`711c8dece81a19f94ab0733db2ebf200afc01fc3` note_from_marketing
+      -- ,`8966dcdf3070bc7d45c52ee5800dca0a9efd91b4` budget
+      -- ,`3f0acf615fdd18626380a935dde6bc8b2c0c8916` lead_score
+      -- ,`4ef8ce2eeb78d393977a24d4db5b25ba60823df9` priority_score
+      ,`32df8feaa3cf81248288f4c18b562b52318aa71d` customer_problem_1
+      ,`36ada051863b3001106248b85a2a050caed5ba73` customer_problem_2
+      ,`56b0cc5defaf568b6990b68341074fedc58693eb` customer_need_1
+      ,`56afadfee2e44cf5c478d3fc439c42e4940d7705` customer_need_2
+      ,`ad355ab57ff75dd561ccfbca41c9aba20468a133` stakeholder_engagement
+      ,`0ff3d9479a456dc5fcde3fef42b2d4ef6082c912` brand_awareness
+      -- ,`e6db98a67854a49d9b14d56edc70c2330cf8bc99` price_sensitive
+      ,`0c0314d53d63dbd7f1ac11bcc45b20f943a4d145` gtm_type
+      -- ,`b41b9f0d98fa55c63dd60005f8b184b104afb46c`customer_request
+      ,`b7c205797fc745d3b7619146603d27568b5055ac` partner_owner
+      ,`09fae946b918159745b5ad3a3ee7b079afe8f143` partner_id
+      ,`803427a7bbfc4dc909c52469688b2a2a2d07a941` company_size
+      ,`b6959119fb956cf44fb680045abb3a66994cda25` tax_code
+      ,`add_time` add_time
+      ,`expected_close_date` expected_close_date
+      ,`status` status
+      ,`stage_id` stage_id
+      ,`value` value
+      ,`user_id` user_id
+      ,`pipeline` pipeline_id
+      ,`won_time` won_time
+      ,`stage_change_time` stage_change_time
+      ,`lost_time` lost_time
+      ,`lost_reason` lost_reason
+      ,probability
+      ,first_won_time
+      ,close_time
+    FROM deal_change_raw
+    pivot(max(value) for field_name in ('01ba13f47bddc6f6edf7fcb26af2a02b8621357e'
+                                      ,'0cba272b8feb43724fcc8d64c2fee8790d711277'
+                                      ,'1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6'
+                                      ,'6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6'
+                                      ,'884fee7fac0121b07b113c49eec9feecb9f1dcbc'
+                                      ,'9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e'
+                                      ,'da767c03989c02f5088529c717dee6cb5da9b767'
+                                      ,'fbfadd21eb74d60f934ef0247d9ebe844ec66772'
+                                      ,'41c48ba0a3590d935a2130d18a6d0846ebf58102'
+                                      ,'648ba676ed29bd49a766d5099cff5aa2f3b1a8ce'
+                                      ,'7cf4977ae439c865977354da511ae51a56310805'
+                                      ,'b9389221ce01ecb6c9a2c014c0cd134b13ddb32c'
+                                      ,'711c8dece81a19f94ab0733db2ebf200afc01fc3'
+                                      ,'8966dcdf3070bc7d45c52ee5800dca0a9efd91b4'
+                                      ,'3f0acf615fdd18626380a935dde6bc8b2c0c8916'
+                                      ,'4ef8ce2eeb78d393977a24d4db5b25ba60823df9'
+                                      ,'56b0cc5defaf568b6990b68341074fedc58693eb'
+                                      ,'56afadfee2e44cf5c478d3fc439c42e4940d7705'
+                                      ,'ad355ab57ff75dd561ccfbca41c9aba20468a133'
+                                      ,'0ff3d9479a456dc5fcde3fef42b2d4ef6082c912'
+                                      ,'e6db98a67854a49d9b14d56edc70c2330cf8bc99'
+                                      ,'0c0314d53d63dbd7f1ac11bcc45b20f943a4d145'
+                                      ,'b41b9f0d98fa55c63dd60005f8b184b104afb46c'
+                                      ,'09fae946b918159745b5ad3a3ee7b079afe8f143'
+                                      ,'b7c205797fc745d3b7619146603d27568b5055ac'
+                                      ,'32df8feaa3cf81248288f4c18b562b52318aa71d'
+                                      ,'36ada051863b3001106248b85a2a050caed5ba73'
+                                      ,'803427a7bbfc4dc909c52469688b2a2a2d07a941'
+                                      ,'b6959119fb956cf44fb680045abb3a66994cda25'
+                                      ,'add_time'
+                                      ,'expected_close_date'
+                                      ,'status'
+                                      ,'stage_id'
+                                      ,'value'
+                                      ,'user_id'
+                                      ,'pipeline'
+                                      ,'won_time'
+                                      ,'stage_change_time'
+                                      ,'lost_time'
+                                      ,'lost_reason'
+                                      ,'label'
+                                      ,'probability'
+                                      ,'first_won_time'
+                                      ,'close_time')
+          )
+  ),
+
+  deal_change AS (
+    SELECT
+      deal_id
+      ,update_time
+      ,cast(user_id as int64) user_id
+      ,cast(pipeline_id as int64) pipeline_id
+      ,cast(stage_id as int64) stage_id
+      ,DATETIME_ADD(cast(add_time as DATETIME), INTERVAL 7 HOUR) add_time
+      ,DATETIME_ADD(cast(stage_change_time as DATETIME), INTERVAL 7 HOUR) stage_change_time
+      ,DATETIME_ADD(cast(close_time as DATETIME), INTERVAL 7 HOUR) close_time
+      ,DATETIME_ADD(cast(won_time as DATETIME), INTERVAL 7 HOUR) won_time
+      ,DATETIME_ADD(cast(first_won_time as DATETIME), INTERVAL 7 HOUR) first_won_time
+      ,DATETIME_ADD(cast(lost_time as DATETIME), INTERVAL 7 HOUR) lost_time
+      ,lost_reason
+      ,status
+      ,safe_cast(expected_close_date as DATE) expected_close_date
+      ,cast(value as FLOAT64) value
+      ,probability
+      ,tracking_campaign_name
+      ,tracking_appendix
+      ,tracking_referral
+      ,tracking_content
+      ,tracking_source
+      ,tracking_medium
+      ,tracking_content_link
+      ,tracking_term
+      ,df1.label source_group
+      -- ,challenge
+      -- ,goal
+      -- ,competitor
+      -- ,note_from_marketing
+      -- ,budget
+      -- ,df2.label lead_score
+      -- ,df3.label priority_score
+      ,case when df4.label is not null then df4.label  else df9.label  end customer_need
+      ,case when customer_problem_1 is not null then customer_problem_1 else customer_problem_2 end customer_problem
+      ,df5.label stakeholder_engagement
+      ,df6.label brand_awareness
+      -- ,df7.label price_sensitive
+      ,df8.label gtm_type
+      ,cast(partner_owner as int64) partner_owner
+      ,cast(partner_id as int64) partner_id
+      ,df12.label company_size
+      ,REPLACE(tax_code,' ','') tax_code
+    FROM deal_change_pivot
+    LEFT JOIN deal_field_option df1 
+      ON df1.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND df1.id = cast(source_group as int64)
+    -- LEFT JOIN deal_field_option df2 
+    --   ON df2.key = '3f0acf615fdd18626380a935dde6bc8b2c0c8916' AND df2.id = cast(lead_score as int64)
+    -- LEFT JOIN deal_field_option df3 
+    --   ON df3.key = '4ef8ce2eeb78d393977a24d4db5b25ba60823df9' AND df3.id = cast(priority_score as int64)
+    LEFT JOIN deal_field_option df4 
+      ON df4.key = '56b0cc5defaf568b6990b68341074fedc58693eb' AND df4.id = cast(customer_need_1 as int64)
+    LEFT JOIN deal_field_option df5 
+      ON df5.key = 'ad355ab57ff75dd561ccfbca41c9aba20468a133' AND df5.id = cast(stakeholder_engagement as int64)
+    LEFT JOIN deal_field_option df6 
+      ON df6.key = '0ff3d9479a456dc5fcde3fef42b2d4ef6082c912' AND df6.id = cast(brand_awareness as int64)
+    -- LEFT JOIN deal_field_option df7 
+    --   ON df7.key = 'e6db98a67854a49d9b14d56edc70c2330cf8bc99' AND df7.id = cast(price_sensitive as int64)
+    LEFT JOIN deal_field_option df8 
+      ON df8.key = '0c0314d53d63dbd7f1ac11bcc45b20f943a4d145' AND df8.id = cast(gtm_type as int64)
+    LEFT JOIN deal_field_option df9
+      ON df9.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df9.id = cast(customer_need_2 as int64)
+    LEFT JOIN deal_field_option df12
+      ON df12.key = '803427a7bbfc4dc909c52469688b2a2a2d07a941' AND df12.id = safe_cast(company_size as int64)
+  ),
+
+  deal_transaction AS (
+    SELECT DISTINCT
+      deal_change.deal_id
+      ,case when deal_change.update_time is not null then deal_change.update_time when deal_.update_time is not null then deal_.update_time else add_time end update_time
+      ,user_id
+      ,pipeline_id
+      ,stage_id
+      ,add_time
+      ,stage_change_time
+      ,close_time
+      ,won_time
+      ,first_won_time
+      ,lost_time
+      ,lost_reason
+      ,status
+      ,expected_close_date
+      ,value
+      ,probability
+      ,tracking_campaign_name
+      ,tracking_appendix
+      ,tracking_referral
+      ,tracking_content
+      ,tracking_source
+      ,tracking_medium
+      ,tracking_content_link
+      ,tracking_term
+      ,source_group
+      -- ,challenge
+      -- ,goal
+      -- ,competitor
+      -- ,note_from_marketing
+      -- ,budget
+      -- ,lead_score
+      -- ,priority_score
+      ,customer_need
+      ,customer_problem
+      ,stakeholder_engagement
+      ,brand_awareness
+      -- ,price_sensitive
+      ,gtm_type
+      ,partner_owner
+      ,partner_id
+      ,company_size
+      ,tax_code
+    FROM deal_change
+    LEFT JOIN (select deal_id, update_time from deal_done) deal_ ON deal_.deal_id = deal_change.deal_id
+    UNION ALL
+    SELECT DISTINCT
+      deal_id
+      ,update_time
+      ,user_id
+      ,pipeline_id
+      ,stage_id
+      ,add_time
+      ,stage_change_time
+      ,close_time
+      ,won_time
+      ,first_won_time
+      ,lost_time
+      ,lost_reason
+      ,status
+      ,expected_close_date
+      ,value
+      ,probability
+      ,tracking_campaign_name
+      ,tracking_appendix
+      ,tracking_referral
+      ,tracking_content
+      ,tracking_source
+      ,tracking_medium
+      ,tracking_content_link
+      ,tracking_term
+      ,source_group
+      -- ,challenge
+      -- ,goal
+      -- ,competitor
+      -- ,note_from_marketing
+      -- ,budget
+      -- ,lead_score
+      -- ,priority_score
+      ,customer_need
+      ,customer_problem
+      ,stakeholder_engagement
+      ,brand_awareness
+      -- ,price_sensitive
+      ,gtm_type
+      ,partner_owner
+      ,partner_id
+      ,company_size
+      ,tax_code
+    FROM deal_done 
+  )
+
+SELECT DISTINCT * FROM deal_transaction
