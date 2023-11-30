@@ -16,6 +16,10 @@ SELECT
     ,lead.ProductId product_id
     -- ,lower(lead.Source) source
     ,lead.SourceGroup source_group
+    ,lead.CampaignMedium campaign_medium
+    ,lead.CampaignName campaign_name
+    ,lead.CampaignTerm campaign_term
+    ,lead.CampaignContent campaign_content
     ,ce.CampaignID campaign_id
     ,DATE_ADD(DATETIME(lead.CreatedDate), INTERVAL 7 HOUR) create_date 
     ,lead.Note note

@@ -1,7 +1,10 @@
 config {
   type: "incremental",
   uniqueKey: ["lead_id"],
-  schema: "marketing"
+  schema: "marketing",
+  bigquery: {
+    partitionBy: "DATE(create_date)"
+  }
 }
 
 WITH
@@ -17,6 +20,10 @@ WITH
             ,company_name
             ,company_size
             ,company_address
+            ,campaign_medium
+            ,campaign_name
+            ,campaign_term
+            ,campaign_content
             ,create_date
             ,note
             ,status
