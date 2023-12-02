@@ -8,7 +8,45 @@ config {
 }
 
 WITH
+    customer AS (
+        SELECT customer_id
+        FROM ${ref('customer')}
+        WHERE email not like '%@base.vn%' 
+            or lower(title) not like '%học sinh%' 
+            or lower(title) not like '%sinh viên%' 
+            or lower(title) not like '%student%'
+        ),
+
     lead AS (
+        SELECT DISTINCT
+            lead_id
+            ,customer_id
+            ,deal_id
+            ,campaign_id
+            ,product_id
+            ,name
+            ,source_group
+            ,company_name
+            ,company_size
+            ,company_address
+            ,campaign_medium
+            ,campaign_name
+            ,campaign_term
+            ,campaign_content
+            ,create_date
+            ,note
+            ,status
+            ,disqualified_reason
+        FROM ${ref('raw_lead')}
+        WHERE customer_id IN (SELECT customer_id FROM customer)
+            AND (status != 'delete'
+            OR product_id != 220
+            OR note not like '%manual%'
+            OR lower(note) not like '%sync leads in pipedrive%')
+            
+    ),
+
+    lead_error AS (
         SELECT 
             lead_id
             ,customer_id
@@ -29,10 +67,7 @@ WITH
             ,status
             ,disqualified_reason
         FROM ${ref('raw_lead')}
-        WHERE (status = 'delete'
-            OR product_id = 220
-            OR note like '%manual%'
-            OR lower(note) like '%sync leads in pipedrive%')
+        WHERE lead_id not in (select lead_id from lead)
     )
 
 
@@ -40,6 +75,6 @@ SELECT DISTINCT * EXCEPT(row_number)
 FROM (
     SELECT distinct *,
         ROW_NUMBER() OVER (PARTITION BY lead_id ORDER BY create_date DESC) AS row_number
-    FROM lead
+    FROM lead_error
     ) t
 WHERE t.row_number = 1
