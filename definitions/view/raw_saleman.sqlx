@@ -8,6 +8,6 @@ FROM (
   SELECT Name name, Email email, Location location, Status status, PipeDriveId user_id,
       ROW_NUMBER() OVER (PARTITION BY PipeDriveId ORDER BY ID DESC) AS row_number
   FROM `base-datateam.airbyte_ads.mssql_Salesman`
-  WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+  -- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
   ) t
 WHERE t.row_number = 1

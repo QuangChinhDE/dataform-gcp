@@ -1,0 +1,9 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+  cast(id as int64) user_pipedrive_id
+  ,email
+FROM `base-datateam.airbyte_pipedrive.user` user
