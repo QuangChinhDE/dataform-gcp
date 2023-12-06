@@ -19,20 +19,16 @@ GROUP BY
   CAST(ad_id AS INT64),
   CAST(campaign_id AS INT64),
   ad_name,
-  campaign_name
-
+  campaign_name 
+-- UNION ALL
 -- SELECT
 --     phone phone_account,
 --     TO_JSON_STRING(reports) reports,
 --     CAST(campaign_id AS INT64) campaign_id,
 --     campaign_name,
---     start_date start_date,
---     end_date end_date,
 --     CAST(ad_id AS INT64) ad_id,
---     ad_type,
 --     ad_name,
 --     CAST(NULL AS TIMESTAMP) _airbyte_extracted_at
-
 -- FROM `base-datateam.airbyte_ads.zalo_old_ads_260422_300923`
 
 

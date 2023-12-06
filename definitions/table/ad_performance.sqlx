@@ -11,6 +11,7 @@ WITH
                     IFNULL(cast(account_id AS STRING), ''),
                     IFNULL(cast(ad_id AS STRING), ''),
                     IFNULL(cast(date AS STRING), ''),
+                    IFNULL(cast(marketer AS STRING), ''),
                     IFNULL(cast(TO_BASE64(source_id) AS STRING), '')
                 )) ad_performance_id,
             account_id, 
