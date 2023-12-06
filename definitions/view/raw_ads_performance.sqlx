@@ -83,7 +83,7 @@ WITH
     zalo_raw AS (
         SELECT
             zalo_raw_split.ad_id,
-            CASE WHEN phone_account in ('0901706233', '0374626566') THEN 'phuongluong02' ELSE 'thaonguyen06' END marketer,
+            CASE WHEN phone_account in ('0901706233', '0374626566') THEN 'phuongluong02' WHEN phone_account in ('0354626566') THEN 'thaonguyen06' END marketer,
             cast(phone_account as int64) account_id,
             DATE(TIMESTAMP_SECONDS(cast(create_date as int64) + 25200)) date,
             cast(JSON_EXTRACT(json_str, '$.cost') as FLOAT64) AS cost,
