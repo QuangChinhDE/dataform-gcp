@@ -31,7 +31,7 @@ GROUP BY
 --     CAST(ad_id AS INT64) ad_id,
 --     ad_type,
 --     ad_name,
---         CAST(NULL AS TIMESTAMP) _airbyte_extracted_at
+--     CAST(NULL AS TIMESTAMP) _airbyte_extracted_at
 
 -- FROM `base-datateam.airbyte_ads.zalo_old_ads_260422_300923`
 
