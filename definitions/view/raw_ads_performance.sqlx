@@ -107,6 +107,7 @@ WITH
             max(cast(NULL as int64)) reach, 
             MD5('zalo') source_id 
         FROM zalo_raw 
+        where account_id != 782013387
         group by 
             account_id, 
             marketer, 
