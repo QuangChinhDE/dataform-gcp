@@ -9,7 +9,7 @@ config {
 
 WITH 
     new_deal_raw AS (SELECT DISTINCT * EXCEPT(category,field,industry,segmentation,size,tax_code) FROM ${ ref('raw_deal') }),
-    lead_deal AS (SELECT distinct deal_id FROM ${ ref('raw_lead') })
+    lead_deal AS (SELECT distinct deal_id FROM ${ ref('lead')} UNION ALL  SELECT distinct deal_id FROM ${ref('lead_error')})
 
 
 SELECT DISTINCT * EXCEPT(row_number)
@@ -19,4 +19,4 @@ FROM (
     FROM new_deal_raw
     ) t
 WHERE t.row_number = 1
-    -- AND deal_id in (SELECT DISTINCT deal_id from lead_deal)
+    AND deal_id in (SELECT DISTINCT deal_id from lead_deal where deal_id is not null)
