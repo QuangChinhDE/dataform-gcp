@@ -101,19 +101,19 @@ WITH
             marketer, 
             ad_id, 
             date, 
-            max(cost) cost, 
-            max(impression) impression, 
-            max(click) click, 
-            max(cast(NULL as int64)) reach, 
+            cost cost, 
+            impression impression, 
+            click click, 
+            cast(NULL as int64) reach, 
             MD5('zalo') source_id 
         FROM zalo_raw 
         where account_id != 782013387
-        group by 
-            account_id, 
-            marketer, 
-            ad_id, 
-            date,
-            MD5('zalo')
+        -- group by 
+        --     account_id, 
+        --     marketer, 
+        --     ad_id, 
+        --     date,
+        --     MD5('zalo')
         -- ORDER BY cost desc
         -- where marketer = 'thaonguyen06' and date between '2023-11-01' and '2023-11-30'
 
@@ -128,6 +128,7 @@ SELECT DISTINCT * FROM zalo_cost
 UNION ALL
 SELECT DISTINCT * FROM coccoc_cost
 
+-- SELECT DISTINCT * FROM zalo_cost
 
 
 
