@@ -107,7 +107,7 @@ WITH
             cast(NULL as int64) reach, 
             MD5('zalo') source_id 
         FROM zalo_raw 
-        where account_id != 782013387
+        -- where account_id != 782013387 and date between '2023-11-01' and '2023-11-30'
         -- group by 
         --     account_id, 
         --     marketer, 
