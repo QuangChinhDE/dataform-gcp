@@ -12,7 +12,7 @@ SELECT
   ad_name,
   MAX(_airbyte_extracted_at) _airbyte_extracted_at
 FROM `base-datateam.airbyte_ads.zalo_ads`
-WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
 GROUP BY
   phone_account,
   TO_JSON_STRING(reports),
