@@ -1,8 +1,12 @@
 config {
   type: "incremental",
-  uniqueKey: ['job_id'],
-  schema: "customer_onboarding"
+  uniqueKey: ["job_id"],
+  schema: "customer_onboarding",
+  bigquery: {
+    partitionBy: "DATE(last_update)"
+  }
 }
+
 
 WITH
   job AS (
