@@ -92,45 +92,71 @@ WITH
       ,max(link_income) link_income
     FROM job_form_pivot
     group by job_id
+  ),
+
+  job_done AS (
+    SELECT DISTINCT
+      job.job_id
+      ,MD5(lower(replace(pic_email, " ", ""))) customer_id
+      ,MD5(lower(ma_so_thue)) company_id
+      ,safe_cast(request_id as int64) request_id
+      ,job.stage_id
+      ,case 
+        when safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64) is null then job.from_id
+        else safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64)
+      end from_id
+      ,case
+        when job.from_type is null and safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64) is not null then 'workflowjobs'
+        when job.from_type is null and safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64) is null then null
+        else job.from_type
+      end from_app
+      ,safe_cast(replace(pivot_.link_income, 'https://income.base.vn/incomes?show=income&id=', '') as int64) income_id
+      ,case 
+        when safe_cast(id_system as int64) is null then safe_cast(system_id as int64)
+        else safe_cast(id_system as int64)
+      end system_id
+      ,case
+        when planhat_id = '' or planhat_id is null then null
+        else planhat_id
+      end planhat_id
+      ,safe_cast(deal_id as int64) deal_id
+      ,workflow_id
+      ,user_id
+      ,creator_id
+      ,first_assignee_id
+      ,name
+      ,status
+      ,since
+      ,last_update
+      ,finish_at
+      ,deadline
+      ,failed_name
+      ,failed_note
+      ,failed_since
+    FROM job
+    LEFT JOIN pivot_ ON pivot_.job_id = job.job_id
   )
 
-SELECT DISTINCT
-  job.job_id
-  ,MD5(lower(replace(pic_email, " ", ""))) customer_id
-  ,MD5(lower(ma_so_thue)) company_id
-  ,safe_cast(request_id as int64) request_id
-  ,job.stage_id
-  ,case 
-    when safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64) is null then job.from_id
-    else safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64)
-  end from_id
-  ,case
-    when job.from_type is null and safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64) is not null then 'workflowjobs'
-    when job.from_type is null and safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64) is null then null
-    else job.from_type
-  end from_app
-  ,safe_cast(replace(pivot_.link_income, 'https://income.base.vn/incomes?show=income&id=', '') as int64) income_id
-  ,case 
-    when safe_cast(id_system as int64) is null then safe_cast(system_id as int64)
-    else safe_cast(id_system as int64)
-  end system_id
-  ,case
-    when planhat_id = '' or planhat_id is null then null
-    else planhat_id
-  end planhat_id
-  ,safe_cast(deal_id as int64) deal_id
-  ,workflow_id
-  ,user_id
-  ,creator_id
-  ,first_assignee_id
-  ,name
-  ,status
-  ,since
-  ,last_update
-  ,finish_at
-  ,deadline
-  ,failed_name
-  ,failed_note
-  ,failed_since
-FROM job
-LEFT JOIN pivot_ ON pivot_.job_id = job.job_id
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+  SELECT *,
+      ROW_NUMBER() OVER (PARTITION BY job_id ORDER BY last_update DESC) AS row_number
+  FROM job_done a
+  ) t
+WHERE t.row_number = 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
