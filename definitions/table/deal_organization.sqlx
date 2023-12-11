@@ -17,4 +17,4 @@ SELECT *,
 FROM raw_organization
 ) t
 WHERE t.row_number = 1
-  AND org_id IN (SELECT DISTINCT org_id FROM ${ref('deal')})
+  AND org_id IN (SELECT DISTINCT org_id FROM `base-data-analyst.customer_onboarding.deal`)

@@ -14,4 +14,4 @@ SELECT *,
 FROM ${ref('raw_deal_person')}
 ) t
 WHERE t.row_number = 1
-  AND person_id IN (SELECT DISTINCT person_id FROM ${ref('deal')})
+  AND person_id IN (SELECT DISTINCT person_id FROM `base-data-analyst.customer_onboarding.deal`)
