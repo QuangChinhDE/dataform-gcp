@@ -5,8 +5,21 @@ config {
 }
 
 
-SELECT
-    MD5(CONCAT(org_id,location,size,field,industry,category,type,partnership_category,partnership_type,segmentation,tax_code)) org_info_id,
+SELECT DISTINCT
+    MD5(CONCAT(
+        IFNULL(cast(org_id as string), ''), 
+        IFNULL(cast(location as string), ''), 
+        IFNULL(cast(size as string), ''), 
+        IFNULL(cast(field as string), ''), 
+        IFNULL(cast(industry as string), ''), 
+        IFNULL(cast(location as string), ''), 
+        IFNULL(cast(category as string), ''), 
+        IFNULL(cast(type as string), ''), 
+        IFNULL(cast(partnership_category as string), ''), 
+        IFNULL(cast(partnership_type as string), ''), 
+        IFNULL(cast(segmentation as string), ''), 
+        IFNULL(cast(tax_code as string), '')
+    )) org_info_id,
     org_id,
     location,
     size,
