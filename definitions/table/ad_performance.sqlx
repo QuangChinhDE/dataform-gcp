@@ -21,7 +21,9 @@ WITH
             cost, 
             impression, 
             click, 
-            reach, 
+            reach,
+            conversion,
+            cost_per_conversion,
             source_id 
         FROM ${ref('raw_ads_performance')}
     )

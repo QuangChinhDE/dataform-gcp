@@ -13,6 +13,8 @@ SELECT distinct
     END cost
     ,MAX(metrics_impressions) impression
     ,MAX(metrics_clicks) click
+    ,MAX(metrics_conversions) conversion
+    ,MAX(metrics_cost_per_conversion) cost_per_conversion
 FROM `base-datateam.airbyte_ads.google_ad_group_ad_report`
 WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
 -- AND customer_id = 9582920772 and campaign_id = 18140698997 AND string(segments_date) like '%2023-01%'
