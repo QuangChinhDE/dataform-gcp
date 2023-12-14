@@ -7,7 +7,6 @@ WITH
   deal_field AS (
     SELECT key, options 
     FROM `base-datateam.airbyte_pipedrive.deal_field` 
-    WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
   ),
 
   deal_field_ AS (
@@ -22,12 +21,16 @@ WITH
           FROM UNNEST(JSON_EXTRACT_ARRAY(options, '$')) x
         ) AS label
       FROM deal_field
-  ),
-
-  deal_field_option AS (
-    SELECT key, id, label
-    FROM deal_field_, UNNEST (id) id WITH OFFSET o1 
-    LEFT JOIN UNNEST (label) label WITH OFFSET o2 ON o1 = o2
+      WHERE options is not null
   )
 
-SELECT * FROM deal_field_option
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY key,id ORDER BY label DESC) AS row_number
+    FROM (SELECT key, cast(id as int64) id, max(label) label
+        FROM deal_field_, UNNEST (id) id WITH OFFSET o1 
+        LEFT JOIN UNNEST (label) label WITH OFFSET o2 ON o1 = o2
+        GROUP BY key, cast(id as int64))
+    ) t
+WHERE t.row_number = 1

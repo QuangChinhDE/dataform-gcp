@@ -32,7 +32,11 @@ SELECT DISTINCT
         IFNULL(cast(partner_owner AS STRING), ''),
         IFNULL(cast(partner_id AS STRING), ''),
         IFNULL(cast(event AS STRING), ''),
-        IFNULL(cast(churn_info AS STRING), '')
+        IFNULL(cast(churn_info AS STRING), ''),
+        IFNULL(cast(lead_score AS STRING), ''),
+        IFNULL(cast(priority_score AS STRING), ''),
+        IFNULL(cast(challenge AS STRING), ''),
+        IFNULL(cast(gtm_type AS STRING), '')
     )) deal_transaction_id
     ,deal_id
     ,update_time
@@ -58,4 +62,19 @@ SELECT DISTINCT
     ,partner_id
     ,event
     ,churn_info
+    ,challenge
+    ,lead_score
+    ,priority_score
+    ,gtm_type
 FROM ${ref('raw_deal_transaction')}
+
+
+
+
+
+
+
+
+
+
+
