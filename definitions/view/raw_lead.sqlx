@@ -28,8 +28,8 @@ SELECT
     ,lead.DisqualifiedReason disqualified_reason
 FROM `base-datateam.airbyte_ads.mssql_Leads` lead
 INNER JOIN (SELECT ID, CampaignID FROM `base-datateam.airbyte_ads.mssql_ContactEvents` 
-            WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+            WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
             -- WHERE _airbyte_extracted_at >= '2023-11-28'
             ) ce ON ce.ID = lead.ContactEventID
-WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
 -- WHERE _airbyte_extracted_at >= '2023-11-28'
