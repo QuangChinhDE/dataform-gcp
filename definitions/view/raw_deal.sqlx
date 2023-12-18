@@ -90,7 +90,7 @@ deal AS (
     ON df8.key = '0c0314d53d63dbd7f1ac11bcc45b20f943a4d145' AND df8.id = cast(JSON_EXTRACT_SCALAR(data, '$.0c0314d53d63dbd7f1ac11bcc45b20f943a4d145') as int64)
   LEFT JOIN deal_field_option df11 
     ON df11.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df11.id = cast(JSON_EXTRACT_SCALAR(data, '$.56afadfee2e44cf5c478d3fc439c42e4940d7705') as int64)
-  WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())  
+  WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())  
   ),
 
   old_deal_field_raw AS (
@@ -228,7 +228,7 @@ deal AS (
     FROM `base-datateam.airbyte_pipedrive.old_deals`
   )
 
-SELECT * FROM deal
+SELECT distinct * FROM deal
 -- UNION ALL
 -- SELECT DISTINCT old_deal_raw.*, old_deal_field_pivot.* EXCEPT(deal_id) FROM old_deal_raw
 -- INNER JOIN old_deal_field_pivot ON old_deal_field_pivot.deal_id = old_deal_raw.deal_id
