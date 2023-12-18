@@ -48,7 +48,7 @@ SELECT distinct
   MAX(DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR)) update_time
 FROM `base-datateam.airbyte_pipedrive.organization` organization
 LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM organization_field_option WHERE key = '7658cd3ed5703f76437ae03a903b0192b4a115bb' GROUP BY cast(id as int64)) organization_field_option ON organization_field_option.id = cast(replace(JSON_EXTRACT_SCALAR(data, '$.7658cd3ed5703f76437ae03a903b0192b4a115bb'), '.0', '') as int64)
-WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
 GROUP BY 
   cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64), 
   cast(JSON_EXTRACT_SCALAR(data, '$.owner_id') as int64), 

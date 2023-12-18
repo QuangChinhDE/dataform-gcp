@@ -116,7 +116,7 @@ WITH
                 OR JSON_EXTRACT_SCALAR(data, '$.org_id') IS NOT NULL
                 OR JSON_EXTRACT_SCALAR(data, '$.person_id') IS NOT NULL
                 OR JSON_EXTRACT_SCALAR(data, '$.user_id') is not null)
-            AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+            AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
               
     )
 

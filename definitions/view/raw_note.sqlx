@@ -19,7 +19,7 @@ FROM (
           ,cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as datetime) update_time
           ,JSON_EXTRACT_SCALAR(data, '$.active_flag') active_flag
         FROM `base-datateam.airbyte_pipedrive.note`
-        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
       ) a
   ) t
 WHERE t.row_number = 1
