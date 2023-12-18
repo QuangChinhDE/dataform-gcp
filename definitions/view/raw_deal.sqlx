@@ -76,7 +76,7 @@ WITH
       ON df11.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df11.id = cast(replace(JSON_EXTRACT_SCALAR(data, '$.56afadfee2e44cf5c478d3fc439c42e4940d7705'),'.0','') as int64)
     LEFT JOIN deal_field_option df12 
       ON df12.key = '803427a7bbfc4dc909c52469688b2a2a2d07a941' AND df12.id = cast(replace(JSON_EXTRACT_SCALAR(data, '$.803427a7bbfc4dc909c52469688b2a2a2d07a941'),'.0','') as int64)
-    WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())  
+    WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())  
   ),
 
   old_deal_field_raw AS (
