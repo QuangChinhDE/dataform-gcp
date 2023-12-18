@@ -12,9 +12,15 @@ select DISTINCT
   MD5(CONCAT(
         IFNULL(cast(user_pseudo_id AS STRING), ''),
         IFNULL(cast(event_timestamp AS STRING), ''),
-        IFNULL(cast(event_date AS STRING), ''),
+        IFNULL(cast(DATE(PARSE_DATE('%Y%m%d', CAST(event_date AS STRING))) AS STRING), ''),
         IFNULL(cast(e.key AS STRING), ''),
         IFNULL(cast(e.value.string_value AS STRING), ''),
+        IFNULL(cast(user.user_ltv.sessions AS STRING), ''),
+        IFNULL(cast(user.user_ltv.engagement_time_millis AS STRING), ''),
+        IFNULL(cast(user.user_ltv.purchases AS STRING), ''),
+        IFNULL(cast(DATETIME_ADD(DATETIME(TIMESTAMP_MICROS(user.user_info.last_active_timestamp_micros)), INTERVAL 7 HOUR) AS STRING), ''),
+        IFNULL(cast(DATETIME_ADD(DATETIME(TIMESTAMP_MICROS(user.user_info.user_first_touch_timestamp_micros)), INTERVAL 7 HOUR) AS STRING), ''),
+        IFNULL(cast(event.traffic_source.medium  AS STRING), ''),
         IFNULL(cast(device.web_info.hostname AS STRING), '')
   )) event_id
   ,event.user_pseudo_id user_id
