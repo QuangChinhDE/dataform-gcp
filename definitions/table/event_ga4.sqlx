@@ -1,0 +1,47 @@
+config {
+  type: "incremental",
+  uniqueKey: ["event_id"],
+  schema: "marketing",
+  bigquery: {
+    partitionBy: "DATE(event_timestamp)"
+  }
+}
+
+
+select DISTINCT
+  MD5(CONCAT(
+        IFNULL(cast(user_pseudo_id AS STRING), ''),
+        IFNULL(cast(event_timestamp AS STRING), ''),
+        IFNULL(cast(event_date AS STRING), ''),
+        IFNULL(cast(e.key AS STRING), ''),
+        IFNULL(cast(e.value.string_value AS STRING), ''),
+        IFNULL(cast(device.web_info.hostname AS STRING), '')
+  )) event_id
+  ,event.user_pseudo_id user_id
+  -- ,event.event_bundle_sequence_id session_id-- các sự kiện trong cùng một phiên
+  ,e.key session_name
+  ,e.value.string_value session_value
+  ,user.user_ltv.sessions session_user
+  ,user.user_ltv.engagement_time_millis engagement_time_millis
+  ,user.user_ltv.purchases purchase
+  ,user.user_ltv.engaged_sessions engaged_session
+  ,user.user_ltv.session_duration_micros session_duration_micro
+  ,DATETIME_ADD(DATETIME(TIMESTAMP_MICROS(user.user_info.last_active_timestamp_micros)), INTERVAL 7 HOUR) last_active_timestamp_micro
+  ,DATETIME_ADD(DATETIME(TIMESTAMP_MICROS(user.user_info.user_first_touch_timestamp_micros)), INTERVAL 7 HOUR) user_first_touch_timestamp_micro
+  ,DATE(PARSE_DATE('%Y%m%d', CAST(event_date AS STRING))) event_date 
+  ,event.geo.city city
+  ,event.geo.country country
+  ,event.geo.continent continent
+  ,event.geo.region region
+  ,event.geo.sub_continent sub_continent
+  ,event.traffic_source.source traffic_source 
+  ,event.traffic_source.medium traffic_source_medium 
+  ,event.event_name
+  ,device.operating_system
+  ,device.is_limited_ad_tracking
+  ,device.web_info.browser_version
+  ,device.web_info.hostname
+  ,DATETIME_ADD(DATETIME(TIMESTAMP_MICROS(event_timestamp)), INTERVAL 7 HOUR) event_timestamp
+from ${ ref('raw_ga4_event')} event,
+  unnest(event.event_params) e
+inner join ${ ref('raw_ga4_user')} user on event.user_pseudo_id = user.pseudo_user_id

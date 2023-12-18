@@ -1,0 +1,17 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+select
+    event.user_pseudo_id -- định danh duy nhất cho mỗi người dùng
+    ,event.event_bundle_sequence_id-- các sự kiện trong cùng một phiên
+    ,event.event_params -- các sự kiện trong cùng một phiên
+    ,event_date -- xác định ngày xảy ra sự kiện.
+    ,event.geo -- giá trị địa lý
+    ,event.traffic_source -- nhóm các kênh truy cập.
+    ,event.event_name
+    ,event.device
+    ,event_timestamp
+from `base-datateam.analytics_276469051.events_*` event
+where _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d', TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND '20991231'
