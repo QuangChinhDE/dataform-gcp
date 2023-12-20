@@ -50,7 +50,7 @@ SELECT
     customer_in_pipedrive_raw.customer_id
     ,customer_in_pipedrive_raw.name
     ,customer_in_pipedrive_raw.email
-    ,cast(NULL as STRING) phone
+    ,phone
     ,customer_in_pipedrive_raw.birthday
     ,customer_in_pipedrive_raw.title
     ,customer_in_pipedrive_raw.position
