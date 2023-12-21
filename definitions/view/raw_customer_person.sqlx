@@ -21,7 +21,7 @@ WITH
     FROM `base-datateam.airbyte_pipedrive.person`
     ,UNNEST(JSON_EXTRACT_ARRAY(data, '$.email')) as mail
     WHERE replace(JSON_EXTRACT_SCALAR(mail, '$.value'), '"','') != ''
-      AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+      AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
   ),
 
   person AS (
