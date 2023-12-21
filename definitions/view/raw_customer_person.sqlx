@@ -13,10 +13,7 @@ WITH
       cast(JSON_EXTRACT_SCALAR(data, '$.job_title') as string) title,
       cast(JSON_EXTRACT_SCALAR(data, '$.birthday') as date) birthday,
       lower(replace(replace(JSON_EXTRACT_SCALAR(mail, '$.value'), '"',''), ' ','')) email,
-      case
-            when JSON_EXTRACT_SCALAR(data, '$.phone[0].value') = '' then null
-            else JSON_EXTRACT_SCALAR(data, '$.phone[0].value')
-        end phone,
+      IF(LENGTH(REGEXP_REPLACE(case when JSON_EXTRACT_SCALAR(data, '$.phone[0].value') = '' then null else JSON_EXTRACT_SCALAR(data, '$.phone[0].value') end, r'[^0-9]', '')) < 9, NULL, REGEXP_REPLACE(case when JSON_EXTRACT_SCALAR(data, '$.phone[0].value') = '' then null else JSON_EXTRACT_SCALAR(data, '$.phone[0].value') end, r'[^0-9]', '')) as phone,
       date_add(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as datetime), interval 7 hour) last_update,
       date_add(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as datetime), interval 7 hour) create_date,
       cast(JSON_EXTRACT_SCALAR(data, '$.last_activity_date') as date) last_activity_date,
@@ -46,7 +43,7 @@ WITH
         ,job_title title
         ,safe_cast(birthday as date) birthday
         ,lower(replace(personEmail.email, ' ','')) email
-        ,phone
+        ,IF(LENGTH(REGEXP_REPLACE(JSON_EXTRACT_SCALAR(phone, '$[0].value'), r'[^0-9]', '')) < 9, NULL, REGEXP_REPLACE(JSON_EXTRACT_SCALAR(phone, '$[0].value'), r'[^0-9]', '')) as phone
         ,date_add(update_time, interval 7 hour) last_update
         ,date_add(add_time, interval 7 hour) create_date
         ,safe_cast(last_activity_date as date) last_activity_date

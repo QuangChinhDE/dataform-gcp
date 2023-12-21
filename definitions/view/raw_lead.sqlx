@@ -8,7 +8,7 @@ SELECT
     ,lead.Name name
     ,MD5(lower(Replace(lead.Email, ' ', ''))) customer_id
     ,lower(Replace(lead.Email, ' ', '')) email
-    ,lead.Phone phone
+    ,IF(LENGTH(REGEXP_REPLACE(lead.Phone, r'[^0-9]', '')) < 9, NULL, REGEXP_REPLACE(lead.Phone, r'[^0-9]', '')) as phone
     ,lead.Title title
     ,lead.CompanyName company_name
     ,lead.CompanySize company_size
