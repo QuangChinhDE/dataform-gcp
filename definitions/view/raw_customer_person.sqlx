@@ -20,7 +20,7 @@ WITH
       cast(JSON_EXTRACT_SCALAR(data, '$.d16cad683039dda92cd4f022c23886bb2f1cef2d') as string) position,
     FROM `base-datateam.airbyte_pipedrive.person`
     ,UNNEST(JSON_EXTRACT_ARRAY(data, '$.email')) as mail
-    WHERE replace(JSON_EXTRACT_SCALAR(mail, '$.value'), '"','') != ''
+    WHERE lower(replace(replace(JSON_EXTRACT_SCALAR(mail, '$.value'), '"',''), ' ','')) != '' or lower(replace(replace(JSON_EXTRACT_SCALAR(mail, '$.value'), '"',''), ' ','')) is not null
       AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
   ),
 
@@ -50,7 +50,7 @@ WITH
         ,cast(NULL as string) position
     FROM `base-datateam.airbyte_pipedrive.old_personEmail` personEmail
     INNER JOIN `base-datateam.airbyte_pipedrive.old_persons` persons ON persons.id = personEmail.person_id
-    WHERE person_id NOT IN (SELECT distinct person_id FROM person)
+    WHERE person_id NOT IN (SELECT distinct person_id FROM person) and lower(replace(personEmail.email, ' ','')) is not null
   ),
 
   old_person AS (

@@ -1,7 +1,10 @@
 config {
   type: "incremental",
   uniqueKey: ["customer_id"],
-  schema: "marketing"
+  schema: "marketing",
+  bigquery: {
+    partitionBy: "DATE(last_update)"
+  }
 }
 
 SELECT DISTINCT * EXCEPT(row_number)
