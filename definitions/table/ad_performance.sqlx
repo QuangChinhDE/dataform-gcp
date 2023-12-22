@@ -24,7 +24,8 @@ WITH
             reach,
             conversion,
             cost_per_conversion,
-            source_id 
+            source_id,
+            network_type
         FROM ${ref('raw_ads_performance')}
     )
 

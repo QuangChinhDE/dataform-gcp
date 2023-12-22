@@ -17,6 +17,7 @@ WITH
             ,CAST(NULL AS INT64) conversion
             ,CAST(NULL AS INT64) cost_per_conversion
             ,MD5('facebook') source_id
+            ,CAST(NULL AS STRING) network_type
         FROM ${ref('raw_ads_facebook')} facebook
     ),
 
@@ -33,6 +34,7 @@ WITH
             ,CAST(NULL AS INT64) conversion
             ,CAST(NULL AS INT64) cost_per_conversion
             ,MD5('coc_coc') source_id
+            ,CAST(NULL AS STRING) network_type
         FROM ${ref('raw_ads_coccoc')}
     ),
 
@@ -72,6 +74,7 @@ WITH
             ,cast(conversion as INT64) conversion
             ,cast(cost_per_conversion as INT64) cost_per_conversion
             ,MD5('google') source_id
+            ,network_type
         FROM ${ref('raw_ads_google')} google
         -- LEFT JOIN google_marketer ON google_marketer.campaign_id = google.campaign_id
     ),
@@ -113,7 +116,8 @@ WITH
             cast(NULL as int64) reach, 
             CAST(NULL AS INT64) conversion,
             CAST(NULL AS INT64) cost_per_conversion,
-            MD5('zalo') source_id 
+            MD5('zalo') source_id ,
+            CAST(NULL AS STRING) network_type
         FROM zalo_raw 
         -- where account_id != 782013387 and date between '2023-11-01' and '2023-11-30'
         -- group by 
