@@ -8,4 +8,4 @@ select
     ,user_ltv
     ,user_info
 from `base-datateam.analytics_276469051.pseudonymous_users_*` 
-where _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d', TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 0 DAY)) AND '20991231'
+where _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d', TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND '20991231'
