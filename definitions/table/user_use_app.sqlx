@@ -1,0 +1,10 @@
+config {
+  type: "incremental",
+  uniqueKey: ['user_id','system_id','status','app','since','last_update'],
+  schema: "customer_onboarding",
+  bigquery: {
+    partitionBy: "DATE(last_update)"
+  }
+}
+
+SELECT * FROM ${ref('raw_user_use_app')}

@@ -4,7 +4,6 @@ config {
   schema: "customer_onboarding"
 }
 
-
 WITH
     user_activity AS (
         SELECT * FROM ${ref('raw_user_activity')}
