@@ -24,7 +24,8 @@ WITH
                     ,ad_group_id adset_id
                     ,ad_group_name adset_name
                     ,MAX(_airbyte_extracted_at) _airbyte_extracted_at
-                FROM `base-datateam.airbyte_ads.google_ad_groups`
+                -- FROM `base-datateam.airbyte_ads.google_ad_groups`
+                FROM `base-datateam.airbyte_ads.google_v15_ad_group`
                 WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
                 GROUP BY
                     SAFE_CAST(SPLIT(ad_group_campaign, 'campaigns/')[OFFSET(1)] AS INT64)
