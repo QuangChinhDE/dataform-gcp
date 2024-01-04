@@ -1,0 +1,24 @@
+config {
+  type: "incremental",
+  uniqueKey: ['user_id'],
+  schema: "dev_base"
+}
+
+WITH ranked_products AS (
+  SELECT 
+    user_id,
+    product,
+    sum(count_login) total_transaction,
+    ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY sum(count_login) DESC) as rn
+  FROM `base-data-analyst.customer_onboarding.user_activity`
+  WHERE date BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 3 MONTH) AND CURRENT_DATE()
+  GROUP BY 
+    user_id,
+    product
+)
+SELECT 
+  user_id,
+  ARRAY_TO_STRING((ARRAY_AGG(product)), ', ') as product
+FROM ranked_products
+WHERE rn <= 5
+GROUP BY user_id
