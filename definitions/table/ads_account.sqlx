@@ -1,0 +1,8 @@
+config {
+  type: "incremental",
+  uniqueKey: ["account_id","source_id"],
+  schema: "marketing"
+}
+
+
+SELECT DISTINCT * FROM ${ref('raw_ads_account')} 
