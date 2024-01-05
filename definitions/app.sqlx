@@ -1,0 +1,27 @@
+config {
+  type: "table",
+  schema: "dev_base"
+}
+
+SELECT
+  product,
+  CASE 
+    WHEN source = 'javascript' OR source LIKE '%php%' THEN 'web' 
+    ELSE 'mobile' 
+  END AS device,
+  source,
+FROM (
+  SELECT DISTINCT 
+    CASE 
+      WHEN source = 'javascript_backup_19Apr23' THEN 'javascript'
+      WHEN source = 'react_native_backup_19Apr23' THEN 'react_native'
+      WHEN source = 'react_native_base_me_backup_19Apr23' THEN 'javascript'
+      WHEN source = 'rn_request_backup_19Apr23' THEN 'rn_request'
+      WHEN source = 'rn_wework_backup_19Apr23' THEN 'rn_wework'
+      WHEN source = 'rn_workflow_backup_19Apr23' THEN 'rn_workflow'
+      ELSE source 
+    END AS source,
+    product
+  FROM `base-data-analyst.customer_onboarding.user_activity`
+  WHERE NOT REGEXP_CONTAINS(product, r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}$')
+)
