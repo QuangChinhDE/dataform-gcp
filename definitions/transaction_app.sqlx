@@ -20,5 +20,5 @@ SELECT
   user_id,
   ARRAY_TO_STRING((ARRAY_AGG(product)), ', ') as product
 FROM ranked_products
-WHERE rn <= 5
+WHERE rn <= 10
 GROUP BY user_id
