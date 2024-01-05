@@ -12,6 +12,7 @@ WITH ranked_products AS (
     ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY sum(count_login) DESC) as rn
   FROM `base-data-analyst.customer_onboarding.user_activity`
   WHERE date BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 3 MONTH) AND CURRENT_DATE()
+    AND NOT REGEXP_CONTAINS(product, r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{7} \+\d{2}:\d{2}$')
   GROUP BY 
     user_id,
     product
