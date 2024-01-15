@@ -1,5 +1,5 @@
 config {
-  type: "incremental",
+  type: "table",
   uniqueKey: ['stage_id'],
   schema: "customer_onboarding"
 }
