@@ -20,7 +20,7 @@ WITH
         SELECT distinct campaign_id, campaign_name, MD5('google') source_id,
             ROW_NUMBER() OVER (PARTITION BY campaign_id ORDER BY _airbyte_extracted_at DESC) AS row_number
         -- FROM `base-datateam.airbyte_ads.google_campaigns`
-        FROM `base-datateam.airbyte_ads.google_v15_campaign`
+        FROM `base-datateam.airbyte_google.ads_campaign`
         WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
         ) t
         WHERE t.row_number = 1
