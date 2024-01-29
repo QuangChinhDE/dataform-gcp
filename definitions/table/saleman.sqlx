@@ -10,9 +10,10 @@ FROM (
       ,case when email_u is null then email_s else email_u end email
       ,location
       ,status
+      ,saleman_id
       ,user_pipedrive_id user_id
-      ,ROW_NUMBER() OVER (PARTITION BY user_pipedrive_id ORDER BY user_pipedrive_id DESC) AS row_number
-    FROM (SELECT name, user.email email_u, saleman.email email_s, location, status, user_pipedrive_id FROM ${ref('raw_saleman')} saleman
+      ,ROW_NUMBER() OVER (PARTITION BY user_pipedrive_id, saleman_id ORDER BY user_pipedrive_id DESC) AS row_number
+    FROM (SELECT name, user.email email_u, saleman.email email_s, location, status, user_pipedrive_id, saleman_id FROM ${ref('raw_saleman')} saleman
           FULL JOIN ${ref('raw_user_pipedrive')} user ON user.user_pipedrive_id = saleman.user_id)
   ) t
 WHERE t.row_number = 1 

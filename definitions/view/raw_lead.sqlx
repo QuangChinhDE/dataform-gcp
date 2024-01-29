@@ -18,9 +18,12 @@ SELECT
     ,lead.SourceGroup source_group
     ,lead.CampaignMedium campaign_medium
     ,lead.CampaignName campaign_name
+    ,SAFE_CAST(ARRAY_REVERSE(SPLIT(lead.CampaignName, "_"))[OFFSET(0)] AS INT64) campaign_id
+    ,ce.CampaignID campaign_id_old
     ,lead.CampaignTerm campaign_term
+    ,SAFE_CAST(ARRAY_REVERSE(SPLIT(lead.CampaignTerm, "_"))[OFFSET(0)] AS INT64) adset_id
     ,lead.CampaignContent campaign_content
-    ,ce.CampaignID campaign_id
+    ,SAFE_CAST(ARRAY_REVERSE(SPLIT(lead.CampaignContent, "_"))[OFFSET(0)] AS INT64) ad_id
     ,DATE_ADD(DATETIME(lead.CreatedDate), INTERVAL 7 HOUR) create_date 
     ,lead.Note note
     ,lead.Status status

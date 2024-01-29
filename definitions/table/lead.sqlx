@@ -22,7 +22,10 @@ WITH
             lead_id
             ,customer_id
             ,deal_id
+            ,campaign_id_old
             ,campaign_id
+            ,adset_id
+            ,ad_id
             ,product_id
             ,name
             ,source_group

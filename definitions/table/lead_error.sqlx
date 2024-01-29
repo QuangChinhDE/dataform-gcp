@@ -20,23 +20,23 @@ WITH
     lead AS (
         SELECT DISTINCT
             lead_id
-            ,customer_id
-            ,deal_id
-            ,campaign_id
-            ,product_id
-            ,name
-            ,source_group
-            ,company_name
-            ,company_size
-            ,company_address
-            ,campaign_medium
-            ,campaign_name
-            ,campaign_term
-            ,campaign_content
-            ,create_date
-            ,note
-            ,status
-            ,disqualified_reason
+            -- ,customer_id
+            -- ,deal_id
+            -- ,campaign_id
+            -- ,product_id
+            -- ,name
+            -- ,source_group
+            -- ,company_name
+            -- ,company_size
+            -- ,company_address
+            -- ,campaign_medium
+            -- ,campaign_name
+            -- ,campaign_term
+            -- ,campaign_content
+            -- ,create_date
+            -- ,note
+            -- ,status
+            -- ,disqualified_reason
         FROM ${ref('raw_lead')}
         WHERE customer_id IN (SELECT customer_id FROM customer)
             AND (status != 'delete'
@@ -51,7 +51,10 @@ WITH
             lead_id
             ,customer_id
             ,deal_id
+            ,campaign_id_old
             ,campaign_id
+            ,adset_id
+            ,ad_id
             ,product_id
             ,name
             ,source_group
