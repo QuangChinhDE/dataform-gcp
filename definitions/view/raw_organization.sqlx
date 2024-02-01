@@ -28,7 +28,7 @@ WITH
         LEFT JOIN organization_field_option of5 ON of5.key = 'e3d331500177698d4931689b866c08c234d39aac' AND of5.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.e3d331500177698d4931689b866c08c234d39aac') as int64)
         LEFT JOIN organization_field_option of6 ON of6.key = 'eafff329b5a3a4dec079ed3ef70c2b540219221a' AND of6.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.eafff329b5a3a4dec079ed3ef70c2b540219221a') as int64)
         LEFT JOIN organization_field_option of7 ON of7.key = 'cd38b6a4591ac1d1f99ba791d5972b45d0a98faf' AND of6.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.cd38b6a4591ac1d1f99ba791d5972b45d0a98faf') as int64)
-        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
         GROUP BY
             cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64), 
             JSON_EXTRACT_SCALAR(data, '$.name'),

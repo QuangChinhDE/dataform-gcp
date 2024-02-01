@@ -4,235 +4,267 @@ config {
 }
 
 WITH
-  deal_field_option AS (
-      SELECT * FROM ${ref('raw_deal_field')}
-  ),
+    deal_field_option AS (
+        SELECT * FROM ${ref('raw_deal_field')}
+    ),
 
-deal AS (
-  SELECT DISTINCT
-    cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) deal_id
-    ,cast(JSON_EXTRACT_SCALAR(data, '$.creator_user_id') as int64) creator_user_id
-    ,cast(JSON_EXTRACT_SCALAR(data, '$.org_id') as int64) org_id
-    ,JSON_EXTRACT_SCALAR(data, '$.title') title
-    ,cast(JSON_EXTRACT_SCALAR(data, '$.person_id') as int64) person_id
-    ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR) update_time
+    deal AS (
+    SELECT DISTINCT
+        cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) deal_id
+        ,cast(JSON_EXTRACT_SCALAR(data, '$.creator_user_id') as int64) creator_user_id
+        ,cast(JSON_EXTRACT_SCALAR(data, '$.org_id') as int64) org_id
+        ,JSON_EXTRACT_SCALAR(data, '$.title') title
+        ,cast(JSON_EXTRACT_SCALAR(data, '$.person_id') as int64) person_id
+        ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR) update_time
 
-    ,cast(JSON_EXTRACT_SCALAR(data, '$.user_id') as int64) user_id
-    ,cast(JSON_EXTRACT_SCALAR(data, '$.pipeline_id') as int64) pipeline_id
-    ,cast(JSON_EXTRACT_SCALAR(data, '$.stage_id') as int64) stage_id
-    ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time
-    ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.stage_change_time') as DATETIME), INTERVAL 7 HOUR) stage_change_time
-    ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.close_time') as DATETIME), INTERVAL 7 HOUR) close_time
-    ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.won_time') as DATETIME), INTERVAL 7 HOUR) won_time
-    ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.first_won_time') as DATETIME), INTERVAL 7 HOUR) first_won_time
-    ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.lost_time') as DATETIME), INTERVAL 7 HOUR) lost_time
-    ,JSON_EXTRACT_SCALAR(data, '$.lost_reason') lost_reason
-    ,JSON_EXTRACT_SCALAR(data, '$.status' ) status
-    ,cast(JSON_EXTRACT_SCALAR(data, '$.expected_close_date') as DATE) expected_close_date
-    ,safe_cast(JSON_EXTRACT_SCALAR(data, '$.value') as FLOAT64) value
-    ,JSON_EXTRACT_SCALAR(data, '$.probability') probability
-    ,JSON_EXTRACT_SCALAR(data, '$.01ba13f47bddc6f6edf7fcb26af2a02b8621357e') tracking_campaign_name
-    ,JSON_EXTRACT_SCALAR(data, '$.0cba272b8feb43724fcc8d64c2fee8790d711277') tracking_appendix
-    ,JSON_EXTRACT_SCALAR(data, '$.1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6') tracking_referral
-    ,JSON_EXTRACT_SCALAR(data, '$.6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6') tracking_content
-    ,JSON_EXTRACT_SCALAR(data, '$.884fee7fac0121b07b113c49eec9feecb9f1dcbc') tracking_source
-    ,JSON_EXTRACT_SCALAR(data, '$.9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e') tracking_medium
-    ,JSON_EXTRACT_SCALAR(data, '$.da767c03989c02f5088529c717dee6cb5da9b767') tracking_content_link
-    ,JSON_EXTRACT_SCALAR(data, '$.fbfadd21eb74d60f934ef0247d9ebe844ec66772') tracking_term
-    ,df1.label source_group
-    ,JSON_EXTRACT_SCALAR(data, '$.648ba676ed29bd49a766d5099cff5aa2f3b1a8ce') challenge
-    ,JSON_EXTRACT_SCALAR(data, '$.7cf4977ae439c865977354da511ae51a56310805') goal
-    ,JSON_EXTRACT_SCALAR(data, '$.b9389221ce01ecb6c9a2c014c0cd134b13ddb32c') competitor
-    ,JSON_EXTRACT_SCALAR(data, '$.711c8dece81a19f94ab0733db2ebf200afc01fc3') note_from_marketing
-    ,JSON_EXTRACT_SCALAR(data, '$.8966dcdf3070bc7d45c52ee5800dca0a9efd91b4') budget
-    ,df2.label lead_score
-    ,df3.label priority_score
-    ,CASE 
-      WHEN SAFE_CAST(replace(JSON_EXTRACT_SCALAR(data, '$.56b0cc5defaf568b6990b68341074fedc58693eb'),'.0','') as int64) IS NOT NULL THEN df4.label 
-      ELSE df11.label 
-      END customer_need
-    ,CASE 
-      WHEN JSON_EXTRACT_SCALAR(data, '$.36ada051863b3001106248b85a2a050caed5ba73') IS NOT NULL THEN JSON_EXTRACT_SCALAR(data, '$.36ada051863b3001106248b85a2a050caed5ba73') 
-      ELSE JSON_EXTRACT_SCALAR(data, '$.32df8feaa3cf81248288f4c18b562b52318aa71d') 
-      END customer_problem
-    ,df5.label stakeholder_engagement
-    ,df6.label brand_awareness
-    ,df7.label price_sensitive
-    ,df8.label gtm_type
-    ,SAFE_CAST(replace(JSON_EXTRACT_SCALAR(data, '$.b7c205797fc745d3b7619146603d27568b5055ac'),'.0','') AS INT64) partner_owner
-    ,SAFE_CAST(replace(JSON_EXTRACT_SCALAR(data, '$.09fae946b918159745b5ad3a3ee7b079afe8f143'),'.0','') AS INT64) partner_id
-
-    -- Thông tin company của deal -----------------------------------------------------------------------
-    ,replace(JSON_EXTRACT_SCALAR(data, '$.ba7758126eaf7a1c291050d38314f3ef6caac23a'),'.0','') category
-    ,replace(JSON_EXTRACT_SCALAR(data, '$.03cb33c8f645c1cb6c4b5663060f5be62bd45b47'),'.0','') field
-    ,replace(JSON_EXTRACT_SCALAR(data, '$.433393a17d7d4d66fad7fea01c611906aa554327'),'.0','') industry
-    ,replace(JSON_EXTRACT_SCALAR(data, '$.4bc6995517793efb195df2de43629b79fa001818'),'.0','') segmentation
-    ,replace(JSON_EXTRACT_SCALAR(data, '$.803427a7bbfc4dc909c52469688b2a2a2d07a941'),'.0','') size
-    ,REPLACE(JSON_EXTRACT_SCALAR(data, '$.b6959119fb956cf44fb680045abb3a66994cda25'),' ','') tax_code
-    -----------------------------------------------------------------------------------------------------
-
-  FROM `base-datateam.airbyte_pipedrive.deal` deal
-  LEFT JOIN deal_field_option df1 
-    ON df1.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND df1.id = cast(JSON_EXTRACT_SCALAR(data, '$.41c48ba0a3590d935a2130d18a6d0846ebf58102') as int64)
-  LEFT JOIN deal_field_option df2 
-    ON df2.key = '3f0acf615fdd18626380a935dde6bc8b2c0c8916' AND df2.id = cast(JSON_EXTRACT_SCALAR(data, '$.3f0acf615fdd18626380a935dde6bc8b2c0c8916') as int64)
-  LEFT JOIN deal_field_option df3 
-    ON df3.key = '4ef8ce2eeb78d393977a24d4db5b25ba60823df9' AND df3.id = cast(JSON_EXTRACT_SCALAR(data, '$.4ef8ce2eeb78d393977a24d4db5b25ba60823df9') as int64)
-  LEFT JOIN deal_field_option df4 
-    ON df4.key = '56b0cc5defaf568b6990b68341074fedc58693eb' AND df4.id = cast(JSON_EXTRACT_SCALAR(data, '$.56b0cc5defaf568b6990b68341074fedc58693eb') as int64)
-  LEFT JOIN deal_field_option df5 
-    ON df5.key = 'ad355ab57ff75dd561ccfbca41c9aba20468a133' AND df5.id = cast(JSON_EXTRACT_SCALAR(data, '$.ad355ab57ff75dd561ccfbca41c9aba20468a133') as int64)
-  LEFT JOIN deal_field_option df6 
-    ON df6.key = '0ff3d9479a456dc5fcde3fef42b2d4ef6082c912' AND df6.id = cast(JSON_EXTRACT_SCALAR(data, '$.0ff3d9479a456dc5fcde3fef42b2d4ef6082c912') as int64)
-  LEFT JOIN deal_field_option df7 
-    ON df7.key = 'e6db98a67854a49d9b14d56edc70c2330cf8bc99' AND df7.id = cast(JSON_EXTRACT_SCALAR(data, '$.e6db98a67854a49d9b14d56edc70c2330cf8bc99') as int64)
-  LEFT JOIN deal_field_option df8 
-    ON df8.key = '0c0314d53d63dbd7f1ac11bcc45b20f943a4d145' AND df8.id = cast(JSON_EXTRACT_SCALAR(data, '$.0c0314d53d63dbd7f1ac11bcc45b20f943a4d145') as int64)
-  LEFT JOIN deal_field_option df11 
-    ON df11.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df11.id = cast(JSON_EXTRACT_SCALAR(data, '$.56afadfee2e44cf5c478d3fc439c42e4940d7705') as int64)
-  WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())  
-  ),
-
-  old_deal_field_raw AS (
-      SELECT deal_id,field_key,value FROM `base-datateam.airbyte_pipedrive.old_dealFields_value`
-  ),
-
-  old_deal_field_pivot AS (
-    select
-        deal_id
-        ,`01ba13f47bddc6f6edf7fcb26af2a02b8621357e` tracking_campaign_name
-        ,`0cba272b8feb43724fcc8d64c2fee8790d711277` tracking_appendix
-        ,`1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6` tracking_referral
-        ,`6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6` tracking_content
-        ,`884fee7fac0121b07b113c49eec9feecb9f1dcbc` tracking_source
-        ,`9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e` tracking_medium
-        ,`da767c03989c02f5088529c717dee6cb5da9b767` tracking_content_link
-        ,`fbfadd21eb74d60f934ef0247d9ebe844ec66772` tracking_term
+        ,cast(JSON_EXTRACT_SCALAR(data, '$.user_id') as int64) user_id
+        ,cast(JSON_EXTRACT_SCALAR(data, '$.pipeline_id') as int64) pipeline_id
+        ,cast(JSON_EXTRACT_SCALAR(data, '$.stage_id') as int64) stage_id
+        ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time
+        ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.stage_change_time') as DATETIME), INTERVAL 7 HOUR) stage_change_time
+        ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.close_time') as DATETIME), INTERVAL 7 HOUR) close_time
+        ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.won_time') as DATETIME), INTERVAL 7 HOUR) won_time
+        ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.first_won_time') as DATETIME), INTERVAL 7 HOUR) first_won_time
+        ,DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.lost_time') as DATETIME), INTERVAL 7 HOUR) lost_time
+        ,JSON_EXTRACT_SCALAR(data, '$.lost_reason') lost_reason
+        ,JSON_EXTRACT_SCALAR(data, '$.status' ) status
+        ,cast(JSON_EXTRACT_SCALAR(data, '$.expected_close_date') as DATE) expected_close_date
+        ,safe_cast(JSON_EXTRACT_SCALAR(data, '$.value') as FLOAT64) value
+        ,JSON_EXTRACT_SCALAR(data, '$.probability') probability
+        ,JSON_EXTRACT_SCALAR(data, '$.01ba13f47bddc6f6edf7fcb26af2a02b8621357e') tracking_campaign_name
+        ,JSON_EXTRACT_SCALAR(data, '$.0cba272b8feb43724fcc8d64c2fee8790d711277') tracking_appendix
+        ,JSON_EXTRACT_SCALAR(data, '$.1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6') tracking_referral
+        ,JSON_EXTRACT_SCALAR(data, '$.6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6') tracking_content
+        ,JSON_EXTRACT_SCALAR(data, '$.884fee7fac0121b07b113c49eec9feecb9f1dcbc') tracking_source
+        ,JSON_EXTRACT_SCALAR(data, '$.9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e') tracking_medium
+        ,JSON_EXTRACT_SCALAR(data, '$.da767c03989c02f5088529c717dee6cb5da9b767') tracking_content_link
+        ,JSON_EXTRACT_SCALAR(data, '$.fbfadd21eb74d60f934ef0247d9ebe844ec66772') tracking_term
         ,df1.label source_group
-        ,`648ba676ed29bd49a766d5099cff5aa2f3b1a8ce` challenge
-        ,`7cf4977ae439c865977354da511ae51a56310805` goal
-        ,`b9389221ce01ecb6c9a2c014c0cd134b13ddb32c` competitor
-        ,`711c8dece81a19f94ab0733db2ebf200afc01fc3` note_from_marketing
-        ,`8966dcdf3070bc7d45c52ee5800dca0a9efd91b4` budget
+        ,JSON_EXTRACT_SCALAR(data, '$.648ba676ed29bd49a766d5099cff5aa2f3b1a8ce') challenge
+        ,JSON_EXTRACT_SCALAR(data, '$.7cf4977ae439c865977354da511ae51a56310805') goal
+        ,JSON_EXTRACT_SCALAR(data, '$.b9389221ce01ecb6c9a2c014c0cd134b13ddb32c') competitor
+        ,JSON_EXTRACT_SCALAR(data, '$.711c8dece81a19f94ab0733db2ebf200afc01fc3') note_from_marketing
+        ,JSON_EXTRACT_SCALAR(data, '$.8966dcdf3070bc7d45c52ee5800dca0a9efd91b4') budget
         ,df2.label lead_score
         ,df3.label priority_score
-        ,case when `56b0cc5defaf568b6990b68341074fedc58693eb` is not null THEN df4.label ELSE df11.label end customer_need
-        ,case when `36ada051863b3001106248b85a2a050caed5ba73` is not null THEN `36ada051863b3001106248b85a2a050caed5ba73` ELSE `32df8feaa3cf81248288f4c18b562b52318aa71d` END customer_problem
+        ,CASE 
+        WHEN SAFE_CAST(replace(JSON_EXTRACT_SCALAR(data, '$.56b0cc5defaf568b6990b68341074fedc58693eb'),'.0','') as int64) IS NOT NULL THEN df4.label 
+        ELSE df11.label 
+        END customer_need
+        ,CASE 
+        WHEN JSON_EXTRACT_SCALAR(data, '$.36ada051863b3001106248b85a2a050caed5ba73') IS NOT NULL THEN JSON_EXTRACT_SCALAR(data, '$.36ada051863b3001106248b85a2a050caed5ba73') 
+        ELSE JSON_EXTRACT_SCALAR(data, '$.32df8feaa3cf81248288f4c18b562b52318aa71d') 
+        END customer_problem
         ,df5.label stakeholder_engagement
         ,df6.label brand_awareness
         ,df7.label price_sensitive
         ,df8.label gtm_type
-        -- ,df9.label customer_request
-        ,SAFE_CAST(replace(`b7c205797fc745d3b7619146603d27568b5055ac`,'.0','') AS INT64) partner_owner
-        ,SAFE_CAST(replace(`09fae946b918159745b5ad3a3ee7b079afe8f143`,'.0','') AS INT64) partner_id
-        ,`ba7758126eaf7a1c291050d38314f3ef6caac23a` category
-        ,`03cb33c8f645c1cb6c4b5663060f5be62bd45b47` field
-        ,`433393a17d7d4d66fad7fea01c611906aa554327` industry
-        ,`4bc6995517793efb195df2de43629b79fa001818` segmentation
-        ,`803427a7bbfc4dc909c52469688b2a2a2d07a941` size
-        ,REPLACE(`b6959119fb956cf44fb680045abb3a66994cda25`,' ','') tax_code
-    from old_deal_field_raw
-    pivot(max(value) for field_key in ('01ba13f47bddc6f6edf7fcb26af2a02b8621357e'
-                                      ,'0cba272b8feb43724fcc8d64c2fee8790d711277'
-                                      ,'1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6'
-                                      ,'6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6'
-                                      ,'884fee7fac0121b07b113c49eec9feecb9f1dcbc'
-                                      ,'9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e'
-                                      ,'da767c03989c02f5088529c717dee6cb5da9b767'
-                                      ,'fbfadd21eb74d60f934ef0247d9ebe844ec66772'
-                                      ,'41c48ba0a3590d935a2130d18a6d0846ebf58102'
-                                      ,'648ba676ed29bd49a766d5099cff5aa2f3b1a8ce'
-                                      ,'7cf4977ae439c865977354da511ae51a56310805'
-                                      ,'b9389221ce01ecb6c9a2c014c0cd134b13ddb32c'
-                                      ,'711c8dece81a19f94ab0733db2ebf200afc01fc3'
-                                      ,'8966dcdf3070bc7d45c52ee5800dca0a9efd91b4'
-                                      ,'3f0acf615fdd18626380a935dde6bc8b2c0c8916'
-                                      ,'4ef8ce2eeb78d393977a24d4db5b25ba60823df9'
-                                      ,'56b0cc5defaf568b6990b68341074fedc58693eb'
-                                      ,'56afadfee2e44cf5c478d3fc439c42e4940d7705'
-                                      ,'ad355ab57ff75dd561ccfbca41c9aba20468a133'
-                                      ,'0ff3d9479a456dc5fcde3fef42b2d4ef6082c912'
-                                      ,'e6db98a67854a49d9b14d56edc70c2330cf8bc99'
-                                      ,'0c0314d53d63dbd7f1ac11bcc45b20f943a4d145'
-                                      ,'b41b9f0d98fa55c63dd60005f8b184b104afb46c'
-                                      ,'09fae946b918159745b5ad3a3ee7b079afe8f143'
-                                      ,'b7c205797fc745d3b7619146603d27568b5055ac'
-                                      ,'32df8feaa3cf81248288f4c18b562b52318aa71d'
-                                      ,'36ada051863b3001106248b85a2a050caed5ba73'
-                                      ,'ba7758126eaf7a1c291050d38314f3ef6caac23a'
-                                      ,'03cb33c8f645c1cb6c4b5663060f5be62bd45b47'
-                                      ,'433393a17d7d4d66fad7fea01c611906aa554327'
-                                      ,'4bc6995517793efb195df2de43629b79fa001818'
-                                      ,'803427a7bbfc4dc909c52469688b2a2a2d07a941'
-                                      ,'b6959119fb956cf44fb680045abb3a66994cda25'
-                                      ,'add_time'
-                                      ,'expected_close_date'
-                                      ,'status'
-                                      ,'stage_id'
-                                      ,'value'
-                                      ,'user_id'
-                                      ,'pipeline'
-                                      ,'won_time'
-                                      ,'stage_change_time'
-                                      ,'lost_time'
-                                      ,'lost_reason'
-                                      ,'label'
-                                      ,'probability'
-                                      ,'first_won_time'
-                                      ,'close_time')) 
+        ,SAFE_CAST(replace(JSON_EXTRACT_SCALAR(data, '$.b7c205797fc745d3b7619146603d27568b5055ac'),'.0','') AS INT64) partner_owner
+        ,SAFE_CAST(replace(JSON_EXTRACT_SCALAR(data, '$.09fae946b918159745b5ad3a3ee7b079afe8f143'),'.0','') AS INT64) partner_id
+        ,df12.label way_of_cooperation
+        ,df13.label partner_type
+        ,df14.label partner_expertise
+        ,SAFE_CAST(replace(JSON_EXTRACT_SCALAR(data, '$.86ea3cdeeb36be6bdeffe3f9374a0d6c060dfcb6'),'.0','') AS INT64) bdr_owner
+
+        -- Thông tin company của deal -----------------------------------------------------------------------
+        ,replace(JSON_EXTRACT_SCALAR(data, '$.ba7758126eaf7a1c291050d38314f3ef6caac23a'),'.0','') category
+        ,replace(JSON_EXTRACT_SCALAR(data, '$.03cb33c8f645c1cb6c4b5663060f5be62bd45b47'),'.0','') field
+        ,replace(JSON_EXTRACT_SCALAR(data, '$.433393a17d7d4d66fad7fea01c611906aa554327'),'.0','') industry
+        ,replace(JSON_EXTRACT_SCALAR(data, '$.4bc6995517793efb195df2de43629b79fa001818'),'.0','') segmentation
+        ,replace(JSON_EXTRACT_SCALAR(data, '$.803427a7bbfc4dc909c52469688b2a2a2d07a941'),'.0','') size
+        ,REPLACE(JSON_EXTRACT_SCALAR(data, '$.b6959119fb956cf44fb680045abb3a66994cda25'),' ','') tax_code
+        -----------------------------------------------------------------------------------------------------
+
+    FROM `base-datateam.airbyte_pipedrive.deal` deal
     LEFT JOIN deal_field_option df1 
-      ON df1.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND df1.id = safe_cast(replace(`41c48ba0a3590d935a2130d18a6d0846ebf58102`,'.0','') as int64)
+        ON df1.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND df1.id = cast(JSON_EXTRACT_SCALAR(data, '$.41c48ba0a3590d935a2130d18a6d0846ebf58102') as int64)
     LEFT JOIN deal_field_option df2 
-      ON df2.key = '3f0acf615fdd18626380a935dde6bc8b2c0c8916' AND df2.id = safe_cast(replace(`3f0acf615fdd18626380a935dde6bc8b2c0c8916`,'.0','') as int64)
+        ON df2.key = '3f0acf615fdd18626380a935dde6bc8b2c0c8916' AND df2.id = cast(JSON_EXTRACT_SCALAR(data, '$.3f0acf615fdd18626380a935dde6bc8b2c0c8916') as int64)
     LEFT JOIN deal_field_option df3 
-      ON df3.key = '4ef8ce2eeb78d393977a24d4db5b25ba60823df9' AND df3.id = safe_cast(replace(`4ef8ce2eeb78d393977a24d4db5b25ba60823df9`,'.0','') as int64)
+        ON df3.key = '4ef8ce2eeb78d393977a24d4db5b25ba60823df9' AND df3.id = cast(JSON_EXTRACT_SCALAR(data, '$.4ef8ce2eeb78d393977a24d4db5b25ba60823df9') as int64)
     LEFT JOIN deal_field_option df4 
-      ON df4.key = '56b0cc5defaf568b6990b68341074fedc58693eb' AND df4.id = safe_cast(replace(`56b0cc5defaf568b6990b68341074fedc58693eb`,'.0','') as int64)
+        ON df4.key = '56b0cc5defaf568b6990b68341074fedc58693eb' AND df4.id = cast(JSON_EXTRACT_SCALAR(data, '$.56b0cc5defaf568b6990b68341074fedc58693eb') as int64)
     LEFT JOIN deal_field_option df5 
-      ON df5.key = 'ad355ab57ff75dd561ccfbca41c9aba20468a133' AND df5.id = safe_cast(replace(`ad355ab57ff75dd561ccfbca41c9aba20468a133`,'.0','') as int64)
+        ON df5.key = 'ad355ab57ff75dd561ccfbca41c9aba20468a133' AND df5.id = cast(JSON_EXTRACT_SCALAR(data, '$.ad355ab57ff75dd561ccfbca41c9aba20468a133') as int64)
     LEFT JOIN deal_field_option df6 
-      ON df6.key = '0ff3d9479a456dc5fcde3fef42b2d4ef6082c912' AND df6.id = safe_cast(replace(`0ff3d9479a456dc5fcde3fef42b2d4ef6082c912`,'.0','') as int64)
+        ON df6.key = '0ff3d9479a456dc5fcde3fef42b2d4ef6082c912' AND df6.id = cast(JSON_EXTRACT_SCALAR(data, '$.0ff3d9479a456dc5fcde3fef42b2d4ef6082c912') as int64)
     LEFT JOIN deal_field_option df7 
-      ON df7.key = 'e6db98a67854a49d9b14d56edc70c2330cf8bc99' AND df7.id = safe_cast(replace(`e6db98a67854a49d9b14d56edc70c2330cf8bc99`,'.0','') as int64)
+        ON df7.key = 'e6db98a67854a49d9b14d56edc70c2330cf8bc99' AND df7.id = cast(JSON_EXTRACT_SCALAR(data, '$.e6db98a67854a49d9b14d56edc70c2330cf8bc99') as int64)
     LEFT JOIN deal_field_option df8 
-      ON df8.key = '0c0314d53d63dbd7f1ac11bcc45b20f943a4d145' AND df8.id = safe_cast(replace(`0c0314d53d63dbd7f1ac11bcc45b20f943a4d145`,'.0','') as int64)
-    LEFT JOIN deal_field_option df9 
-      ON df9.key = 'b41b9f0d98fa55c63dd60005f8b184b104afb46c' AND df9.id = safe_cast(replace(`b41b9f0d98fa55c63dd60005f8b184b104afb46c`,'.0','') as int64)
+        ON df8.key = '0c0314d53d63dbd7f1ac11bcc45b20f943a4d145' AND df8.id = cast(JSON_EXTRACT_SCALAR(data, '$.0c0314d53d63dbd7f1ac11bcc45b20f943a4d145') as int64)
     LEFT JOIN deal_field_option df11 
-      ON df11.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df11.id = safe_cast(replace(`56afadfee2e44cf5c478d3fc439c42e4940d7705`,'.0','') as int64)
-  ),
+        ON df11.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df11.id = cast(JSON_EXTRACT_SCALAR(data, '$.56afadfee2e44cf5c478d3fc439c42e4940d7705') as int64)
+    LEFT JOIN deal_field_option df12
+        ON df12.key = '47ef271bef0e14a61274edbe0521a50064e77b2f' AND df12.id = cast(JSON_EXTRACT_SCALAR(data, '$.47ef271bef0e14a61274edbe0521a50064e77b2f') as int64)
+    LEFT JOIN deal_field_option df13
+        ON df13.key = '84b9275df8967f3f77339a1394598c449573bf32' AND df13.id = cast(JSON_EXTRACT_SCALAR(data, '$.84b9275df8967f3f77339a1394598c449573bf32') as int64)
+    LEFT JOIN deal_field_option df14
+        ON df14.key = 'fbc0629b1cefb76b65c4cdb27aaba08a7d223142' AND df14.id = cast(JSON_EXTRACT_SCALAR(data, '$.fbc0629b1cefb76b65c4cdb27aaba08a7d223142') as int64)
+    -- LEFT JOIN deal_field_option df11 
+    --   ON df11.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df11.id = cast(JSON_EXTRACT_SCALAR(data, '$.56afadfee2e44cf5c478d3fc439c42e4940d7705') as int64)
 
-  old_deal_raw as (
-    SELECT DISTINCT
-      cast(id as int64) deal_id
-      ,cast(creator_user_id as int64)creator_user_id
-      ,cast(org_id as int64)org_id
-      ,title
-      ,cast(person_id as int64)person_id
-      ,DATETIME_ADD(safe_cast(update_time as DATETIME), INTERVAL 7 HOUR) update_time
+    WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())  
+    ),
 
-      ,cast(user_id as int64)user_id
-      ,cast(pipeline_id as int64)pipeline_id
-      ,cast(stage_id as int64)stage_id
-      ,DATETIME_ADD(safe_cast(add_time as DATETIME), INTERVAL 7 HOUR) add_time
-      ,DATETIME_ADD(safe_cast(stage_change_time as DATETIME), INTERVAL 7 HOUR) stage_change_time
-      ,DATETIME_ADD(safe_cast(close_time as DATETIME), INTERVAL 7 HOUR) close_time
-      ,DATETIME_ADD(safe_cast(won_time as DATETIME), INTERVAL 7 HOUR) won_time
-      ,DATETIME_ADD(safe_cast(first_won_time as DATETIME), INTERVAL 7 HOUR) first_won_time
-      ,DATETIME_ADD(safe_cast(lost_time as DATETIME), INTERVAL 7 HOUR) lost_time
-      ,lost_reason
-      ,status
-      ,safe_cast(expected_close_date as DATE) expected_close_date
-      ,safe_cast(value as FLOAT64) value
-      ,probability
-    FROM `base-datateam.airbyte_pipedrive.old_deals`
-  )
+    old_deal_field_raw AS (
+        SELECT deal_id,field_key,value FROM `base-datateam.airbyte_pipedrive.old_dealFields_value`
+    ),
+
+    old_deal_field_pivot AS (
+        select
+            deal_id
+            ,`01ba13f47bddc6f6edf7fcb26af2a02b8621357e` tracking_campaign_name
+            ,`0cba272b8feb43724fcc8d64c2fee8790d711277` tracking_appendix
+            ,`1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6` tracking_referral
+            ,`6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6` tracking_content
+            ,`884fee7fac0121b07b113c49eec9feecb9f1dcbc` tracking_source
+            ,`9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e` tracking_medium
+            ,`da767c03989c02f5088529c717dee6cb5da9b767` tracking_content_link
+            ,`fbfadd21eb74d60f934ef0247d9ebe844ec66772` tracking_term
+            ,df1.label source_group
+            ,`648ba676ed29bd49a766d5099cff5aa2f3b1a8ce` challenge
+            ,`7cf4977ae439c865977354da511ae51a56310805` goal
+            ,`b9389221ce01ecb6c9a2c014c0cd134b13ddb32c` competitor
+            ,`711c8dece81a19f94ab0733db2ebf200afc01fc3` note_from_marketing
+            ,`8966dcdf3070bc7d45c52ee5800dca0a9efd91b4` budget
+            ,df2.label lead_score
+            ,df3.label priority_score
+            ,case when `56b0cc5defaf568b6990b68341074fedc58693eb` is not null THEN df4.label ELSE df11.label end customer_need
+            ,case when `36ada051863b3001106248b85a2a050caed5ba73` is not null THEN `36ada051863b3001106248b85a2a050caed5ba73` ELSE `32df8feaa3cf81248288f4c18b562b52318aa71d` END customer_problem
+            ,df5.label stakeholder_engagement
+            ,df6.label brand_awareness
+            ,df7.label price_sensitive
+            ,df8.label gtm_type
+            -- ,df9.label customer_request
+            ,SAFE_CAST(replace(`b7c205797fc745d3b7619146603d27568b5055ac`,'.0','') AS INT64) partner_owner
+            ,SAFE_CAST(replace(`09fae946b918159745b5ad3a3ee7b079afe8f143`,'.0','') AS INT64) partner_id
+            ,df12.label way_of_cooperation
+            ,df13.label partner_type
+            ,df14.label partner_expertise
+            ,SAFE_CAST(replace(`86ea3cdeeb36be6bdeffe3f9374a0d6c060dfcb6`,'.0','') AS INT64) bdr_owner
+
+            ,`ba7758126eaf7a1c291050d38314f3ef6caac23a` category
+            ,`03cb33c8f645c1cb6c4b5663060f5be62bd45b47` field
+            ,`433393a17d7d4d66fad7fea01c611906aa554327` industry
+            ,`4bc6995517793efb195df2de43629b79fa001818` segmentation
+            ,`803427a7bbfc4dc909c52469688b2a2a2d07a941` size
+            ,REPLACE(`b6959119fb956cf44fb680045abb3a66994cda25`,' ','') tax_code
+        from old_deal_field_raw
+        pivot(max(value) for field_key in ('01ba13f47bddc6f6edf7fcb26af2a02b8621357e'
+                                        ,'0cba272b8feb43724fcc8d64c2fee8790d711277'
+                                        ,'1b674964f5fbfe6123d56fd2fcf4c4adc2dd63f6'
+                                        ,'6f7bf3f0b72a9d9a8a17bd765cf529eea96750b6'
+                                        ,'884fee7fac0121b07b113c49eec9feecb9f1dcbc'
+                                        ,'9f9af7dd1aa753d22a0f68ab2bb87f393ac9c62e'
+                                        ,'da767c03989c02f5088529c717dee6cb5da9b767'
+                                        ,'fbfadd21eb74d60f934ef0247d9ebe844ec66772'
+                                        ,'41c48ba0a3590d935a2130d18a6d0846ebf58102'
+                                        ,'648ba676ed29bd49a766d5099cff5aa2f3b1a8ce'
+                                        ,'7cf4977ae439c865977354da511ae51a56310805'
+                                        ,'b9389221ce01ecb6c9a2c014c0cd134b13ddb32c'
+                                        ,'711c8dece81a19f94ab0733db2ebf200afc01fc3'
+                                        ,'8966dcdf3070bc7d45c52ee5800dca0a9efd91b4'
+                                        ,'3f0acf615fdd18626380a935dde6bc8b2c0c8916'
+                                        ,'4ef8ce2eeb78d393977a24d4db5b25ba60823df9'
+                                        ,'56b0cc5defaf568b6990b68341074fedc58693eb'
+                                        ,'56afadfee2e44cf5c478d3fc439c42e4940d7705'
+                                        ,'ad355ab57ff75dd561ccfbca41c9aba20468a133'
+                                        ,'0ff3d9479a456dc5fcde3fef42b2d4ef6082c912'
+                                        ,'e6db98a67854a49d9b14d56edc70c2330cf8bc99'
+                                        ,'0c0314d53d63dbd7f1ac11bcc45b20f943a4d145'
+                                        ,'b41b9f0d98fa55c63dd60005f8b184b104afb46c'
+                                        ,'09fae946b918159745b5ad3a3ee7b079afe8f143'
+                                        ,'b7c205797fc745d3b7619146603d27568b5055ac'
+                                        ,'32df8feaa3cf81248288f4c18b562b52318aa71d'
+                                        ,'36ada051863b3001106248b85a2a050caed5ba73'
+                                        ,'ba7758126eaf7a1c291050d38314f3ef6caac23a'
+                                        ,'03cb33c8f645c1cb6c4b5663060f5be62bd45b47'
+                                        ,'433393a17d7d4d66fad7fea01c611906aa554327'
+                                        ,'4bc6995517793efb195df2de43629b79fa001818'
+                                        ,'803427a7bbfc4dc909c52469688b2a2a2d07a941'
+                                        ,'b6959119fb956cf44fb680045abb3a66994cda25'
+                                        ,'47ef271bef0e14a61274edbe0521a50064e77b2f'
+                                        ,'84b9275df8967f3f77339a1394598c449573bf32'
+                                        ,'fbc0629b1cefb76b65c4cdb27aaba08a7d223142'
+                                        ,'86ea3cdeeb36be6bdeffe3f9374a0d6c060dfcb6'
+                                        ,'add_time'
+                                        ,'expected_close_date'
+                                        ,'status'
+                                        ,'stage_id'
+                                        ,'value'
+                                        ,'user_id'
+                                        ,'pipeline'
+                                        ,'won_time'
+                                        ,'stage_change_time'
+                                        ,'lost_time'
+                                        ,'lost_reason'
+                                        ,'label'
+                                        ,'probability'
+                                        ,'first_won_time'
+                                        ,'close_time')) 
+        LEFT JOIN deal_field_option df1 
+        ON df1.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND df1.id = safe_cast(replace(`41c48ba0a3590d935a2130d18a6d0846ebf58102`,'.0','') as int64)
+        LEFT JOIN deal_field_option df2 
+        ON df2.key = '3f0acf615fdd18626380a935dde6bc8b2c0c8916' AND df2.id = safe_cast(replace(`3f0acf615fdd18626380a935dde6bc8b2c0c8916`,'.0','') as int64)
+        LEFT JOIN deal_field_option df3 
+        ON df3.key = '4ef8ce2eeb78d393977a24d4db5b25ba60823df9' AND df3.id = safe_cast(replace(`4ef8ce2eeb78d393977a24d4db5b25ba60823df9`,'.0','') as int64)
+        LEFT JOIN deal_field_option df4 
+        ON df4.key = '56b0cc5defaf568b6990b68341074fedc58693eb' AND df4.id = safe_cast(replace(`56b0cc5defaf568b6990b68341074fedc58693eb`,'.0','') as int64)
+        LEFT JOIN deal_field_option df5 
+        ON df5.key = 'ad355ab57ff75dd561ccfbca41c9aba20468a133' AND df5.id = safe_cast(replace(`ad355ab57ff75dd561ccfbca41c9aba20468a133`,'.0','') as int64)
+        LEFT JOIN deal_field_option df6 
+        ON df6.key = '0ff3d9479a456dc5fcde3fef42b2d4ef6082c912' AND df6.id = safe_cast(replace(`0ff3d9479a456dc5fcde3fef42b2d4ef6082c912`,'.0','') as int64)
+        LEFT JOIN deal_field_option df7 
+        ON df7.key = 'e6db98a67854a49d9b14d56edc70c2330cf8bc99' AND df7.id = safe_cast(replace(`e6db98a67854a49d9b14d56edc70c2330cf8bc99`,'.0','') as int64)
+        LEFT JOIN deal_field_option df8 
+        ON df8.key = '0c0314d53d63dbd7f1ac11bcc45b20f943a4d145' AND df8.id = safe_cast(replace(`0c0314d53d63dbd7f1ac11bcc45b20f943a4d145`,'.0','') as int64)
+        LEFT JOIN deal_field_option df9 
+        ON df9.key = 'b41b9f0d98fa55c63dd60005f8b184b104afb46c' AND df9.id = safe_cast(replace(`b41b9f0d98fa55c63dd60005f8b184b104afb46c`,'.0','') as int64)
+        LEFT JOIN deal_field_option df11 
+        ON df11.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df11.id = safe_cast(replace(`56afadfee2e44cf5c478d3fc439c42e4940d7705`,'.0','') as int64)
+        LEFT JOIN deal_field_option df12
+        ON df12.key = '47ef271bef0e14a61274edbe0521a50064e77b2f' AND df12.id = safe_cast(replace(`47ef271bef0e14a61274edbe0521a50064e77b2f`,'.0','') as int64)
+        LEFT JOIN deal_field_option df13
+        ON df13.key = '84b9275df8967f3f77339a1394598c449573bf32' AND df13.id = safe_cast(replace(`84b9275df8967f3f77339a1394598c449573bf32`,'.0','') as int64)
+        LEFT JOIN deal_field_option df14
+        ON df14.key = 'fbc0629b1cefb76b65c4cdb27aaba08a7d223142' AND df14.id = safe_cast(replace(`fbc0629b1cefb76b65c4cdb27aaba08a7d223142`,'.0','') as int64)
+    ),
+
+    old_deal_raw as (
+        SELECT DISTINCT
+        cast(id as int64) deal_id
+        ,cast(creator_user_id as int64)creator_user_id
+        ,cast(org_id as int64)org_id
+        ,title
+        ,cast(person_id as int64)person_id
+        ,DATETIME_ADD(safe_cast(update_time as DATETIME), INTERVAL 7 HOUR) update_time
+
+        ,cast(user_id as int64)user_id
+        ,cast(pipeline_id as int64)pipeline_id
+        ,cast(stage_id as int64)stage_id
+        ,DATETIME_ADD(safe_cast(add_time as DATETIME), INTERVAL 7 HOUR) add_time
+        ,DATETIME_ADD(safe_cast(stage_change_time as DATETIME), INTERVAL 7 HOUR) stage_change_time
+        ,DATETIME_ADD(safe_cast(close_time as DATETIME), INTERVAL 7 HOUR) close_time
+        ,DATETIME_ADD(safe_cast(won_time as DATETIME), INTERVAL 7 HOUR) won_time
+        ,DATETIME_ADD(safe_cast(first_won_time as DATETIME), INTERVAL 7 HOUR) first_won_time
+        ,DATETIME_ADD(safe_cast(lost_time as DATETIME), INTERVAL 7 HOUR) lost_time
+        ,lost_reason
+        ,status
+        ,safe_cast(expected_close_date as DATE) expected_close_date
+        ,safe_cast(value as FLOAT64) value
+        ,probability
+        FROM `base-datateam.airbyte_pipedrive.old_deals`
+    )
 
 SELECT distinct * FROM deal
 -- UNION ALL
 -- SELECT DISTINCT old_deal_raw.*, old_deal_field_pivot.* EXCEPT(deal_id) FROM old_deal_raw
 -- INNER JOIN old_deal_field_pivot ON old_deal_field_pivot.deal_id = old_deal_raw.deal_id
 -- WHERE old_deal_raw.deal_id not in (select distinct deal_id from deal)
+
+
+
+
 
 
 
