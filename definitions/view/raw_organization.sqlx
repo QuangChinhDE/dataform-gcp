@@ -21,7 +21,7 @@ WITH
             DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.add_time') as DATETIME), INTERVAL 7 HOUR) add_time,
             MAX(DATETIME_ADD(cast(JSON_EXTRACT_SCALAR(data, '$.update_time') as DATETIME), INTERVAL 7 HOUR)) update_time
         FROM `base-datateam.airbyte_pipedrive.organization` org
-        LEFT JOIN organization_field_option of1 ON of1.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND of1.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.41c48ba0a3590d935a2130d18a6d0846ebf58102') as int64)
+        LEFT JOIN organization_field_option of1 ON of1.key = '7658cd3ed5703f76437ae03a903b0192b4a115bb' AND of1.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.7658cd3ed5703f76437ae03a903b0192b4a115bb') as int64)
         LEFT JOIN organization_field_option of2 ON of2.key = '02c2235f2970ec1b3537676cd4dfdcead536d375' AND of2.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.02c2235f2970ec1b3537676cd4dfdcead536d375') as int64)
         LEFT JOIN organization_field_option of3 ON of3.key = '302d3174f5d276253bc757eabe1a03d2b588471d' AND of3.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.302d3174f5d276253bc757eabe1a03d2b588471d') as int64)
         LEFT JOIN organization_field_option of4 ON of4.key = '889f949126fc899b7c2a6b197eb44af57cc1bc96' AND of4.id = safe_cast(JSON_EXTRACT_SCALAR(data, '$.889f949126fc899b7c2a6b197eb44af57cc1bc96') as int64)
@@ -61,8 +61,8 @@ WITH
                 ,new_value
                 ,log_time
             from `base-datateam.airbyte_pipedrive.old_organizationChanges`) org_change
-        pivot (max(new_value) for field_key in ('41c48ba0a3590d935a2130d18a6d0846ebf58102','02c2235f2970ec1b3537676cd4dfdcead536d375','302d3174f5d276253bc757eabe1a03d2b588471d','889f949126fc899b7c2a6b197eb44af57cc1bc96','e3d331500177698d4931689b866c08c234d39aac','eafff329b5a3a4dec079ed3ef70c2b540219221a','cd38b6a4591ac1d1f99ba791d5972b45d0a98faf','86aee7c697aaf161d55cdf1b390f3059da1a375d'))
-        LEFT JOIN organization_field_option of1 ON of1.key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' AND of1.id = safe_cast(replace(`41c48ba0a3590d935a2130d18a6d0846ebf58102`,'.0','') as int64)
+        pivot (max(new_value) for field_key in ('7658cd3ed5703f76437ae03a903b0192b4a115bb','02c2235f2970ec1b3537676cd4dfdcead536d375','302d3174f5d276253bc757eabe1a03d2b588471d','889f949126fc899b7c2a6b197eb44af57cc1bc96','e3d331500177698d4931689b866c08c234d39aac','eafff329b5a3a4dec079ed3ef70c2b540219221a','cd38b6a4591ac1d1f99ba791d5972b45d0a98faf','86aee7c697aaf161d55cdf1b390f3059da1a375d'))
+        LEFT JOIN organization_field_option of1 ON of1.key = '7658cd3ed5703f76437ae03a903b0192b4a115bb' AND of1.id = safe_cast(replace(`7658cd3ed5703f76437ae03a903b0192b4a115bb`,'.0','') as int64)
         LEFT JOIN organization_field_option of2 ON of2.key = '02c2235f2970ec1b3537676cd4dfdcead536d375' AND of2.id = safe_cast(replace(`02c2235f2970ec1b3537676cd4dfdcead536d375`,'.0','') as int64)
         LEFT JOIN organization_field_option of3 ON of3.key = '302d3174f5d276253bc757eabe1a03d2b588471d' AND of3.id = safe_cast(replace(`302d3174f5d276253bc757eabe1a03d2b588471d`,'.0','') as int64)
         LEFT JOIN organization_field_option of4 ON of4.key = '889f949126fc899b7c2a6b197eb44af57cc1bc96' AND of4.id = safe_cast(replace(`889f949126fc899b7c2a6b197eb44af57cc1bc96`,'.0','') as int64)
@@ -125,5 +125,5 @@ WITH
     )
 
 SELECT * FROM org
--- UNION ALL
--- SELECT * FROM old_org
+UNION ALL
+SELECT * FROM old_org

@@ -31,20 +31,33 @@ WITH
         LEFT JOIN ${ref('raw_deal_field')} df1 ON df1.key = '433393a17d7d4d66fad7fea01c611906aa554327' AND safe_cast(df1.id as int64) = safe_cast(industry as int64)
     ),
 
-    org_info AS (
-        SELECT
+    org AS (
+        SELECT DISTINCT
             org_id, 
             location,
             size,
-            of1.label category,
+            category,
             partnership_category,
             type,
             partnership_type,
             field,
             industry,
             update_time        
-        FROM ${ref('raw_organization')}, UNNEST(SPLIT(category, ',')) AS category
-        LEFT JOIN ${ref('raw_organization_field')} of1 ON of1.key = '86aee7c697aaf161d55cdf1b390f3059da1a375d' AND safe_cast(of1.id as int64) = safe_cast(replace(category, ' ','') as int64)
+        FROM ${ref('raw_organization')}
+    ),
+
+    category AS (
+        SELECT
+            org_id, 
+            of1.label category,
+            update_time        
+        FROM org , UNNEST(SPLIT(category, ',')) AS category
+        LEFT JOIN `base-data-analyst.query.raw_organization_field` of1 ON of1.key = '86aee7c697aaf161d55cdf1b390f3059da1a375d' AND safe_cast(of1.id as int64) = safe_cast(replace(category, ' ','') as int64)
+    ),
+
+    org_info AS (
+        SELECT org.* EXCEPT(category), category.category FROM org 
+        LEFT JOIN category ON category.org_id = org.org_id and category.update_time = org.update_time
     ),
 
     done AS (
@@ -77,16 +90,16 @@ WITH
     )
 
 SELECT * FROM done
-WHERE location is not null
-    or size is not null
-    or field is not null
-    or industry is not null
-    or category is not null
-    or partnership_category is not null
-    or type is not null
-    or partnership_type is not null
-    or segmentation is not null
-    or tax_code is not null
+-- WHERE location is not null
+--     or size is not null
+--     or field is not null
+--     or industry is not null
+--     or category is not null
+--     or partnership_category is not null
+--     or type is not null
+--     or partnership_type is not null
+--     or segmentation is not null
+--     or tax_code is not null
 
 
 
