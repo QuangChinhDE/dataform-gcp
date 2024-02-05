@@ -18,12 +18,21 @@ SELECT
     ,lead.SourceGroup source_group
     ,lead.CampaignMedium campaign_medium
     ,lead.CampaignName campaign_name
-    ,SAFE_CAST(ARRAY_REVERSE(SPLIT(lead.CampaignName, "_"))[OFFSET(0)] AS INT64) campaign_id
+    ,CASE
+      WHEN CAST(REGEXP_EXTRACT(lead.CampaignName, r'_(\d+)(?:_|$)') AS INT64) < 1500000 THEN NULL
+      ELSE REGEXP_EXTRACT(lead.CampaignName, r'_(\d+)(?:_|$)')
+    END AS campaign_id
     ,ce.CampaignID campaign_id_old
     ,lead.CampaignTerm campaign_term
-    ,SAFE_CAST(ARRAY_REVERSE(SPLIT(lead.CampaignTerm, "_"))[OFFSET(0)] AS INT64) adset_id
+    ,CASE
+      WHEN CAST(REGEXP_EXTRACT(lead.CampaignTerm, r'_(\d+)(?:_|$)') AS INT64) < 45000000000 THEN NULL
+      ELSE REGEXP_EXTRACT(lead.CampaignTerm, r'_(\d+)(?:_|$)')
+    END AS adset_id
     ,lead.CampaignContent campaign_content
-    ,SAFE_CAST(ARRAY_REVERSE(SPLIT(lead.CampaignContent, "_"))[OFFSET(0)] AS INT64) ad_id
+    ,CASE
+      WHEN CAST(REGEXP_EXTRACT(lead.CampaignContent, r'_(\d+)(?:_|$)') AS INT64) < 16000000 THEN NULL
+      ELSE REGEXP_EXTRACT(lead.CampaignContent, r'_(\d+)(?:_|$)')
+    END AS ad_id
     ,DATE_ADD(DATETIME(lead.CreatedDate), INTERVAL 7 HOUR) create_date 
     ,lead.Note note
     ,lead.Status status
