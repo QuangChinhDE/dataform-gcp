@@ -20,18 +20,18 @@ SELECT
     ,lead.CampaignName campaign_name
     ,CASE
       WHEN CAST(REGEXP_EXTRACT(lead.CampaignName, r'_(\d+)(?:_|$)') AS INT64) < 1500000 THEN NULL
-      ELSE REGEXP_EXTRACT(lead.CampaignName, r'_(\d+)(?:_|$)')
+      ELSE CAST(REGEXP_EXTRACT(lead.CampaignName, r'_(\d+)(?:_|$)') AS INT64)
     END AS campaign_id
     ,ce.CampaignID campaign_id_old
     ,lead.CampaignTerm campaign_term
     ,CASE
       WHEN CAST(REGEXP_EXTRACT(lead.CampaignTerm, r'_(\d+)(?:_|$)') AS INT64) < 45000000000 THEN NULL
-      ELSE REGEXP_EXTRACT(lead.CampaignTerm, r'_(\d+)(?:_|$)')
+      ELSE CAST(REGEXP_EXTRACT(lead.CampaignTerm, r'_(\d+)(?:_|$)') AS INT64)
     END AS adset_id
     ,lead.CampaignContent campaign_content
     ,CASE
       WHEN CAST(REGEXP_EXTRACT(lead.CampaignContent, r'_(\d+)(?:_|$)') AS INT64) < 16000000 THEN NULL
-      ELSE REGEXP_EXTRACT(lead.CampaignContent, r'_(\d+)(?:_|$)')
+      ELSE CAST(REGEXP_EXTRACT(lead.CampaignContent, r'_(\d+)(?:_|$)') AS INT64)
     END AS ad_id
     ,DATE_ADD(DATETIME(lead.CreatedDate), INTERVAL 7 HOUR) create_date 
     ,lead.Note note
