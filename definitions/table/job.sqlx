@@ -102,13 +102,13 @@ WITH
       ,safe_cast(request_id as int64) request_id
       ,job.stage_id
       ,case 
-        when safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64) is null then job.from_id
-        else safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64)
+        when job.from_id is null then safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64)
+        else job.from_id
       end from_id
       ,case
+        when job.from_type is not null then job.from_type
         when job.from_type is null and safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64) is not null then 'workflowjobs'
-        when job.from_type is null and safe_cast(replace(pivot_.link_job, 'https://workflow.base.vn/job/', '') as int64) is null then null
-        else job.from_type
+        else null
       end from_app
       ,safe_cast(replace(pivot_.link_income, 'https://income.base.vn/incomes?show=income&id=', '') as int64) income_id
       ,case 
