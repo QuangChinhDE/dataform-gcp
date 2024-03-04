@@ -37,7 +37,7 @@ WITH
                     ,MAX(ad._airbyte_extracted_at) _airbyte_extracted_at
                 -- FROM `base-datateam.airbyte_ads.google_ad_group_ads` ad
                 FROM `base-datateam.airbyte_google.ads_ad_group_ad` ad
-                LEFT JOIN (SELECT * FROM ${ref('raw_adset')} WHERE source_id = MD5('google')) adset ON adset.adset_id = SAFE_CAST(SPLIT(ad_group_ad_ad_group, 'adGroups/')[OFFSET(1)] AS INT64)
+                LEFT JOIN (SELECT adset_id, campaign_id FROM `base-data-analyst.marketing.adset` WHERE source_id = MD5('google')) adset ON adset.adset_id = SAFE_CAST(SPLIT(ad_group_ad_ad_group, 'adGroups/')[OFFSET(1)] AS INT64)
                 WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
                 GROUP BY
                     campaign_id
