@@ -3,6 +3,32 @@ config {
   schema: "query"
 }
 
+WITH tb as (
+  SELECT
+    json_array,
+    job_id,
+    keys
+  FROM (
+    SELECT 
+      keys, 
+      job_id, 
+      SAFE_CAST(FROM_BASE64(CAST(value AS STRING)) AS STRING) AS value,
+      -- Chuyển đổi value thành json_array ngay tại đây để kiểm tra độ dài sau
+      JSON_EXTRACT_ARRAY(SAFE_CAST(FROM_BASE64(CAST(value AS STRING)) AS STRING)) AS json_array
+    FROM 
+      ${ref('raw_job_form')} job_form
+    WHERE 
+      type = 'input-table' 
+      AND NOT REGEXP_CONTAINS(CAST(value AS STRING), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
+      AND CAST(value AS STRING) NOT LIKE '%{}%'
+      AND value NOT LIKE '%{}%'
+      AND value NOT LIKE '% %'
+      AND value NOT LIKE '%1.%'
+  )
+  -- Thêm điều kiện này để kiểm tra và loại bỏ các hàng với json_array rỗng
+  WHERE ARRAY_LENGTH(json_array) > 0
+)
+
 SELECT
   job_id
   ,case
@@ -45,17 +71,7 @@ SELECT
   end expense
   ,'thong_tin_subscription' type
 FROM (
-  SELECT
-    (json_extract_array(value)) AS json_array
-    ,job_id
-  FROM (SELECT job_id, CAST(FROM_BASE64(value) AS STRING) value FROM ${ref('raw_job_form')} job_form 
-      WHERE keys = 'thong_tin_subscription' 
-        and type = 'input-table' 
-        AND NOT REGEXP_CONTAINS(cast(value as string), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
-        AND cast(value as string) not like '%{}%'
-        AND (value not like '%{}%') 
-        AND (value not like '% %') 
-        AND (value not like '%1.%'))
+  SELECT * FROM tb WHERE keys = 'thong_tin_subscription'
 ), UNNEST(json_array) AS json
 
 UNION ALL
@@ -108,17 +124,7 @@ SELECT
   end expense
   ,'thong_tin_package' type
 FROM (
-  SELECT
-    (json_extract_array(value)) AS json_array
-    ,job_id
-  FROM (SELECT job_id, CAST(FROM_BASE64(value) AS STRING) value FROM ${ref('raw_job_form')} job_form
-      WHERE keys = 'thong_tin_package' 
-            and type = 'input-table' 
-            AND NOT REGEXP_CONTAINS(cast(value as string), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
-            AND cast(value as string) not like '%{}%'
-            AND (value not like '%{}%') 
-            AND (value not like '% %') 
-            AND (value not like '%1.%'))
+  SELECT * FROM tb WHERE keys = 'thong_tin_package'
 ), UNNEST(json_array) AS json
 
 UNION ALL
@@ -156,17 +162,6 @@ SELECT
   end expense
   ,'fpt_product' type
 FROM (
-  SELECT
-    (json_extract_array(value)) AS json_array
-    ,job_id
-  FROM (SELECT job_id, CAST(FROM_BASE64(value) AS STRING) value FROM ${ref('raw_job_form')} job_form 
-      WHERE keys = 'fpt_product' 
-            and type = 'input-table' 
-            AND NOT REGEXP_CONTAINS(cast(value as string), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
-            AND cast(value as string) not like '%{}%'
-            AND (value not like '%{}%') 
-            AND (value not like '% %') 
-            AND (value not like '%1.%'))
+  SELECT * FROM tb WHERE keys = 'fpt_product'
 ), UNNEST(json_array) AS json
-
 
