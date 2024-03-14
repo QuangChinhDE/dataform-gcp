@@ -24,6 +24,7 @@ FROM (
           ,user_base.email
           ,user_base.status
           ,update_time
+          ,name
         FROM user_base 
         LEFT JOIN user ON user_base.email = user.email) a
   ) t
