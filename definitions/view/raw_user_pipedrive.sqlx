@@ -6,4 +6,5 @@ config {
 SELECT
   cast(id as int64) user_pipedrive_id
   ,email
+  ,name
 FROM `base-datateam.airbyte_pipedrive.user` user
