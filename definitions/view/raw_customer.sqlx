@@ -29,44 +29,83 @@ WITH
     WHERE t.row_number = 1
   )
 
+-- SELECT
+--     customer_in_pipedrive_raw.customer_id
+--     ,customer_in_pipedrive_raw.name
+--     ,customer_in_pipedrive_raw.email email
+--     ,customer_in_pipedrive_raw.phone phone
+--     ,customer_in_pipedrive_raw.birthday
+--     ,customer_in_pipedrive_raw.title
+--     ,customer_in_pipedrive_raw.position
+--     ,customer_in_pipedrive_raw.last_update
+--     ,customer_in_pipedrive_raw.create_date
+--     ,customer_in_pipedrive_raw.last_activity_date
+--     ,customer_in_pipedrive_raw.person_id
+--     ,customer_in_pipedrive_raw.org_id
+--     ,1 status
+-- FROM customer_in_pipedrive_raw
+-- -- LEFT JOIN customer_in_lead_raw ON customer_in_lead_raw.customer_id = customer_in_lead_raw.customer_id
+-- UNION ALL
+-- SELECT 
+--     customer_in_lead_raw.customer_id
+--     ,customer_in_lead_raw.name
+--     ,customer_in_lead_raw.email
+--     ,customer_in_lead_raw.phone phone
+--     ,customer_in_pipedrive_raw.birthday
+--     ,customer_in_lead_raw.title title
+--     ,customer_in_pipedrive_raw.position
+--     ,customer_in_pipedrive_raw.last_update
+--     ,customer_in_lead_raw.create_date
+--     ,customer_in_pipedrive_raw.last_activity_date
+--     ,customer_in_pipedrive_raw.person_id
+--     ,customer_in_pipedrive_raw.org_id
+--     ,CASE WHEN customer_in_pipedrive_raw.org_id IS NULL THEN 0 ELSE 1 END status
+-- FROM customer_in_lead_raw
+-- LEFT JOIN customer_in_pipedrive_raw ON customer_in_pipedrive_raw.customer_id = customer_in_lead_raw.customer_id
+-- -- WHERE customer_in_lead_raw.customer_id NOT IN (SELECT DISTINCT customer_id FROM customer_in_pipedrive_raw)
 
 
+-- Bước 1: Lấy tất cả dữ liệu từ customer_in_pipedrive_raw mà không có trong customer_in_lead_raw
 SELECT
-    customer_in_pipedrive_raw.customer_id
-    ,customer_in_pipedrive_raw.name
-    ,customer_in_pipedrive_raw.email email
-    ,customer_in_pipedrive_raw.phone phone
-    ,customer_in_pipedrive_raw.birthday
-    ,customer_in_pipedrive_raw.title
-    ,customer_in_pipedrive_raw.position
-    ,customer_in_pipedrive_raw.last_update
-    ,customer_in_pipedrive_raw.create_date
-    ,customer_in_pipedrive_raw.last_activity_date
-    ,customer_in_pipedrive_raw.person_id
-    ,customer_in_pipedrive_raw.org_id
-    ,1 status
-FROM customer_in_pipedrive_raw
--- LEFT JOIN customer_in_lead_raw ON customer_in_lead_raw.customer_id = customer_in_lead_raw.customer_id
+    p.customer_id,
+    p.name,
+    p.email,
+    p.phone,
+    p.birthday,
+    p.title,
+    p.position,
+    p.last_update,
+    p.create_date,
+    p.last_activity_date,
+    p.person_id,
+    p.org_id,
+    1 AS status -- Đã có trong customer_in_pipedrive_raw nên status = 1
+FROM customer_in_pipedrive_raw p
+LEFT JOIN customer_in_lead_raw l ON p.customer_id = l.customer_id
+WHERE l.customer_id IS NULL
+
 UNION ALL
-SELECT 
-    customer_in_lead_raw.customer_id
-    ,customer_in_lead_raw.name
-    ,customer_in_lead_raw.email
-    ,customer_in_lead_raw.phone phone
-    ,customer_in_pipedrive_raw.birthday
-    ,customer_in_lead_raw.title title
-    ,customer_in_pipedrive_raw.position
-    ,customer_in_pipedrive_raw.last_update
-    ,customer_in_lead_raw.create_date
-    ,customer_in_pipedrive_raw.last_activity_date
-    ,customer_in_pipedrive_raw.person_id
-    ,customer_in_pipedrive_raw.org_id
-    ,CASE WHEN customer_in_pipedrive_raw.org_id IS NULL THEN 0 ELSE 1 END status
-FROM customer_in_lead_raw
-LEFT JOIN customer_in_pipedrive_raw ON customer_in_pipedrive_raw.customer_id = customer_in_lead_raw.customer_id
--- WHERE customer_in_lead_raw.customer_id NOT IN (SELECT DISTINCT customer_id FROM customer_in_pipedrive_raw)
 
-
+-- Bước 2: Lấy tất cả dữ liệu từ customer_in_lead_raw và dữ liệu tương ứng từ customer_in_pipedrive_raw
+SELECT
+    COALESCE(p.customer_id, l.customer_id) AS customer_id,
+    COALESCE(p.name, l.name) AS name,
+    COALESCE(p.email, l.email) AS email,
+    COALESCE(p.phone, l.phone) AS phone,
+    p.birthday,
+    COALESCE(p.title, l.title) AS title,
+    p.position,
+    p.last_update,
+    COALESCE(p.create_date, l.create_date) AS create_date,
+    p.last_activity_date,
+    p.person_id,
+    p.org_id,
+    CASE 
+        WHEN p.customer_id IS NOT NULL THEN 1
+        ELSE 0 
+    END AS status
+FROM customer_in_lead_raw l
+LEFT JOIN customer_in_pipedrive_raw p ON l.customer_id = p.customer_id
 
 
 
