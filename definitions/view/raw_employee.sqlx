@@ -3,46 +3,6 @@ config {
   schema: "query"
 }
 
-WITH employee_form AS (
-    SELECT DISTINCT
-        cast(id as int64) employee_id
-        ,cast(user_id as int64) user_id
-        ,cast(office_id as int64) office_id
-        ,cast(position_id as int64) position_id
-        ,cast(team_id as int64) team_id
-        ,code
-        ,name
-        ,CASE WHEN
-            email like '%@%' then LOWER(email)
-            ELSE NULL END email
-        ,CASE
-            WHEN REGEXP_CONTAINS(phone, r'^\+?[0-9-]+$') THEN phone
-            ELSE NULL END AS phone
-        ,SAFE.PARSE_DATE('%Y-%m-%d', CONCAT(dob_year, '-', dob_month, '-', dob_day)) AS date_of_birth
-        ,CASE
-            WHEN CAST(gender as int64) = 0 THEN 'male' 
-            WHEN CAST(gender as int64) = 1 THEN 'female'
-            ELSE 'other'
-        END gender
-        ,cast(salary as float64) salary
-        ,CASE
-            WHEN JSON_EXTRACT_SCALAR(profile, '$.address') != '' THEN JSON_EXTRACT_SCALAR(profile, '$.address')
-            ELSE NULL END AS address
-        ,CASE
-            WHEN JSON_EXTRACT_SCALAR(json_array_element, '$.value') != '' THEN CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(json_array_element, '$.value'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE)
-            ELSE CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(start_date, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE)
-        END onboard_date
-        ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
-    FROM `base-datateam.airbyte_base_hrm.employee`,
-    UNNEST(JSON_EXTRACT_ARRAY(form)) AS json_array_element
-    WHERE JSON_EXTRACT_SCALAR(json_array_element, '$.id') = 'custom_ngay_onboard_thuc_te'
-        AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
-)
-
-SELECT * FROM employee_form
-
-UNION ALL
-
 SELECT DISTINCT
     cast(id as int64) employee_id
     ,cast(user_id as int64) user_id
@@ -68,7 +28,9 @@ SELECT DISTINCT
         WHEN JSON_EXTRACT_SCALAR(profile, '$.address') != '' THEN JSON_EXTRACT_SCALAR(profile, '$.address')
         ELSE NULL END AS address
     ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(start_date, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE) onboard_date
+    ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(terminated_date, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE) offboard_date
+    ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(official_start_date, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE) official_date
+    ,case when is_terminated = "0" THEN "active" else "deactive" end status
     ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
 FROM `base-datateam.airbyte_base_hrm.employee`
-WHERE cast(id as int64) NOT IN (SELECT distinct employee_id FROM employee_form)
-    AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
