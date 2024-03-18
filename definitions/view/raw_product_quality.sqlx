@@ -1,0 +1,8 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+
+SELECT DISTINCT * EXCEPT(_airbyte_extracted_at, _airbyte_meta, _airbyte_raw_id) 
+FROM `base-datateam.airbyte_google_sheet.co_product_quality`

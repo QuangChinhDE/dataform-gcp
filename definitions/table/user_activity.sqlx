@@ -7,10 +7,21 @@ config {
 WITH
     user_activity AS (
         SELECT * FROM ${ref('raw_user_activity')}
+    ),
+
+    product_quality AS (
+        SELECT * FROM ${ref('raw_product_quality')}
     )
 
 SELECT DISTINCT
-    *
-FROM user_activity
+    user_id
+    ,u.product
+    ,date
+    ,count_login
+    ,source
+    ,p.product_name
+    ,p.product_package
+FROM user_activity u
+LEFT JOIN product_quality p ON u.product = p.product
 WHERE (user_id is not null or count_login != 0) 
 and (date < "2000-01-01" or date < DATE(DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY)))
