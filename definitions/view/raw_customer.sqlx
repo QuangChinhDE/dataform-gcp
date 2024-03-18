@@ -5,31 +5,59 @@ config {
 
 WITH
   person_in_pipedrive_raw AS (
-    SELECT DISTINCT *
+    SELECT 
+      customer_id
+      ,email
+      ,LAST_VALUE(name IGNORE NULLS) OVER (PARTITION BY name ORDER BY last_update ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS name
+      ,LAST_VALUE(phone IGNORE NULLS) OVER (PARTITION BY phone ORDER BY last_update ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS phone
+      ,LAST_VALUE(person_id IGNORE NULLS) OVER (PARTITION BY person_id ORDER BY last_update ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS person_id
+      ,LAST_VALUE(org_id IGNORE NULLS) OVER (PARTITION BY org_id ORDER BY last_update ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS org_id
+      ,LAST_VALUE(birthday IGNORE NULLS) OVER (PARTITION BY birthday ORDER BY last_update ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS birthday
+      ,LAST_VALUE(create_date IGNORE NULLS) OVER (PARTITION BY create_date ORDER BY last_update ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS create_date
+      ,LAST_VALUE(last_activity_date IGNORE NULLS) OVER (PARTITION BY last_activity_date ORDER BY last_update ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS last_activity_date
+      ,LAST_VALUE(position IGNORE NULLS) OVER (PARTITION BY position ORDER BY last_update ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS position
+      ,LAST_VALUE(title IGNORE NULLS) OVER (PARTITION BY title ORDER BY last_update ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS title
+      ,ROW_NUMBER() OVER (PARTITION BY email ORDER BY last_update DESC) AS rn
+      ,last_update
     FROM ${ref('raw_customer_person')}
   ),
 
   customer_in_pipedrive_raw AS (
-    SELECT DISTINCT * EXCEPT(row_number)
-    FROM (
-      SELECT *,
-          ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY last_update DESC) AS row_number
-      FROM person_in_pipedrive_raw
-      ) t
-    WHERE t.row_number = 1
+    SELECT DISTINCT customer_id,name,email,phone,title,person_id,org_id,birthday,create_date,last_activity_date,position, max(last_update) last_update
+    FROM person_in_pipedrive_raw
+    WHERE rn = 1
+    GROUP BY customer_id,name,email,phone,title,person_id,org_id,birthday,create_date,last_activity_date,position
   ), 
 
   customer_in_lead_raw AS (
-    SELECT DISTINCT * EXCEPT(row_number)
-    FROM (
-      SELECT *,
-          ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY create_date,phone DESC) AS row_number
-      FROM (SELECT DISTINCT customer_id,name,email,phone,title,create_date FROM ${ref('raw_lead')})
-      ) t
-    WHERE t.row_number = 1
+    SELECT 
+      customer_id
+      ,email
+      ,LAST_VALUE(name IGNORE NULLS) OVER (PARTITION BY name ORDER BY create_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS name
+      ,LAST_VALUE(phone IGNORE NULLS) OVER (PARTITION BY phone ORDER BY create_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS phone
+      ,LAST_VALUE(title IGNORE NULLS) OVER (PARTITION BY title ORDER BY create_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS title
+      ,ROW_NUMBER() OVER (PARTITION BY email ORDER BY create_date DESC) AS rn
+      ,create_date
+    FROM ${ref('raw_lead')}
+  ),
+
+  customer_in_lead AS (
+    SELECT DISTINCT customer_id,name,email,phone,title, max(create_date) create_date
+    FROM customer_in_lead_raw
+    WHERE rn = 1
+    GROUP BY customer_id,name,email,phone,title
   )
 
--- Bước 1: Lấy tất cả dữ liệu từ customer_in_pipedrive_raw mà không có trong customer_in_lead_raw
+  --   SELECT DISTINCT * EXCEPT(row_number)
+  --   FROM (
+  --     SELECT *,
+  --         ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY create_date DESC) AS row_number
+  --     FROM (SELECT DISTINCT customer_id,name,email,phone,title,create_date FROM ${ref('raw_lead')})
+  --     ) t
+  --   WHERE t.row_number = 1
+  -- )
+
+-- Bước 1: Lấy tất cả dữ liệu từ customer_in_pipedrive_raw mà không có trong customer_in_lead
 SELECT
     p.customer_id,
     COALESCE(NULLIF(TRIM(p.name), ''), NULLIF(TRIM(l.name), '')) AS name,
@@ -45,12 +73,12 @@ SELECT
     p.org_id,
     1 AS status -- Đã có trong customer_in_pipedrive_raw nên status = 1
 FROM customer_in_pipedrive_raw p
-LEFT JOIN customer_in_lead_raw l ON p.customer_id = l.customer_id
+LEFT JOIN customer_in_lead l ON p.customer_id = l.customer_id
 WHERE l.customer_id IS NULL
 
 UNION ALL
 
--- Bước 2: Lấy tất cả dữ liệu từ customer_in_lead_raw và dữ liệu tương ứng từ customer_in_pipedrive_raw
+-- Bước 2: Lấy tất cả dữ liệu từ customer_in_lead và dữ liệu tương ứng từ customer_in_pipedrive_raw
 SELECT
     COALESCE(p.customer_id, l.customer_id) AS customer_id,
     COALESCE(NULLIF(TRIM(p.name), ''), NULLIF(TRIM(l.name), '')) AS name,
@@ -68,7 +96,7 @@ SELECT
         WHEN p.customer_id IS NOT NULL THEN 1
         ELSE 0 
     END AS status
-FROM customer_in_lead_raw l
+FROM customer_in_lead l
 LEFT JOIN customer_in_pipedrive_raw p ON l.customer_id = p.customer_id
 
 
