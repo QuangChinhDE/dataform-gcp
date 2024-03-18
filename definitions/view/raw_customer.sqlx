@@ -72,7 +72,7 @@ SELECT
     NULLIF(TRIM(p.email), '') AS email,
     NULLIF(TRIM(p.phone), '') AS phone,
     p.birthday AS birthday,
-    NULLIF(TRIM(p.title), '') AS title,
+    COALESCE(NULLIF(TRIM(p.title), ''), NULLIF(TRIM(l.title), '')) AS title,
     NULLIF(TRIM(p.position), '') AS position,
     p.last_update,
     p.create_date,
