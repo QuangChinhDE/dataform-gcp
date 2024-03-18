@@ -18,7 +18,7 @@ FROM (
             ,ly_do reason
             ,chi_tiet note
             ,CAST(DATE_ADD(safe_cast(ngay_tao as DATETIME), INTERVAL 7 HOUR) AS DATETIME) since
-          FROM `base-datateam.airbyte_google_sheet_request_co.raw` 
+          FROM `base-datateam.airbyte_google_sheet.cs_dung_trien_khai` 
         ) a
 ) t
 WHERE t.row_number = 1
