@@ -30,6 +30,8 @@ WITH
                   replace(address_data, '', null) address,
                   status,
                   metatype,
+                  role_id,
+                  role,
                   since,
                   last_update
               FROM user_raw) a
@@ -46,20 +48,22 @@ FROM (
   SELECT *,
       ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY last_update DESC) AS row_number
   FROM (SELECT
-          user_id,
-          user_pipedrive_id,
-          system_id, 
-          username, 
-          first_name,
-          last_name,
-          user_base.email,
-          phone,
-          birthday,
-          address,
-          status,
-          metatype,
-          since,
-          last_update
+            user_id,
+            user_pipedrive_id,
+            system_id, 
+            username, 
+            first_name,
+            last_name,
+            user_base.email,
+            phone,
+            birthday,
+            address,
+            status,
+            metatype,
+            role_id,
+            role,
+            since,
+            last_update
         FROM user_base
         LEFT JOIN user_pipedrive ON user_pipedrive.email = user_base.email) a
   ) t
