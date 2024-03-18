@@ -29,48 +29,12 @@ WITH
     WHERE t.row_number = 1
   )
 
--- SELECT
---     customer_in_pipedrive_raw.customer_id
---     ,customer_in_pipedrive_raw.name
---     ,customer_in_pipedrive_raw.email email
---     ,customer_in_pipedrive_raw.phone phone
---     ,customer_in_pipedrive_raw.birthday
---     ,customer_in_pipedrive_raw.title
---     ,customer_in_pipedrive_raw.position
---     ,customer_in_pipedrive_raw.last_update
---     ,customer_in_pipedrive_raw.create_date
---     ,customer_in_pipedrive_raw.last_activity_date
---     ,customer_in_pipedrive_raw.person_id
---     ,customer_in_pipedrive_raw.org_id
---     ,1 status
--- FROM customer_in_pipedrive_raw
--- -- LEFT JOIN customer_in_lead_raw ON customer_in_lead_raw.customer_id = customer_in_lead_raw.customer_id
--- UNION ALL
--- SELECT 
---     customer_in_lead_raw.customer_id
---     ,customer_in_lead_raw.name
---     ,customer_in_lead_raw.email
---     ,customer_in_lead_raw.phone phone
---     ,customer_in_pipedrive_raw.birthday
---     ,customer_in_lead_raw.title title
---     ,customer_in_pipedrive_raw.position
---     ,customer_in_pipedrive_raw.last_update
---     ,customer_in_lead_raw.create_date
---     ,customer_in_pipedrive_raw.last_activity_date
---     ,customer_in_pipedrive_raw.person_id
---     ,customer_in_pipedrive_raw.org_id
---     ,CASE WHEN customer_in_pipedrive_raw.org_id IS NULL THEN 0 ELSE 1 END status
--- FROM customer_in_lead_raw
--- LEFT JOIN customer_in_pipedrive_raw ON customer_in_pipedrive_raw.customer_id = customer_in_lead_raw.customer_id
--- -- WHERE customer_in_lead_raw.customer_id NOT IN (SELECT DISTINCT customer_id FROM customer_in_pipedrive_raw)
-
-
 -- Bước 1: Lấy tất cả dữ liệu từ customer_in_pipedrive_raw mà không có trong customer_in_lead_raw
 SELECT
     p.customer_id,
-    NULLIF(TRIM(p.name), '') AS name,
+    COALESCE(NULLIF(TRIM(p.name), ''), NULLIF(TRIM(l.name), '')) AS name,
     NULLIF(TRIM(p.email), '') AS email,
-    NULLIF(TRIM(p.phone), '') AS phone,
+    COALESCE(NULLIF(TRIM(l.phone), ''), NULLIF(TRIM(p.phone), '')) AS phone,
     p.birthday AS birthday,
     COALESCE(NULLIF(TRIM(p.title), ''), NULLIF(TRIM(l.title), '')) AS title,
     NULLIF(TRIM(p.position), '') AS position,
@@ -90,8 +54,8 @@ UNION ALL
 SELECT
     COALESCE(p.customer_id, l.customer_id) AS customer_id,
     COALESCE(NULLIF(TRIM(p.name), ''), NULLIF(TRIM(l.name), '')) AS name,
-    COALESCE(NULLIF(TRIM(p.email), ''), NULLIF(TRIM(l.email), '')) AS email,
-    COALESCE(NULLIF(TRIM(p.phone), ''), NULLIF(TRIM(l.phone), '')) AS phone,
+    NULLIF(TRIM(l.email), '') AS email,
+    COALESCE(NULLIF(TRIM(l.phone), ''), NULLIF(TRIM(p.phone), '')) AS phone,
     p.birthday AS birthday,
     COALESCE(NULLIF(TRIM(p.title), ''), NULLIF(TRIM(l.title), '')) AS title,
     NULLIF(TRIM(p.position), '') AS position,
