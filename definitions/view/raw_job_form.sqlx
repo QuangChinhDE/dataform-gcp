@@ -7,10 +7,10 @@ SELECT
   MD5(CONCAT(
         IFNULL(cast(job_id AS STRING), ''),
         IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.id') AS STRING), ''),
-        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.value') AS STRING), ''),
         IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.type') AS STRING), '')
     )) job_form_id
   ,job_id
+  ,last_update
   ,JSON_EXTRACT_SCALAR(json, '$.id')  keys
   ,JSON_EXTRACT_SCALAR(json, '$.value') value
   ,JSON_EXTRACT_SCALAR(json, '$.type') type

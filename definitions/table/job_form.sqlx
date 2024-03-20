@@ -4,4 +4,7 @@ config {
   schema: "customer_onboarding"
 }
 
-SELECT DISTINCT * FROM ${ref('raw_job_form')}
+SELECT
+  * EXCEPT(last_update)
+  ,MAX(last_update) OVER (PARTITION BY job_form_id) as last_update
+FROM ${ref('raw_job_form')}
