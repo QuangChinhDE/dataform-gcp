@@ -46,58 +46,86 @@ WITH
     FROM customer_in_lead_raw
     WHERE rn = 1
     GROUP BY customer_id,name,email,phone,title
+  ),
+
+  customer_raw AS (
+    -- Bước 1: Lấy tất cả dữ liệu từ customer_in_pipedrive_raw mà không có trong customer_in_lead
+    SELECT
+        p.customer_id,
+        COALESCE(NULLIF(TRIM(p.name), ''), NULLIF(TRIM(l.name), '')) AS name,
+        NULLIF(TRIM(p.email), '') AS email,
+        COALESCE(NULLIF(TRIM(l.phone), ''), NULLIF(TRIM(p.phone), '')) AS phone,
+        p.birthday AS birthday,
+        COALESCE(NULLIF(TRIM(p.title), ''), NULLIF(TRIM(l.title), '')) AS title,
+        NULLIF(TRIM(p.position), '') AS position,
+        p.last_update,
+        p.create_date,
+        p.last_activity_date,
+        p.person_id,
+        p.org_id,
+        1 AS status -- Đã có trong customer_in_pipedrive_raw nên status = 1
+    FROM customer_in_pipedrive_raw p
+    LEFT JOIN customer_in_lead l ON p.customer_id = l.customer_id
+    WHERE l.customer_id IS NULL
+
+    UNION ALL
+
+    -- Bước 2: Lấy tất cả dữ liệu từ customer_in_lead và dữ liệu tương ứng từ customer_in_pipedrive_raw
+    SELECT
+        COALESCE(p.customer_id, l.customer_id) AS customer_id,
+        COALESCE(NULLIF(TRIM(p.name), ''), NULLIF(TRIM(l.name), '')) AS name,
+        NULLIF(TRIM(l.email), '') AS email,
+        COALESCE(NULLIF(TRIM(l.phone), ''), NULLIF(TRIM(p.phone), '')) AS phone,
+        p.birthday AS birthday,
+        COALESCE(NULLIF(TRIM(p.title), ''), NULLIF(TRIM(l.title), '')) AS title,
+        NULLIF(TRIM(p.position), '') AS position,
+        p.last_update,
+        COALESCE(p.create_date, l.create_date) AS create_date,
+        p.last_activity_date,
+        p.person_id,
+        p.org_id,
+        CASE 
+            WHEN p.customer_id IS NOT NULL THEN 1
+            ELSE 0 
+        END AS status
+    FROM customer_in_lead l
+    LEFT JOIN customer_in_pipedrive_raw p ON l.customer_id = p.customer_id
+  ),
+
+  customer AS (
+    SELECT
+      customer_id
+      ,email
+      ,name
+      ,phone
+      ,person_id
+      ,org_id
+      ,birthday
+      ,create_date
+      ,last_activity_date
+      ,position
+      ,title
+      ,last_update
+    FROM `base-data-analyst.marketing.customer`
   )
 
-  --   SELECT DISTINCT * EXCEPT(row_number)
-  --   FROM (
-  --     SELECT *,
-  --         ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY create_date DESC) AS row_number
-  --     FROM (SELECT DISTINCT customer_id,name,email,phone,title,create_date FROM ${ref('raw_lead')})
-  --     ) t
-  --   WHERE t.row_number = 1
-  -- )
 
--- Bước 1: Lấy tất cả dữ liệu từ customer_in_pipedrive_raw mà không có trong customer_in_lead
 SELECT
-    p.customer_id,
-    COALESCE(NULLIF(TRIM(p.name), ''), NULLIF(TRIM(l.name), '')) AS name,
-    NULLIF(TRIM(p.email), '') AS email,
-    COALESCE(NULLIF(TRIM(l.phone), ''), NULLIF(TRIM(p.phone), '')) AS phone,
-    p.birthday AS birthday,
-    COALESCE(NULLIF(TRIM(p.title), ''), NULLIF(TRIM(l.title), '')) AS title,
-    NULLIF(TRIM(p.position), '') AS position,
-    p.last_update,
-    p.create_date,
-    p.last_activity_date,
-    p.person_id,
-    p.org_id,
-    1 AS status -- Đã có trong customer_in_pipedrive_raw nên status = 1
-FROM customer_in_pipedrive_raw p
-LEFT JOIN customer_in_lead l ON p.customer_id = l.customer_id
-WHERE l.customer_id IS NULL
-
-UNION ALL
-
--- Bước 2: Lấy tất cả dữ liệu từ customer_in_lead và dữ liệu tương ứng từ customer_in_pipedrive_raw
-SELECT
-    COALESCE(p.customer_id, l.customer_id) AS customer_id,
-    COALESCE(NULLIF(TRIM(p.name), ''), NULLIF(TRIM(l.name), '')) AS name,
-    NULLIF(TRIM(l.email), '') AS email,
-    COALESCE(NULLIF(TRIM(l.phone), ''), NULLIF(TRIM(p.phone), '')) AS phone,
-    p.birthday AS birthday,
-    COALESCE(NULLIF(TRIM(p.title), ''), NULLIF(TRIM(l.title), '')) AS title,
-    NULLIF(TRIM(p.position), '') AS position,
-    p.last_update,
-    COALESCE(p.create_date, l.create_date) AS create_date,
-    p.last_activity_date,
-    p.person_id,
-    p.org_id,
-    CASE 
-        WHEN p.customer_id IS NOT NULL THEN 1
-        ELSE 0 
-    END AS status
-FROM customer_in_lead l
-LEFT JOIN customer_in_pipedrive_raw p ON l.customer_id = p.customer_id
-
+  COALESCE(customer_raw.customer_id, customer.customer_id) as customer_id
+  ,COALESCE(customer_raw.email, customer.email) as email
+  ,COALESCE(customer_raw.name, customer.name) as name
+  ,COALESCE(customer_raw.phone, customer.phone) as phone
+  ,COALESCE(customer_raw.person_id, customer.person_id) as person_id
+  ,COALESCE(customer_raw.org_id, customer.org_id) as org_id
+  ,COALESCE(customer_raw.birthday, customer.birthday) as birthday
+  ,COALESCE(customer_raw.create_date, customer.create_date) as create_date
+  ,COALESCE(customer_raw.last_activity_date, customer.last_activity_date) as last_activity_date
+  ,COALESCE(customer_raw.position, customer.position) as position
+  ,COALESCE(customer_raw.title, customer.title) as title
+  ,COALESCE(customer_raw.last_update, customer.last_update) as last_update
+  ,customer_raw.status
+FROM customer_raw
+FULL OUTER JOIN
+  customer ON customer_raw.customer_id = customer.customer_id
 
 
