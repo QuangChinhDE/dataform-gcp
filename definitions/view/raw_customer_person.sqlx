@@ -100,6 +100,6 @@ WITH
   )
 
 
-SELECT * FROM old_person
-UNION ALL
+-- SELECT * FROM old_person
+-- UNION ALL
 SELECT * FROM person

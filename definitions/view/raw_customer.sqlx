@@ -72,7 +72,7 @@ WITH
 
     -- Bước 2: Lấy tất cả dữ liệu từ customer_in_lead và dữ liệu tương ứng từ customer_in_pipedrive_raw
     SELECT
-        COALESCE(p.customer_id, l.customer_id) AS customer_id,
+        l.customer_id AS customer_id,
         COALESCE(NULLIF(TRIM(p.name), ''), NULLIF(TRIM(l.name), '')) AS name,
         NULLIF(TRIM(l.email), '') AS email,
         COALESCE(NULLIF(TRIM(l.phone), ''), NULLIF(TRIM(p.phone), '')) AS phone,
@@ -106,26 +106,71 @@ WITH
       ,position
       ,title
       ,last_update
+      ,status
     FROM `base-data-analyst.marketing.customer`
   )
 
 
+-- SELECT
+--   COALESCE(customer_raw.customer_id, customer.customer_id) as customer_id
+--   ,COALESCE(customer_raw.email, customer.email) as email
+--   ,COALESCE(customer_raw.name, customer.name) as name
+--   ,COALESCE(customer_raw.phone, customer.phone) as phone
+--   ,COALESCE(customer_raw.person_id, customer.person_id) as person_id
+--   ,COALESCE(customer_raw.org_id, customer.org_id) as org_id
+--   ,COALESCE(customer_raw.birthday, customer.birthday) as birthday
+--   ,COALESCE(customer_raw.create_date, customer.create_date) as create_date
+--   ,COALESCE(customer_raw.last_activity_date, customer.last_activity_date) as last_activity_date
+--   ,COALESCE(customer_raw.position, customer.position) as position
+--   ,COALESCE(customer_raw.title, customer.title) as title
+--   ,COALESCE(customer_raw.last_update, customer.last_update) as last_update
+--   ,customer_raw.status
+-- FROM customer_raw
+-- FULL OUTER JOIN
+--   customer ON customer_raw.customer_id = customer.customer_id
+
 SELECT
-  COALESCE(customer_raw.customer_id, customer.customer_id) as customer_id
-  ,COALESCE(customer_raw.email, customer.email) as email
-  ,COALESCE(customer_raw.name, customer.name) as name
-  ,COALESCE(customer_raw.phone, customer.phone) as phone
-  ,COALESCE(customer_raw.person_id, customer.person_id) as person_id
-  ,COALESCE(customer_raw.org_id, customer.org_id) as org_id
-  ,COALESCE(customer_raw.birthday, customer.birthday) as birthday
-  ,COALESCE(customer_raw.create_date, customer.create_date) as create_date
-  ,COALESCE(customer_raw.last_activity_date, customer.last_activity_date) as last_activity_date
-  ,COALESCE(customer_raw.position, customer.position) as position
-  ,COALESCE(customer_raw.title, customer.title) as title
-  ,COALESCE(customer_raw.last_update, customer.last_update) as last_update
-  ,customer_raw.status
-FROM customer_raw
-FULL OUTER JOIN
-  customer ON customer_raw.customer_id = customer.customer_id
+    c.customer_id,
+    COALESCE(NULLIF(TRIM(c.name), ''), NULLIF(TRIM(cr.name), '')) AS name,
+    NULLIF(TRIM(c.email), '') AS email,
+    COALESCE(NULLIF(TRIM(cr.phone), ''), NULLIF(TRIM(c.phone), '')) AS phone,
+    c.birthday AS birthday,
+    COALESCE(NULLIF(TRIM(c.title), ''), NULLIF(TRIM(cr.title), '')) AS title,
+    NULLIF(TRIM(c.position), '') AS position,
+    c.last_update,
+    c.create_date,
+    c.last_activity_date,
+    c.person_id,
+    c.org_id,
+    case when c.status = 0 and cr.status = 1 then 1 else 0 end AS status
+FROM customer c
+LEFT JOIN customer_raw cr ON c.customer_id = cr.customer_id
+WHERE cr.customer_id IS NULL
+
+UNION ALL
+
+SELECT
+    cr.customer_id AS customer_id,
+    COALESCE(NULLIF(TRIM(c.name), ''), NULLIF(TRIM(cr.name), '')) AS name,
+    NULLIF(TRIM(cr.email), '') AS email,
+    COALESCE(NULLIF(TRIM(cr.phone), ''), NULLIF(TRIM(c.phone), '')) AS phone,
+    c.birthday AS birthday,
+    COALESCE(NULLIF(TRIM(c.title), ''), NULLIF(TRIM(cr.title), '')) AS title,
+    NULLIF(TRIM(c.position), '') AS position,
+    c.last_update,
+    COALESCE(c.create_date, cr.create_date) AS create_date,
+    c.last_activity_date,
+    c.person_id,
+    c.org_id,
+    case when c.status = 0 and cr.status = 1 then 1 else 0 end AS status
+FROM customer_raw cr
+LEFT JOIN customer c ON cr.customer_id = c.customer_id
+
+
+
+
+
+
+
 
 
