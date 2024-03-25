@@ -1,0 +1,14 @@
+config {
+  type: "incremental",
+  uniqueKey: ['system_id', 'event', 'product_id', 'source', 'type', 'user_id', 'user_count', 'received_date'],
+  schema: "customer_onboarding"
+}
+
+WITH
+    user_feature_tracking AS (
+        SELECT * FROM ${ref('raw_user_feature_tracking')}
+    )
+
+SELECT DISTINCT
+    *
+FROM user_feature_tracking

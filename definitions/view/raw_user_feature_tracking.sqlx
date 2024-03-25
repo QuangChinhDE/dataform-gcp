@@ -1,0 +1,832 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'wework_task_created' source
+FROM  
+    `base-datateam.javascript.wework_task_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64), 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'workflow_job_created' source
+FROM 
+    `base-datateam.javascript.workflow_job_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'request_group_custom_created' source
+FROM 
+    `base-datateam.javascript.request_group_custom_created`
+
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'request_group_direct_created' source
+FROM 
+    `base-datateam.javascript.request_group_direct_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'xdashboard_widget_create' source
+FROM 
+    `base-datateam.javascript.xdashboard_widget_create`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'xdashboard_widget_create' source
+FROM 
+    `base-datateam.javascript.xcalendar_meeting_create`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'master_search' source
+FROM 
+    `base-datateam.javascript.master_search`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'schedule_timesheet_done' source
+FROM 
+    `base-datateam.javascript.schedule_timesheet_done`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'hourly_timesheet_done' source
+FROM 
+    `base-datateam.javascript.hourly_timesheet_done`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'timeoff_annual_created' source
+FROM 
+    `base-datateam.javascript.timeoff_annual_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'timeoff_personal_created' source
+FROM 
+    `base-datateam.javascript.timeoff_personal_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'timeoff_business_created' source
+FROM 
+    `base-datateam.javascript.timeoff_business_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'timeoff_outside_created' source
+FROM 
+    `base-datateam.javascript.timeoff_outside_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'timeoff_unpaid_created' source
+FROM 
+    `base-datateam.javascript.timeoff_unpaid_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'timeoff_other_created' source
+FROM 
+    `base-datateam.javascript.timeoff_other_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'timeoff_outside_hour_created' source
+FROM 
+    `base-datateam.javascript.timeoff_outside_hour_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'timeoff_annual_hour_created' source
+FROM 
+    `base-datateam.javascript.timeoff_annual_hour_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'timeoff_unpaid_hour_created' source
+FROM 
+    `base-datateam.javascript.timeoff_unpaid_hour_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'overtime_created' source
+FROM 
+    `base-datateam.javascript.overtime_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'overtime_created_staff' source
+FROM 
+    `base-datateam.javascript.overtime_created_staff`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'overtime_created_duplicate' source
+FROM 
+    `base-datateam.javascript.overtime_created_duplicate`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'overtime_created_duplicate_staff' source
+FROM 
+    `base-datateam.javascript.overtime_created_duplicate_staff`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'payroll_create' source
+FROM 
+    `base-datateam.javascript.payroll_create`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'case_created' source
+FROM 
+    `base-datateam.javascript.case_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'goal_department_created' source
+FROM 
+    `base-datateam.javascript.goal_department_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64),
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'goal_team_created' source
+FROM 
+    `base-datateam.javascript.goal_team_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'goal_personal_goal_created' source
+FROM 
+    `base-datateam.javascript.goal_personal_goal_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'reward_action_reward' source
+FROM 
+    `base-datateam.javascript.reward_action_reward`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'reward_from_message' source
+FROM 
+    `base-datateam.javascript.reward_from_message`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'meeting_meeting_created' source
+FROM 
+    `base-datateam.javascript.meeting_meeting_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'booking_new_booking_created' source
+FROM 
+    `base-datateam.javascript.booking_new_booking_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'square_question_created' source
+FROM 
+    `base-datateam.javascript.square_question_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+UNION ALL
+
+SELECT 
+    CAST(account_id AS INT64) AS system_id, 
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) AS user_id,
+    COUNT(user_base_uid) user_count, 
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE) received_date,
+    'square_answer_created' source
+FROM 
+    `base-datateam.javascript.square_answer_created`
+WHERE 
+    TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+GROUP BY
+    CAST(account_id AS INT64),
+    event, 
+    product_id, 
+    module_id,
+    type,
+    CAST(replace(user_base_uid, '.0','') as int64) ,
+    CAST(TIMESTAMP_ADD(received_at, INTERVAL 7 HOUR) AS DATE)
+
+
+
+
