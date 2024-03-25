@@ -12,6 +12,7 @@ WITH
         --   cast(org_id as int64) org_id,
         --   cast(person_id as int64) person_id,
         --   cast(user_id as int64) user_id,
+        --   cast(created_by_user_id as int64) created_by_user_id,
         --   subject,
         --   type,
         --   done,
@@ -25,32 +26,32 @@ WITH
         --   case
         --     when note not like "%(i): Nội dung trao đổi với khách<%" then 
         --       case 
-        --         when note like "%<div>%" then REGEXP_EXTRACT(SPLIT(note, "(i): Nội dung trao đổi với khách")[SAFE_OFFSET(1)], r':\s*(.*)</div>')
-        --         else REGEXP_EXTRACT(SPLIT(note, "(i): Nội dung trao đổi với khách")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
+        --         when note like "%<div>%" then REGEXP_EXTRACT(SPLIT(note, "(i): Nội dung trao đổi với khách")[SAFE_OFFSET(1)], r':s*(.*)</div>')
+        --         else REGEXP_EXTRACT(SPLIT(note, "(i): Nội dung trao đổi với khách")[SAFE_OFFSET(1)], r':s*(.*)</p>')
         --         end
         --       else null
         --   end churn_conversation
         --   ,case
         --     when note not like "%(ii): Lí do khách rời bỏ<%" then 
         --       case 
-        --         when note like "%<div>%" then REGEXP_EXTRACT(SPLIT(note, "(ii): Lí do khách rời bỏ")[SAFE_OFFSET(1)], r':\s*(.*)</div>')
-        --         else REGEXP_EXTRACT(SPLIT(note, "(ii): Lí do khách rời bỏ")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
+        --         when note like "%<div>%" then REGEXP_EXTRACT(SPLIT(note, "(ii): Lí do khách rời bỏ")[SAFE_OFFSET(1)], r':s*(.*)</div>')
+        --         else REGEXP_EXTRACT(SPLIT(note, "(ii): Lí do khách rời bỏ")[SAFE_OFFSET(1)], r':s*(.*)</p>')
         --         end
         --     else null
         --   end churn_reason
         --   ,case
         --     when note not like "%(iii): Phần mềm khách sẽ dùng sau khi rời Base<%" then 
         --       case 
-        --         when note like "%<div>%" then REGEXP_EXTRACT(SPLIT(note, "(iii): Phần mềm khách sẽ dùng sau khi rời Base")[SAFE_OFFSET(1)], r':\s*(.*)</div>')
-        --         else REGEXP_EXTRACT(SPLIT(note, "(iii): Phần mềm khách sẽ dùng sau khi rời Base")[SAFE_OFFSET(1)], r':\s*(.*)</p>')
+        --         when note like "%<div>%" then REGEXP_EXTRACT(SPLIT(note, "(iii): Phần mềm khách sẽ dùng sau khi rời Base")[SAFE_OFFSET(1)], r':s*(.*)</div>')
+        --         else REGEXP_EXTRACT(SPLIT(note, "(iii): Phần mềm khách sẽ dùng sau khi rời Base")[SAFE_OFFSET(1)], r':s*(.*)</p>')
         --         end
         --     else null
         --   end post_churn_software
         --   ,case
         --     when note not like "%(iv): Có cơ hội resale không (Có/Không)<%" then 
         --       case 
-        --         when note like "%<div>%" then replace(REGEXP_EXTRACT(SPLIT(note, "(iv): Có cơ hội resale không (Có/Không)")[SAFE_OFFSET(1)], r':\s*(.*)</div>'), ":", "")
-        --         else replace(REGEXP_EXTRACT(SPLIT(note, "(iv): Có cơ hội resale không (Có/Không)")[SAFE_OFFSET(1)], r'\s*(.*)</p>'), ":", "")
+        --         when note like "%<div>%" then replace(REGEXP_EXTRACT(SPLIT(note, "(iv): Có cơ hội resale không (Có/Không)")[SAFE_OFFSET(1)], r':s*(.*)</div>'), ":", "")
+        --         else replace(REGEXP_EXTRACT(SPLIT(note, "(iv): Có cơ hội resale không (Có/Không)")[SAFE_OFFSET(1)], r's*(.*)</p>'), ":", "")
         --         end
         --     else null
         --   end resale_opportunity
@@ -68,6 +69,7 @@ WITH
           cast(JSON_EXTRACT_SCALAR(data, '$.org_id') as int64) org_id,
           cast(JSON_EXTRACT_SCALAR(data, '$.person_id') as int64) person_id,
           cast(JSON_EXTRACT_SCALAR(data, '$.user_id') as int64) user_id,
+          cast(JSON_EXTRACT_SCALAR(data, '$.created_by_user_id') as int64) created_by_user_id,
           JSON_EXTRACT_SCALAR(data, '$.subject') subject,
           JSON_EXTRACT_SCALAR(data, '$.type') type,
           cast(JSON_EXTRACT_SCALAR(data, '$.done') as STRING) done,
@@ -116,8 +118,7 @@ WITH
                 OR JSON_EXTRACT_SCALAR(data, '$.org_id') IS NOT NULL
                 OR JSON_EXTRACT_SCALAR(data, '$.person_id') IS NOT NULL
                 OR JSON_EXTRACT_SCALAR(data, '$.user_id') is not null)
-            AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
-              
+            AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())              
     )
 
 SELECT DISTINCT
@@ -127,6 +128,7 @@ SELECT DISTINCT
       IFNULL(cast(org_id AS STRING), ''),
       IFNULL(cast(person_id AS STRING), ''),
       IFNULL(cast(user_id AS STRING), ''),
+      IFNULL(cast(created_by_user_id AS STRING), ''),
       IFNULL(cast(subject AS STRING), ''),
       IFNULL(cast(type AS STRING), ''),
       IFNULL(cast(done AS STRING), ''),
@@ -144,6 +146,7 @@ SELECT DISTINCT
     org_id,
     person_id,
     user_id,
+    created_by_user_id,
     subject,
     type,
     done,
