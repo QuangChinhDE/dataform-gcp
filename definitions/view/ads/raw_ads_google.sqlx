@@ -18,7 +18,7 @@ SELECT distinct
     ,MAX(segments_ad_network_type) network_type
 -- FROM `base-datateam.airbyte_ads.google_ad_group_ad_report`
 FROM `base-datateam.airbyte_google.ads_ad_group_ad_legacy`
-WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
 GROUP BY
     customer_id
     ,ad_group_ad_ad_id
