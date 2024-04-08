@@ -182,9 +182,9 @@ WITH
       ,df8.label gtm_type
       ,cast(partner_owner as int64) partner_owner
       ,cast(partner_id as int64) partner_id
-      ,df10.label way_of_cooperation
+      ,df12.label way_of_cooperation
       ,df11.label partner_type
-      ,df12.label partner_expertise
+      ,df10.label partner_expertise
       ,cast(bdr_owner as int64) bdr_owner
     FROM deal_change_pivot
     LEFT JOIN deal_field_option df1 
@@ -206,11 +206,11 @@ WITH
     LEFT JOIN deal_field_option df9
       ON df9.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df9.id = cast(customer_need_2 as int64)
     LEFT JOIN deal_field_option df10
-      ON df10.key = 'fbc0629b1cefb76b65c4cdb27aaba08a7d223142' AND df10.id = cast(customer_need_2 as int64)
+      ON df10.key = 'fbc0629b1cefb76b65c4cdb27aaba08a7d223142' AND df10.id = cast(partner_expertise as int64)
     LEFT JOIN deal_field_option df11
-      ON df11.key = '84b9275df8967f3f77339a1394598c449573bf32' AND df11.id = cast(customer_need_2 as int64)
+      ON df11.key = '84b9275df8967f3f77339a1394598c449573bf32' AND df11.id = cast(partner_type as int64)
     LEFT JOIN deal_field_option df12
-      ON df12.key = '47ef271bef0e14a61274edbe0521a50064e77b2f' AND df12.id = cast(customer_need_2 as int64)
+      ON df12.key = '47ef271bef0e14a61274edbe0521a50064e77b2f' AND df12.id = cast(way_of_cooperation as int64)
 
   ),
 
