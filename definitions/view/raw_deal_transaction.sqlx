@@ -25,16 +25,16 @@ WITH
         UNNEST(JSON_EXTRACT_ARRAY(json, '$.data')) AS json
       WHERE cast(JSON_EXTRACT_SCALAR(json, '$.data.item_id') as int64) is not null
         AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
-    --   UNION ALL
-    --   SELECT
-    --     cast(deal_id as int64) deal_id
-    --     ,field_key field_name
-    --     ,Case
-    --       when new_value is not null then new_value
-    --       else old_value
-    --       end value
-    --     ,DATETIME_ADD(SAFE_CAST(log_time as DATETIME), INTERVAL 7 HOUR) update_time
-    --   FROM `base-datateam.airbyte_pipedrive.old_dealChanges`
+      -- UNION ALL
+      -- SELECT
+      --   cast(deal_id as int64) deal_id
+      --   ,field_key field_name
+      --   ,Case
+      --     when new_value is not null then new_value
+      --     else old_value
+      --     end value
+      --   ,DATETIME_ADD(SAFE_CAST(log_time as DATETIME), INTERVAL 7 HOUR) update_time
+      -- FROM `base-datateam.airbyte_pipedrive.old_dealChanges`
   ),
 
   deal_change_pivot as (
@@ -57,7 +57,8 @@ WITH
         ,`3f0acf615fdd18626380a935dde6bc8b2c0c8916` lead_score
         ,`4ef8ce2eeb78d393977a24d4db5b25ba60823df9` priority_score
         ,`0c0314d53d63dbd7f1ac11bcc45b20f943a4d145` gtm_type
-
+        ,`56b0cc5defaf568b6990b68341074fedc58693eb` customer_need_1
+        ,`56afadfee2e44cf5c478d3fc439c42e4940d7705` customer_need_2
         ,`add_time` add_time
         ,`expected_close_date` expected_close_date
         ,`status` status
@@ -87,6 +88,8 @@ WITH
                                       ,'4ef8ce2eeb78d393977a24d4db5b25ba60823df9'
                                       ,'1385c79d79d114404f9cc23d4326918e4390ae18'
                                       ,'0c0314d53d63dbd7f1ac11bcc45b20f943a4d145'
+                                      ,'56b0cc5defaf568b6990b68341074fedc58693eb'
+                                      ,'56afadfee2e44cf5c478d3fc439c42e4940d7705'
                                       ,'add_time'
                                       ,'expected_close_date'
                                       ,'status'
@@ -136,6 +139,7 @@ WITH
         ,df2.label lead_score
         ,df3.label priority_score
         ,df8.label gtm_type
+        ,case when df9.label is not null then df9.label  else df10.label  end customer_need
     FROM deal_change_pivot
     LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = 'e4374d513b687b4de35fac6d149a0b75519483dc' GROUP BY cast(id as int64)) e 
       ON e.id = safe_cast(SPLIT(event, ',')[OFFSET(0)] as int64)
@@ -149,6 +153,10 @@ WITH
       ON df3.key = '4ef8ce2eeb78d393977a24d4db5b25ba60823df9' AND df3.id = cast(priority_score as int64)
     LEFT JOIN deal_field_option df8 
       ON df8.key = '0c0314d53d63dbd7f1ac11bcc45b20f943a4d145' AND df8.id = cast(gtm_type as int64)
+    LEFT JOIN deal_field_option df9
+      ON df9.key = '56b0cc5defaf568b6990b68341074fedc58693eb' AND df9.id = cast(customer_need_1 as int64)
+    LEFT JOIN deal_field_option df10 
+      ON df10.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df10.id = cast(customer_need_2 as int64)
   ),
 
   deal_transaction AS (
@@ -181,6 +189,7 @@ WITH
         ,lead_score
         ,priority_score
         ,gtm_type
+        ,customer_need
     FROM deal_change
     LEFT JOIN (select deal_id, update_time from deal_done) deal_ ON deal_.deal_id = deal_change.deal_id
     UNION ALL
@@ -213,6 +222,7 @@ WITH
         ,lead_score
         ,priority_score
         ,gtm_type
+        ,customer_need
     FROM deal_done 
   )
 

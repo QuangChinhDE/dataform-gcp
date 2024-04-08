@@ -36,7 +36,8 @@ SELECT DISTINCT
         IFNULL(cast(lead_score AS STRING), ''),
         IFNULL(cast(priority_score AS STRING), ''),
         IFNULL(cast(challenge AS STRING), ''),
-        IFNULL(cast(gtm_type AS STRING), '')
+        IFNULL(cast(gtm_type AS STRING), ''),
+        IFNULL(cast(customer_need AS STRING), '')
     )) deal_transaction_id
     ,deal_id
     ,update_time
@@ -66,6 +67,7 @@ SELECT DISTINCT
     ,lead_score
     ,priority_score
     ,gtm_type
+    ,customer_need
 FROM ${ref('raw_deal_transaction')}
 
 
