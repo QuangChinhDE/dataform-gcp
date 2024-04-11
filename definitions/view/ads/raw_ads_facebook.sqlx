@@ -12,32 +12,60 @@ WITH
   ),
 
   facebook_raw AS (
-    SELECT DISTINCT
-      cast(JSON_EXTRACT_SCALAR(json, '$.account_id') AS INT64) AS account_id,
-      cast(JSON_EXTRACT_SCALAR(json, '$.ad_id') AS INT64) AS ad_id,
-      JSON_EXTRACT_SCALAR(json, '$.ad_name') AS ad_name,
-      cast(JSON_EXTRACT_SCALAR(json, '$.adset_id') AS INT64) AS adset_id,
-      JSON_EXTRACT_SCALAR(json, '$.adset_name') AS adset_name,
-      cast(JSON_EXTRACT_SCALAR(json, '$.campaign_id') AS INT64) AS campaign_id,
-      JSON_EXTRACT_SCALAR(json, '$.campaign_name') AS campaign_name,
-      cast(JSON_EXTRACT_SCALAR(json, '$.date_start') AS DATE) AS date_start,
-      MAX(cast(JSON_EXTRACT_SCALAR(json, '$.spend') AS FLOAT64)) AS cost,
-      MAX(cast(JSON_EXTRACT_SCALAR(json, '$.clicks') AS INT64)) AS click,
-      MAX(cast(JSON_EXTRACT_SCALAR(json, '$.impressions') AS INT64)) AS impression,
-      MAX(cast(JSON_EXTRACT_SCALAR(json, '$.reach') AS INT64)) AS reach,
-      MAX(_airbyte_extracted_at) _airbyte_extracted_at
-    FROM facebook_raw_,
-    UNNEST(JSON_EXTRACT_ARRAY(data)) AS json
-    WHERE cast(JSON_EXTRACT_SCALAR(json, '$.date_start') AS DATE) >= '2023-09-20'
+    -- SELECT DISTINCT
+    --   cast(JSON_EXTRACT_SCALAR(json, '$.account_id') AS INT64) AS account_id,
+    --   cast(JSON_EXTRACT_SCALAR(json, '$.ad_id') AS INT64) AS ad_id,
+    --   JSON_EXTRACT_SCALAR(json, '$.ad_name') AS ad_name,
+    --   cast(JSON_EXTRACT_SCALAR(json, '$.adset_id') AS INT64) AS adset_id,
+    --   JSON_EXTRACT_SCALAR(json, '$.adset_name') AS adset_name,
+    --   cast(JSON_EXTRACT_SCALAR(json, '$.campaign_id') AS INT64) AS campaign_id,
+    --   JSON_EXTRACT_SCALAR(json, '$.campaign_name') AS campaign_name,
+    --   cast(JSON_EXTRACT_SCALAR(json, '$.date_start') AS DATE) AS date_start,
+    --   MAX(cast(JSON_EXTRACT_SCALAR(json, '$.spend') AS FLOAT64)) AS cost,
+    --   MAX(cast(JSON_EXTRACT_SCALAR(json, '$.clicks') AS INT64)) AS click,
+    --   MAX(cast(JSON_EXTRACT_SCALAR(json, '$.impressions') AS INT64)) AS impression,
+    --   MAX(cast(JSON_EXTRACT_SCALAR(json, '$.reach') AS INT64)) AS reach,
+    --   MAX(_airbyte_extracted_at) _airbyte_extracted_at
+    -- FROM facebook_raw_,
+    -- UNNEST(JSON_EXTRACT_ARRAY(data)) AS json
+    -- WHERE cast(JSON_EXTRACT_SCALAR(json, '$.date_start') AS DATE) >= '2023-09-20'
+    -- GROUP BY
+    --   cast(JSON_EXTRACT_SCALAR(json, '$.account_id') AS INT64),
+    --   cast(JSON_EXTRACT_SCALAR(json, '$.ad_id') AS INT64),
+    --   JSON_EXTRACT_SCALAR(json, '$.ad_name'),
+    --   cast(JSON_EXTRACT_SCALAR(json, '$.adset_id') AS INT64),
+    --   JSON_EXTRACT_SCALAR(json, '$.adset_name'),
+    --   cast(JSON_EXTRACT_SCALAR(json, '$.campaign_id') AS INT64),
+    --   JSON_EXTRACT_SCALAR(json, '$.campaign_name'),
+    --   cast(JSON_EXTRACT_SCALAR(json, '$.date_start') AS DATE)
+    SELECT  
+      cast(account_id AS INT64) account_id
+      ,ad_id
+      ,ad_name
+      ,adset_id
+      ,adset_name
+      ,campaign_id
+      ,campaign_name
+      ,date_start
+      ,case
+          when account_currency = 'USD' then MAX(cast(spend as int64)*25000)
+          else MAX(cast(spend as int64))
+      end cost
+      ,MAX(cast(clicks AS INT64)) AS click
+      ,MAX(cast(impressions AS INT64)) AS impression
+      ,MAX(cast(reach AS INT64)) AS reach
+    FROM `base-datateam.airbyte_facebook.ads_ads_insights`
+    WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
     GROUP BY
-      cast(JSON_EXTRACT_SCALAR(json, '$.account_id') AS INT64),
-      cast(JSON_EXTRACT_SCALAR(json, '$.ad_id') AS INT64),
-      JSON_EXTRACT_SCALAR(json, '$.ad_name'),
-      cast(JSON_EXTRACT_SCALAR(json, '$.adset_id') AS INT64),
-      JSON_EXTRACT_SCALAR(json, '$.adset_name'),
-      cast(JSON_EXTRACT_SCALAR(json, '$.campaign_id') AS INT64),
-      JSON_EXTRACT_SCALAR(json, '$.campaign_name'),
-      cast(JSON_EXTRACT_SCALAR(json, '$.date_start') AS DATE)
+      cast(account_id AS INT64)
+      ,ad_id
+      ,ad_name
+      ,adset_id
+      ,adset_name
+      ,campaign_id
+      ,campaign_name
+      ,date_start
+      ,account_currency
   ),
 
   facebook AS (
@@ -93,7 +121,8 @@ WITH
   ),
 
   done AS (
-    SELECT * EXCEPT(_airbyte_extracted_at) FROM facebook
+    -- SELECT * EXCEPT(_airbyte_extracted_at) FROM facebook
+    SELECT * FROM facebook
     -- UNION ALL
     -- SELECT * FROM old_facebook
     -- UNION ALL
