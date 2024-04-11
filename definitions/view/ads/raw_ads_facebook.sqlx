@@ -40,11 +40,11 @@ WITH
     --   cast(JSON_EXTRACT_SCALAR(json, '$.date_start') AS DATE)
     SELECT  
       cast(account_id AS INT64) account_id
-      ,ad_id
+      ,cast(ad_id AS INT64) ad_id
       ,ad_name
-      ,adset_id
+      ,cast(adset_id AS INT64) adset_id
       ,adset_name
-      ,campaign_id
+      ,cast(campaign_id AS INT64) campaign_id
       ,campaign_name
       ,date_start
       ,case
