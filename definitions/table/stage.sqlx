@@ -1,0 +1,7 @@
+config {
+  type: "table",
+  uniqueKey: ['stage_id'],
+  schema: "csale_solution_engineer"
+}
+
+SELECT * FROM ${ref('raw_stage')}
