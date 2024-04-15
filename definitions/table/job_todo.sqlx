@@ -1,0 +1,7 @@
+config {
+  type: "incremental",
+  uniqueKey: ['job_todo_id'],
+  schema: "sale_solution_engineer"
+}
+
+SELECT DISTINCT * FROM ${ref('raw_job_todo')}
