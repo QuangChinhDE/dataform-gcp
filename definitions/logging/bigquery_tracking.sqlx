@@ -1,0 +1,18 @@
+config {
+  type: "incremental",
+  uniqueKey: ['project_id', 'dataset_id', 'table_id', 'last_modified_time', 'row_count', 'size_bytes'],
+  schema: "logging"
+}
+
+
+SELECT
+  project_id
+  ,dataset_id
+  ,table_id
+  ,cast(TIMESTAMP_SECONDS(CAST(ROUND(creation_time/1000, 0)+60*60*7 AS INT64)) as datetime) creation_time
+  ,cast(TIMESTAMP_SECONDS(CAST(ROUND(last_modified_time/1000, 0)+60*60*7 AS INT64)) as datetime) last_modified_time
+  ,row_count
+  ,size_bytes
+FROM (select * from `base-data-analyst.sale_solution_engineer.__TABLES__`)
+WHERE row_count != 0 and type = 1
+ORDER BY dataset_id, table_id asc
