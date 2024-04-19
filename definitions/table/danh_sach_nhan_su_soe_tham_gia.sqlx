@@ -1,0 +1,5 @@
+config {
+  type: "table",
+  uniqueKey: ['danh_sach_nhan_su_soe_tham_gia_id'],
+  schema: "sale_solution_engineer"}
+SELECT * FROM ${ref('raw_danh_sach_nhan_su_soe_tham_gia')}
