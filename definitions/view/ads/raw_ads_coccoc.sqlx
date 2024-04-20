@@ -8,7 +8,7 @@ SELECT DISTINCT
   ,ad_name
   ,cast(campaign_id as int64) campaign_id
   ,campaign_name
-  ,cast(date as date) date
+  ,PARSE_DATE('%d-%m-%Y', date) as date
   ,cast(click as int64) click
   ,cast(cost as int64) cost
   ,cast(impression as int64) impression
