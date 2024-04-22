@@ -1,0 +1,24 @@
+config {
+  type: "table",
+  schema: "customer_onboarding"
+}
+
+WITH
+ daily AS (
+    SELECT 
+        system_id,
+        FORMAT_DATE('%Y-%m-01', PARSE_DATE('%Y-%m-%d', cast(date as string))) AS month,
+        active_user,
+        current_user,
+        active_rate
+    FROM ${ref('raw_user_active_rate')}
+ )
+
+SELECT 
+  system_id,
+  month,
+  safe_cast(avg(active_user) as int64) as active_user,
+  safe_cast(avg(current_user) as int64) as current_user,
+  AVG(active_rate) AS average_active_rate
+FROM daily 
+GROUP BY system_id, month

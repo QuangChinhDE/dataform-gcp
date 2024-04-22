@@ -1,0 +1,6 @@
+config {
+  type: "table",
+  schema: "customer_onboarding"
+}
+
+SELECT * FROM ${ref('raw_user_active_rate')}

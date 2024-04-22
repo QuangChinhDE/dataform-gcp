@@ -1,0 +1,187 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH
+--- danh sách system
+system_max_time as (
+  SELECT system_id, last_update FROM base-data-analyst.customer_onboarding.system
+),
+
+--- tất cả các user , loại guest' và lấy last update theo bảng user nếu ko có lấy theo last update của system
+user_since_raw as (
+  SELECT distinct user_id, since,
+  IF(EXTRACT(YEAR FROM user.last_update) = 1970, system_max_time.last_update, user.last_update) last_update, user.status,user.system_id -- 1 as is_active
+  FROM base-data-analyst.customer_onboarding.user as user
+  LEFT JOIN system_max_time ON system_max_time.system_id = user.system_id
+  WHERE metatype != "guest"
+),
+
+--- user đang active và đã được reactive
+user_activated_raw as (
+  select user_id, DATE(since) AS activated_date, since AS activated_datetime, 1 as is_active
+  from user_since_raw where status = 'deactivate'
+  UNION ALL
+  select user_id, DATE(since) AS activated_date, since AS activated_datetime, 1 as is_active
+  from user_since_raw
+  where status != 'deactivate'
+  UNION ALL
+  SELECT distinct his.user_id, DATE(reactivated_since) activated_date, reactivated_since AS activated_datetime, 1 as is_active FROM base-data-analyst.customer_onboarding.user_history as his
+  LEFT JOIN base-data-analyst.customer_onboarding.user as user ON his.user_id = user.user_id
+  WHERE metatype != "guest" and reactivated_since is not null
+),
+
+--- user bị deactive và đã từng bị deactive
+user_deactivated_raw as (
+  select user_id, DATE(last_update) AS activated_date, last_update AS activated_datetime, 0 as is_active
+  from user_since_raw where status = 'deactivate'
+  UNION ALL
+  SELECT distinct his.user_id, DATE(deactivated_since) activated_date, deactivated_since AS activated_datetime, 0 as is_active
+  FROM base-data-analyst.customer_onboarding.user_history as his
+  LEFT JOIN base-data-analyst.customer_onboarding.user as user
+  ON his.user_id = user.user_id
+  WHERE metatype != "guest" and deactivated_since is not null
+),
+
+--- clean bảng user_activated_raw và user_deactivated_raw
+user_raw as (
+  SELECT *, ROW_NUMBER() OVER (PARTITION BY user_id, activated_date ORDER BY activated_datetime DESC) AS row_number
+  FROM ( SELECT user_id, activated_date, activated_datetime, is_active FROM user_activated_raw
+        UNION ALL
+        SELECT user_id, activated_date, activated_datetime, is_active FROM user_deactivated_raw)
+),
+
+--- Chọn user theo giá trị deactive hoặc reative max_time_date
+user as (
+  SELECT user_id, activated_date, is_active FROM user_raw WHERE row_number = 1
+),
+
+---Tạo start_date và end_date cho các trạng thái active, reactive (1) và deactive (0)
+user_activated_date as (
+  SELECT 
+      t1.user_id,
+      t1.activated_date AS start_date,
+      DATE(COALESCE(MIN(t2.activated_date), CURRENT_DATE())) AS end_date,
+      t1.is_active
+  FROM user t1
+  LEFT JOIN user t2 ON t1.user_id = t2.user_id AND t1.is_active != t2.is_active AND t1.activated_date < t2.activated_date
+  GROUP BY t1.user_id, t1.activated_date, t1.is_active
+),
+
+--- Tạo range cho status của user theo từng ngày
+user_acitvity_per_date as (
+  SELECT DISTINCT user_id, is_active, date_range
+  FROM user_activated_date,
+  UNNEST(GENERATE_DATE_ARRAY(start_date, DATE(end_date))) AS date_range
+),
+
+--- Tạo range cho system theo từng ngày
+system_acitvity_date as (
+  SELECT user_acitvity_per_date.user_id, user_since_raw.system_id, sum(is_active) is_active, date_range FROM user_acitvity_per_date
+  LEFT JOIN user_since_raw ON user_since_raw.user_id = user_acitvity_per_date.user_id
+  group by user_acitvity_per_date.user_id, date_range, user_since_raw.system_id
+),
+
+sys_current_user as (
+  SELECT
+  system_max_time.system_id,
+  d.date,
+  system_acitvity_date.is_active
+  FROM system_max_time
+  CROSS JOIN ---date_array
+  (SELECT date FROM UNNEST(GENERATE_DATE_ARRAY('2016-10-03', CURRENT_DATE())) AS date) d
+  LEFT JOIN system_acitvity_date ON system_acitvity_date.system_id = system_max_time.system_id AND d.date = system_acitvity_date.date_range
+),
+
+--- Current user của từng system ---
+current_user as (
+  SELECT
+  system_id,
+  date,
+  sum(is_active) as current_user
+  FROM sys_current_user
+  WHERE date >= '2023-01-01'
+  GROUP BY system_id, date
+),
+
+--- Active user của từng system ---
+active_user as (
+  SELECT  u.system_id, count(distinct ua.user_id) as active_user, ua.date as final_date
+  FROM `base-data-analyst.customer_onboarding.user_activity` ua
+  left join `base-data-analyst.customer_onboarding.user`u on ua.user_id = u.user_id
+  where ( (date >= DATE_SUB(date, INTERVAL 1 YEAR))
+  or (date >= "2023-11-01" and source = "php_production" ))
+  and metatype <> "guest"
+  group by u.system_id, ua.date
+),
+
+daily_active_rate_raw as (
+  select c.system_id, 
+    c.date,
+    case when a.active_user is null then 0 else a.active_user end as active_user,
+    case when c.current_user is null then 0 else c.current_user end as current_user
+  from current_user c
+  left join active_user a on (
+    a.system_id = c.system_id
+    and a.final_date = c.date
+  )
+),
+
+daily_active_rate as (
+  select system_id, 
+    date,
+    active_user,
+    current_user,
+    case 
+    when current_user = 0 then 0
+    when active_user > current_user then 1
+    else safe_cast(active_user/current_user as float64) end as active_rate
+  from daily_active_rate_raw
+)
+
+-- daily as (
+--   select system_id,
+--     FORMAT_DATE('%Y-%m-01', PARSE_DATE('%Y-%m-%d', cast(date as string))) AS month,
+--     active_user,
+--     current_user,
+--     active_rate
+--   from daily_active_rate
+-- )
+
+-- SELECT 
+--   system_id,
+--   month,
+--   safe_cast(avg(active_user) as int64) as active_user,
+--   safe_cast(avg(current_user) as int64) as current_user,
+--   AVG(active_rate) AS average_active_rate
+-- FROM daily 
+-- GROUP BY system_id, month
+
+select system_id,
+  date,
+  active_user,
+  current_user,
+  active_rate
+from daily_active_rate
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
