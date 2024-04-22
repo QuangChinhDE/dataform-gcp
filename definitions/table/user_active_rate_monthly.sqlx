@@ -16,7 +16,7 @@ WITH
 
 SELECT 
   system_id,
-  month,
+  cast(month as date) month,
   safe_cast(avg(active_user) as int64) as active_user,
   safe_cast(avg(current_user) as int64) as current_user,
   AVG(active_rate) AS average_active_rate
