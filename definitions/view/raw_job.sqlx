@@ -16,6 +16,7 @@ SELECT * EXCEPT(row_number)
               ,cast(replace(creator_id, '.0', '') as int64) creator_id
               ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(since, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) since
               ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
+              ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(stage_deadline, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) stage_deadline
               ,CASE
                 WHEN safe_cast(replace(finish_at, '.0', '') as int64) = 0 or safe_cast(replace(finish_at, '.0', '') as int64) IS NULL THEN CAST(NULL AS DATETIME)
                 ELSE CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(finish_at, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME)

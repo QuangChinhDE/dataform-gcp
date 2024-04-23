@@ -128,6 +128,7 @@ WITH
       ,status
       ,since
       ,last_update
+      ,stage_deadline
       ,finish_at
       ,deadline
       ,failed_name
