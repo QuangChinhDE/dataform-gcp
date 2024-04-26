@@ -89,7 +89,7 @@ WITH
         campaign_name AS campaign_name,
         cast(date_start AS DATE) AS date_start,
         case
-            when account_currency = 'USD' then cast(spend as int64)*25000
+            when account_currency = 'USD' then cast(spend as int64)*25500
             else cast(spend as int64)
         end cost,
         cast(clicks AS INT64) AS click,
