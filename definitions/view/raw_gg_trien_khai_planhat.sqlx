@@ -1,0 +1,6 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT cs_trien_khai job_id, id_wf_ban_giao link_job_ban_giao_trien_khai, danh_gia ngay_danh_gia, dao_tao_trien_khai_xong_ Ngay_dao_tao, xac_thuc_khach_hang_ngay_tiep_nhan_ Ngay_tiep_nhan FROM `base-datateam.airbyte_google_sheet.co_trien_khai_planhat` 

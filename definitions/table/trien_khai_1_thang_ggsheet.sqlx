@@ -1,0 +1,9 @@
+config {
+  type: "incremental",
+  uniqueKey: ['job_id_ban_giao'],
+  schema: "customer_onboarding"
+}
+
+-- SELECT * FROM ${ref('raw_trien_khai_1_thang_ggsheet')}
+-- UNION ALL
+SELECT * FROM ${ref('raw_trien_khai_1_thang_ggsheet')}

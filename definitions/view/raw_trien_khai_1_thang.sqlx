@@ -1,0 +1,280 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+with raw_bg_tk as (
+--- Bảng chính số 1: Lấy từ sheet [API] Raw Triển khai Planhat - nối giữa job bàn giao và job triển khai  
+WITH BANG_JOB as
+(
+  SELECT 
+                j.job_id, 
+                j.last_update,
+    (case when jf.ngay_danh_gia <> "" then format_date('%Y-%m-%d',safe.parse_date('%d/%m/%Y', jf.ngay_danh_gia)) else null end) as ngay_danh_gia, 
+    REPLACE(jf.link_job_ban_giao_trien_khai, 'https://workflow.base.vn/job/', '') as link_job_ban_giao_trien_khai
+        FROM 
+        (
+                select  *
+from `base-data-analyst.customer_onboarding.job` 
+where workflow_id = 5555
+and job_id not in (
+select job_id 
+from `base-data-analyst.customer_onboarding.job` 
+where workflow_id = 5555 
+and (failed_name like '%duplicate%' 
+    or failed_name like '%Duplicate%' 
+    or failed_name like "%Dup%" 
+    or failed_name like "%Test%" 
+    or failed_name  like "%test%"
+)
+)
+
+        ) as j 
+        LEFT JOIN 
+        (
+                SELECT 
+                        job_id, 
+                        max(case when keys = 'ngay_danh_gia' then value else NULL end) as ngay_danh_gia,
+                        max(case when keys = 'link_job_ban_giao_trien_khai' then value else NULL end) as link_job_ban_giao_trien_khai
+                FROM  `base-data-analyst.customer_onboarding.job_form`  
+    WHERE keys in ('ngay_danh_gia' , 'link_job_ban_giao_trien_khai') 
+    GROUP BY job_id
+        ) jf
+        ON j.job_id= jf.job_id
+),
+BANG_MOVE as
+(
+        SELECT 
+                job_id,
+                min(CASE WHEN m.stage_id ='37282' THEN cast(m.stage_start as date) else NULL end) as Ngay_dao_tao
+    FROM `base-data-analyst.customer_onboarding.job_move`  as m  
+    WHERE  m.stage_start IS NOT NULL
+    GROUP BY job_id
+),
+
+NGAY_XAC_THUC as 
+(
+  SELECT 
+                job_id,
+                min(CASE WHEN m.stage_id = '37280' THEN cast(m.stage_start as date) else NULL end) as Ngay_tiep_nhan
+    FROM `base-data-analyst.customer_onboarding.job_move`  as m  
+    WHERE  m.stage_start IS NOT NULL
+    GROUP BY job_id
+)
+                
+SELECT  
+        SAFE_CAST(BANG_JOB.job_id as int64) as job_id_trien_khai, 
+        BANG_JOB.link_job_ban_giao_trien_khai as job_id_ban_giao, 
+        (case when BANG_MOVE.Ngay_dao_tao is not null then format_date('%Y-%m-%d', BANG_MOVE.Ngay_dao_tao) else null end) as Ngay_dao_tao,  
+  BANG_JOB.ngay_danh_gia,
+  (case when NGAY_XAC_THUC.Ngay_tiep_nhan is not null then format_date('%Y-%m-%d', NGAY_XAC_THUC.Ngay_tiep_nhan) else null end) as Ngay_tiep_nhan
+FROM  BANG_JOB
+JOIN BANG_MOVE 
+ON BANG_JOB.job_id = BANG_MOVE.job_id 
+LEFT JOIN NGAY_XAC_THUC ON BANG_JOB.job_id = NGAY_XAC_THUC.job_id
+WHERE BANG_MOVE.Ngay_dao_tao is not NULL 
+OR BANG_JOB.ngay_danh_gia is not null
+OR NGAY_XAC_THUC.Ngay_tiep_nhan is not null
+),
+
+raw_bg_workflow as (
+--- Bảng chính số 2: [Raw API]_Bàn giao Workflow - lấy các trường thông tin trên WF Bàn giao
+WITH job AS (
+  --- Thông tin job bàn giao
+  SELECT * FROM `base-data-analyst.customer_onboarding.job` WHERE workflow_id in ( 3940, 4536, 6487)),
+  -- Thong tin job_form
+form AS (SELECT * FROM 
+  (SELECT job_id, keys, MAX(value) AS value FROM `base-data-analyst.customer_onboarding.job_form`
+  WHERE keys IN ("ben_su_dung_dich_vu_ben_a","ma_so_thue","gia_tri_hop_dong_bang_so","thanh_toan_chi_phi_training","dia_chi_training","id_system","loai_hop_dong","username_co" ,"email_co", "email_cs_trien_khai", "location")
+  GROUP BY job_id, keys)
+PIVOT (
+  MAX(value) FOR keys IN ("ben_su_dung_dich_vu_ben_a","ma_so_thue","gia_tri_hop_dong_bang_so","thanh_toan_chi_phi_training","dia_chi_training","id_system","loai_hop_dong","username_co" ,"email_co", "email_cs_trien_khai", "location"))),
+ --- Thông tin chuyển job: Account management
+ move as ( SELECT a.job_id,a.min_bc_deal_planning FROM 
+(SELECT job_id,min(stage_start) as min_bc_deal_planning FROM `base-data-analyst.customer_onboarding.job_move` WHERE stage_id in ( '27156', '23231','39803')  GROUP BY job_id) as a
+),
+--- Thong tin app
+ app_info as 
+ (SELECT job_id,STRING_AGG(Distinct app) as Danh_sach_App, min(safe.PARSE_DATE('%d/%m/%Y', start_date)) as Ngay_bat_dau, max(safe.PARSE_DATE('%d/%m/%Y', end_date_promotion)) as Ngay_ket_thuc FROM `base-data-analyst.customer_onboarding.job_app_info` GROUP BY job_id),
+--- Thong tin trien khai
+onboading_info AS
+(SELECT job_id, MAX(count_training_session) as so_buoi, 
+      max(conduct_training_session) as chi_phi_buoi_dao_tao, 
+      max(expense_training_session) as chi_phi_trien_khai 
+    FROM `base-data-analyst.customer_onboarding.job_training_session` GROUP BY job_id),
+--- Thong tin BC
+bc_info as 
+    (SELECT job_id, STRING_AGG(DISTINCT email) as email_bc FROM `base-data-analyst.customer_onboarding.job_bccs_info` GROUP BY job_id)
+   
+-- QUERY ALL
+ SELECT 
+   safe_cast(job.job_id as string) as job_id_ban_giao, 
+   form.ben_su_dung_dich_vu_ben_a as customer_name, 
+   form.id_system as system_id, 
+   bc_info.email_bc as salesman , 
+    IF(form.username_co IS NULL,form.email_co , form.username_co) as cs_trien_khai, 
+  form.loai_hop_dong as loai_hd, 
+  form.gia_tri_hop_dong_bang_so as gia_tri_hop_dong, 
+  onboading_info.so_buoi as so_buoi_dao_tao, 
+  onboading_info.chi_phi_buoi_dao_tao as chi_phi_dao_tao, 
+  onboading_info.chi_phi_trien_khai as chi_phi_trien_khai, 
+  app_info.Ngay_bat_dau as ngay_bat_dau, 
+  app_info.Ngay_ket_thuc as ngay_ket_thuc, 
+  app_info.Danh_sach_App as danh_sach_app, 
+  CAST(move.min_bc_deal_planning AS DATE) as xac_thuc_khach_hang_ngay_tiep_nhan
+ FROM job
+LEFT JOIN form
+ ON job.job_id = form.job_id
+LEFT JOIN `base-data-analyst.customer_onboarding.stage` AS stage
+ON job.stage_id = cast(stage.stage_id as int64)
+ RIGHT JOIN move
+ ON move.job_id = job.job_id
+ LEFT JOIN app_info ON app_info.job_id = job.job_id
+ LEFT JOIN bc_info ON bc_info.job_id = job.job_id
+ LEFT JOIN onboading_info ON onboading_info.job_id = job.job_id
+   where job.job_id not in
+ (
+   SELECT jf.job_id FROM `base-data-analyst.customer_onboarding.job` j
+  left join `base-data-analyst.customer_onboarding.job_form` jf
+  on j.job_id = jf.job_id
+  WHERE j.workflow_id = 6487
+  and jf.keys = 'id_wfl_ban_giao_2021'
+  and length(jf.value) = 6
+ )
+---and job.last_update >= '{{$json.LogTime}}'
+ORDER BY move.min_bc_deal_planning ASC
+),
+
+raw_app_revenue as (
+  with table1 as (
+SELECT 
+        t1.Deal_id, 
+    safe_cast(gl.jobs_gen_prev as int64) as Job_id_Hop_dong, 
+    safe_cast(gl.job_id as int64) as Job_id_Ban_giao, 
+    t1.System_id, 
+    t1.Revenue_type, 
+    t1.Amount, 
+    t1.Product_Group, 
+    t1.So_users, 
+    t1.Ngay_bat_dau, 
+    t1.Ngay_ket_thuc, 
+    t1.So_nam 
+FROM 
+(
+    --- Bảng sub 1.1 (A): Thông tin giá trị các lần thanh toán ---
+        SELECT 
+                A.*,  
+        B.Job_id 
+        FROM 
+    (
+                SELECT
+                Deal_id, 
+            System_id, 
+            Revenue_type, 
+            SUM(amount) as Amount, 
+            STRING_AGG(DISTINCT Product_name, ", ") as Product_Group, 
+            max(Total_account) as So_users, min(Start_date) as Ngay_bat_dau, 
+            max(Expired_date_before_promotion) as Ngay_ket_thuc, 
+            DIV(date_diff(max(Expired_date_before_promotion), min(Start_date),day), 365) as So_nam 
+        FROM 
+                `base-data-analyst.revenue.Subscriptions` 
+        WHERE Revenue_type <> "Add-on" 
+        AND Total_account not in (-1, 1) 
+        AND (System_id <> 0 or System_id is null) 
+        AND Product_name in (select distinct product_name from `base-data-analyst.revenue.dim_product` where product_category = 'SaaS')
+        GROUP BY Revenue_type, Deal_id, System_id
+    ) as A 
+    --- Bảng sub 1.2 (B): Thông tin về lần thanh toán đầu tiên ---
+    INNER JOIN 
+    ( 
+                SELECT 
+                        Job_id, 
+                        MIN(First_payment_id) as First_Payment_id
+                FROM `base-data-analyst.revenue.Contracts` 
+        WHERE Job_id > 0 
+        AND First_payment_id > 0 
+        GROUP BY Job_id
+        ) as B 
+    ON A.Deal_id = B.First_payment_id
+) t1 
+LEFT JOIN 
+(
+    --- Bảng sub 2.1 (job): Nối giữa job_id bàn giao và job_id triển khai
+        SELECT 
+        safe_cast(job_id as int64) as job_id, 
+        safe_cast(from_id as int64) as jobs_gen_prev
+    FROM `base-data-analyst.customer_onboarding.job`  
+    UNION distinct 
+    (
+        --- Bảng sub 2.2.1 (job)---
+                WITH job as
+        (
+                        SELECT DISTINCT job_id 
+            FROM `base-data-analyst.customer_onboarding.job_move`  as m 
+            where stage_id in ('23231','39802')
+                ), 
+        --- Bảng sub 2.2.2 (form) ---
+        form AS 
+        (
+                        SELECT 
+                                job_id, 
+                safe_cast(REPLACE(max(case when keys = "link_job" then value else NULL end), "https://workflow.base.vn/job/", "") as int64) as link_job_hop_dong  
+                        FROM `base-data-analyst.customer_onboarding.job_form` 
+            GROUP BY job_id
+                ) 
+
+        SELECT 
+                        job.job_id, 
+            form.link_job_hop_dong as jobs_gen_prev  
+                FROM job 
+        LEFT JOIN form 
+        ON job.job_id = form.job_id 
+        WHERE form.link_job_hop_dong IS NOT NULL
+        )
+) as gl 
+ON gl.jobs_gen_prev = t1.Job_id  
+WHERE gl.jobs_gen_prev > 0 
+ORDER BY t1.System_id ASC
+)
+select         
+    table1.Deal_id, 
+    table1.Job_id_Hop_dong, 
+    safe_cast(table1.Job_id_Ban_giao as string) as Job_id_Ban_giao, 
+    table1.System_id, 
+    table1.Revenue_type, 
+    table1.Amount, 
+    table1.Product_Group, 
+    table1.So_users, 
+    table1.Ngay_bat_dau, 
+    table1.Ngay_ket_thuc, 
+    table1.So_nam
+    from table1
+),
+
+dem_raw_app_revenue as (
+  SELECT
+  Job_id_Ban_giao,
+  SUM(CASE WHEN revenue_type = 'New' THEN amount ELSE 0 END) AS gia_tri_new,
+  SUM(CASE WHEN revenue_type = 'Up-sale' THEN amount ELSE 0 END) AS gia_tri_up_sale,
+  SUM(CASE WHEN revenue_type = 'Cross-sale' THEN amount ELSE 0 END) AS gia_tri_cross_sale,
+  SUM(CASE WHEN revenue_type = 'Re-new' THEN amount ELSE 0 END) AS gia_tri_renew,
+  SUM(CASE WHEN revenue_type = 'Resales' THEN amount ELSE 0 END) AS gia_tri_resales
+  FROM raw_app_revenue
+  WHERE revenue_type IN ('New', 'Up-sale', 'Cross-sale', 'Renew', 'Resales')
+  GROUP BY Job_id_Ban_giao
+)
+
+select 
+  raw_bg_workflow.*,
+  raw_bg_tk.Ngay_dao_tao,
+  raw_bg_tk.Ngay_danh_gia,
+  raw_bg_tk.Ngay_tiep_nhan,
+  raw_bg_tk.job_id_trien_khai,
+  dem_raw_app_revenue.gia_tri_new,
+  dem_raw_app_revenue.gia_tri_up_sale,
+  dem_raw_app_revenue.gia_tri_cross_sale,
+  dem_raw_app_revenue.gia_tri_renew,
+  dem_raw_app_revenue.gia_tri_resales
+from raw_bg_workflow
+left join raw_bg_tk on raw_bg_workflow.job_id_ban_giao = raw_bg_tk.job_id_ban_giao
+left join dem_raw_app_revenue on raw_bg_workflow.job_id_ban_giao = dem_raw_app_revenue.Job_id_Ban_giao

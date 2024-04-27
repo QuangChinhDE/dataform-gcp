@@ -1,0 +1,74 @@
+config {
+  type: "view",
+  schema: "query"
+}
+WITH BANG_JOB AS (
+    SELECT 
+        j.job_id, 
+        j.last_update,
+        CASE 
+            WHEN jf.ngay_danh_gia <> "" THEN FORMAT_DATE('%Y-%m-%d', SAFE.PARSE_DATE('%d/%m/%Y', jf.ngay_danh_gia)) 
+            ELSE NULL 
+        END AS ngay_danh_gia, 
+        REPLACE(jf.link_job_ban_giao_trien_khai, 'https://workflow.base.vn/job/', '') AS link_job_ban_giao_trien_khai
+    FROM (
+        SELECT * FROM ${ref('raw_job')} 
+        WHERE workflow_id = 5555
+        AND job_id NOT IN (
+            SELECT job_id 
+            FROM ${ref('raw_job')}
+            WHERE workflow_id = 5555 
+            AND (
+                failed_name LIKE '%duplicate%' 
+                OR failed_name LIKE '%Duplicate%' 
+                OR failed_name LIKE '%Dup%' 
+                OR failed_name LIKE '%Test%' 
+                OR failed_name LIKE '%test%'
+            )
+        )
+    ) AS j 
+    LEFT JOIN (
+        SELECT 
+            job_id, 
+            MAX(CASE WHEN keys = 'ngay_danh_gia' THEN value ELSE NULL END) AS ngay_danh_gia,
+            MAX(CASE WHEN keys = 'link_job_ban_giao_trien_khai' THEN value ELSE NULL END) AS link_job_ban_giao_trien_khai
+        FROM ${ref('raw_job_form')}
+        WHERE keys IN ('ngay_danh_gia' , 'link_job_ban_giao_trien_khai') 
+        GROUP BY job_id
+    ) jf ON j.job_id = jf.job_id
+),
+BANG_MOVE AS (
+    SELECT 
+        job_id,
+        MIN(CASE WHEN m.stage_id = '37282' THEN CAST(m.stage_start AS DATE) ELSE NULL END) AS Ngay_dao_tao
+    FROM ${ref('raw_job_move')} AS m  
+    WHERE m.stage_start IS NOT NULL
+    GROUP BY job_id
+),
+NGAY_XAC_THUC AS (
+    SELECT 
+        job_id,
+        MIN(CASE WHEN m.stage_id = '37280' THEN CAST(m.stage_start AS DATE) ELSE NULL END) AS Ngay_tiep_nhan
+    FROM ${ref('raw_job_move')} AS m  
+    WHERE m.stage_start IS NOT NULL
+    GROUP BY job_id
+)
+SELECT  
+    SAFE_CAST(BANG_JOB.job_id AS INT64) AS job_id, 
+    BANG_JOB.link_job_ban_giao_trien_khai, 
+    CASE 
+        WHEN BANG_MOVE.Ngay_dao_tao IS NOT NULL THEN FORMAT_DATE('%Y-%m-%d', BANG_MOVE.Ngay_dao_tao) 
+        ELSE NULL 
+    END AS Ngay_dao_tao,  
+    BANG_JOB.ngay_danh_gia,
+    CASE 
+        WHEN NGAY_XAC_THUC.Ngay_tiep_nhan IS NOT NULL THEN FORMAT_DATE('%Y-%m-%d', NGAY_XAC_THUC.Ngay_tiep_nhan) 
+        ELSE NULL 
+    END AS Ngay_tiep_nhan
+FROM BANG_JOB
+JOIN BANG_MOVE ON BANG_JOB.job_id = BANG_MOVE.job_id 
+LEFT JOIN NGAY_XAC_THUC ON BANG_JOB.job_id = NGAY_XAC_THUC.job_id
+WHERE BANG_MOVE.Ngay_dao_tao IS NOT NULL 
+    OR BANG_JOB.ngay_danh_gia IS NOT NULL
+    OR NGAY_XAC_THUC.Ngay_tiep_nhan IS NOT NULL
+
