@@ -63,7 +63,7 @@ NGAY_XAC_THUC as
 )
                 
 SELECT  
-        SAFE_CAST(BANG_JOB.job_id as int64) as job_id_trien_khai, 
+        BANG_JOB.job_id job_id_trien_khai, 
         BANG_JOB.link_job_ban_giao_trien_khai as job_id_ban_giao, 
         (case when BANG_MOVE.Ngay_dao_tao is not null then format_date('%Y-%m-%d', BANG_MOVE.Ngay_dao_tao) else null end) as Ngay_dao_tao,  
   BANG_JOB.ngay_danh_gia,
