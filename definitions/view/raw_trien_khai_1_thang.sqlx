@@ -269,7 +269,7 @@ select
   raw_bg_tk.Ngay_dao_tao,
   raw_bg_tk.Ngay_danh_gia,
   raw_bg_tk.Ngay_tiep_nhan,
-  raw_bg_tk.job_id_trien_khai,
+  cast(raw_bg_tk.job_id_trien_khai as string) job_id_trien_khai,
   dem_raw_app_revenue.gia_tri_new,
   dem_raw_app_revenue.gia_tri_up_sale,
   dem_raw_app_revenue.gia_tri_cross_sale,
