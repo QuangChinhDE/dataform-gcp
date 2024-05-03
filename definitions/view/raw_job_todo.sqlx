@@ -12,6 +12,7 @@ SELECT
         IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.username') AS STRING), '')
     )) job_todo_id
   ,job_id
+  ,last_update
   ,CAST(JSON_EXTRACT_SCALAR(json, '$.id') AS INT64)  todo_id
   ,JSON_EXTRACT_SCALAR(json, '$.name') name
   ,CAST(JSON_EXTRACT_SCALAR(json, '$.stage_id') AS INT64) stage_id
