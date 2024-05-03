@@ -2,7 +2,6 @@ config {
   type: "view",
   schema: "query"
 }
-
 with raw_bg_tk as (
 --- Bảng chính số 1: Lấy từ sheet [API] Raw Triển khai Planhat - nối giữa job bàn giao và job triển khai  
 WITH BANG_JOB as
@@ -15,11 +14,12 @@ WITH BANG_JOB as
         FROM 
         (
                 select  *
-from `base-data-analyst.customer_onboarding.job` 
-where workflow_id = 5555
+from ${ref('raw_job')} 
+where workflow_id = 5555 
+            
 and job_id not in (
 select job_id 
-from `base-data-analyst.customer_onboarding.job` 
+from ${ref('raw_job')} 
 where workflow_id = 5555 
 and (failed_name like '%duplicate%' 
     or failed_name like '%Duplicate%' 
@@ -36,7 +36,7 @@ and (failed_name like '%duplicate%'
                         job_id, 
                         max(case when keys = 'ngay_danh_gia' then value else NULL end) as ngay_danh_gia,
                         max(case when keys = 'link_job_ban_giao_trien_khai' then value else NULL end) as link_job_ban_giao_trien_khai
-                FROM  `base-data-analyst.customer_onboarding.job_form`  
+                FROM  ${ref('raw_job_form')}  
     WHERE keys in ('ngay_danh_gia' , 'link_job_ban_giao_trien_khai') 
     GROUP BY job_id
         ) jf
@@ -47,8 +47,8 @@ BANG_MOVE as
         SELECT 
                 job_id,
                 min(CASE WHEN m.stage_id ='37282' THEN cast(m.stage_start as date) else NULL end) as Ngay_dao_tao
-    FROM `base-data-analyst.customer_onboarding.job_move`  as m  
-    WHERE  m.stage_start IS NOT NULL
+    FROM ${ref('raw_job_move')}  as m  
+    WHERE  m.stage_start IS NOT NULL 
     GROUP BY job_id
 ),
 
@@ -57,8 +57,8 @@ NGAY_XAC_THUC as
   SELECT 
                 job_id,
                 min(CASE WHEN m.stage_id = '37280' THEN cast(m.stage_start as date) else NULL end) as Ngay_tiep_nhan
-    FROM `base-data-analyst.customer_onboarding.job_move`  as m  
-    WHERE  m.stage_start IS NOT NULL
+    FROM ${ref('raw_job_move')}  as m  
+    WHERE  m.stage_start IS NOT NULL 
     GROUP BY job_id
 )
                 
@@ -81,30 +81,30 @@ raw_bg_workflow as (
 --- Bảng chính số 2: [Raw API]_Bàn giao Workflow - lấy các trường thông tin trên WF Bàn giao
 WITH job AS (
   --- Thông tin job bàn giao
-  SELECT * FROM `base-data-analyst.customer_onboarding.job` WHERE workflow_id in ( 3940, 4536, 6487)),
+  SELECT * FROM ${ref('raw_job')} WHERE workflow_id in ( 3940, 4536, 6487) ),
   -- Thong tin job_form
 form AS (SELECT * FROM 
-  (SELECT job_id, keys, MAX(value) AS value FROM `base-data-analyst.customer_onboarding.job_form`
-  WHERE keys IN ("ben_su_dung_dich_vu_ben_a","ma_so_thue","gia_tri_hop_dong_bang_so","thanh_toan_chi_phi_training","dia_chi_training","id_system","loai_hop_dong","username_co" ,"email_co", "email_cs_trien_khai", "location")
+  (SELECT job_id, keys, MAX(value) AS value FROM ${ref('raw_job_form')}
+  WHERE keys IN ("ben_su_dung_dich_vu_ben_a","ma_so_thue","gia_tri_hop_dong_bang_so","thanh_toan_chi_phi_training","dia_chi_training","id_system","loai_hop_dong","username_co" ,"email_co", "email_cs_trien_khai", "location") 
   GROUP BY job_id, keys)
 PIVOT (
   MAX(value) FOR keys IN ("ben_su_dung_dich_vu_ben_a","ma_so_thue","gia_tri_hop_dong_bang_so","thanh_toan_chi_phi_training","dia_chi_training","id_system","loai_hop_dong","username_co" ,"email_co", "email_cs_trien_khai", "location"))),
  --- Thông tin chuyển job: Account management
  move as ( SELECT a.job_id,a.min_bc_deal_planning FROM 
-(SELECT job_id,min(stage_start) as min_bc_deal_planning FROM `base-data-analyst.customer_onboarding.job_move` WHERE stage_id in ( '27156', '23231','39803')  GROUP BY job_id) as a
+(SELECT job_id,min(stage_start) as min_bc_deal_planning FROM ${ref('raw_job_move')} WHERE stage_id in ( '27156', '23231','39803')   GROUP BY job_id) as a
 ),
 --- Thong tin app
  app_info as 
- (SELECT job_id,STRING_AGG(Distinct app) as Danh_sach_App, min(safe.PARSE_DATE('%d/%m/%Y', start_date)) as Ngay_bat_dau, max(safe.PARSE_DATE('%d/%m/%Y', end_date_promotion)) as Ngay_ket_thuc FROM `base-data-analyst.customer_onboarding.job_app_info` GROUP BY job_id),
+ (SELECT job_id,STRING_AGG(Distinct app) as Danh_sach_App, min(safe.PARSE_DATE('%d/%m/%Y', start_date)) as Ngay_bat_dau, max(safe.PARSE_DATE('%d/%m/%Y', end_date_promotion)) as Ngay_ket_thuc FROM `base-data-analyst.query.raw_job_app_info` GROUP BY job_id),
 --- Thong tin trien khai
 onboading_info AS
 (SELECT job_id, MAX(count_training_session) as so_buoi, 
       max(conduct_training_session) as chi_phi_buoi_dao_tao, 
       max(expense_training_session) as chi_phi_trien_khai 
-    FROM `base-data-analyst.customer_onboarding.job_training_session` GROUP BY job_id),
+    FROM `base-data-analyst.query.raw_job_training_session` GROUP BY job_id),
 --- Thong tin BC
 bc_info as 
-    (SELECT job_id, STRING_AGG(DISTINCT email) as email_bc FROM `base-data-analyst.customer_onboarding.job_bccs_info` GROUP BY job_id)
+    (SELECT job_id, STRING_AGG(DISTINCT email) as email_bc FROM `base-data-analyst.query.raw_job_bccs_info` GROUP BY job_id)
    
 -- QUERY ALL
  SELECT 
@@ -125,7 +125,7 @@ bc_info as
  FROM job
 LEFT JOIN form
  ON job.job_id = form.job_id
-LEFT JOIN `base-data-analyst.customer_onboarding.stage` AS stage
+LEFT JOIN `base-data-analyst.query.raw_stage` AS stage
 ON job.stage_id = cast(stage.stage_id as int64)
  RIGHT JOIN move
  ON move.job_id = job.job_id
@@ -134,12 +134,12 @@ ON job.stage_id = cast(stage.stage_id as int64)
  LEFT JOIN onboading_info ON onboading_info.job_id = job.job_id
    where job.job_id not in
  (
-   SELECT jf.job_id FROM `base-data-analyst.customer_onboarding.job` j
-  left join `base-data-analyst.customer_onboarding.job_form` jf
+   SELECT jf.job_id FROM ${ref('raw_job')} j
+  left join ${ref('raw_job_form')} jf
   on j.job_id = jf.job_id
   WHERE j.workflow_id = 6487
   and jf.keys = 'id_wfl_ban_giao_2021'
-  and length(jf.value) = 6
+  and length(jf.value) = 6 
  )
 ---and job.last_update >= '{{$json.LogTime}}'
 ORDER BY move.min_bc_deal_planning ASC
@@ -203,14 +203,14 @@ LEFT JOIN
         SELECT 
         safe_cast(job_id as int64) as job_id, 
         safe_cast(from_id as int64) as jobs_gen_prev
-    FROM `base-data-analyst.customer_onboarding.job`  
+    FROM ${ref('raw_job')}  
     UNION distinct 
     (
         --- Bảng sub 2.2.1 (job)---
                 WITH job as
         (
                         SELECT DISTINCT job_id 
-            FROM `base-data-analyst.customer_onboarding.job_move`  as m 
+            FROM ${ref('raw_job_move')}  as m 
             where stage_id in ('23231','39802')
                 ), 
         --- Bảng sub 2.2.2 (form) ---
@@ -219,7 +219,7 @@ LEFT JOIN
                         SELECT 
                                 job_id, 
                 safe_cast(REPLACE(max(case when keys = "link_job" then value else NULL end), "https://workflow.base.vn/job/", "") as int64) as link_job_hop_dong  
-                        FROM `base-data-analyst.customer_onboarding.job_form` 
+                        FROM ${ref('raw_job_form')} 
             GROUP BY job_id
                 ) 
 
