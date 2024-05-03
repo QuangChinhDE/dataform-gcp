@@ -181,7 +181,7 @@ FROM
         WHERE Revenue_type <> "Add-on" 
         AND Total_account not in (-1, 1) 
         AND (System_id <> 0 or System_id is null) 
-        AND Product_name in (select distinct product_name from `base-data-analyst.revenue.dim_product` where product_category = 'SaaS')
+        AND lower(Product_name) in (select distinct lower(product_name) from `base-data-analyst.revenue.dim_product` where product_category = 'SaaS')
         GROUP BY Revenue_type, Deal_id, System_id
     ) as A 
     --- Bảng sub 1.2 (B): Thông tin về lần thanh toán đầu tiên ---
@@ -260,7 +260,7 @@ dem_raw_app_revenue as (
   SUM(CASE WHEN revenue_type = 'Re-new' THEN amount ELSE 0 END) AS gia_tri_renew,
   SUM(CASE WHEN revenue_type = 'Resales' THEN amount ELSE 0 END) AS gia_tri_resales
   FROM raw_app_revenue
-  WHERE revenue_type IN ('New', 'Up-sale', 'Cross-sale', 'Renew', 'Resales')
+  WHERE revenue_type IN ('New', 'Up-sale', 'Cross-sale', 'Renew', 'Resales', 'Re-new')
   GROUP BY Job_id_Ban_giao
 )
 
