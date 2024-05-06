@@ -1,0 +1,57 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH 
+  careerpath AS (
+    SELECT distinct email_BC
+    FROM `base-data-analyst.careerpath.BC_careerpath`
+    WHERE location = "HCM"
+  ),
+
+  user AS (
+    SELECT u.base_user_id 
+    FROM `base-data-analyst.sale.user` u
+    JOIN careerpath c ON u.email = c.email_BC
+  ),
+
+  timeoff AS (
+    SELECT
+      cast(id as int64) timeoff_id,
+      name,
+      cast(group_id as int64) group_id,
+      cast(timeoff.user_id as int64) user_id,
+      username,
+      cast(creator_id as int64) creator_id,
+      creator_username,
+      CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(since, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) since,
+      CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update,
+      CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(start_date, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE) start_date,
+      CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(end_date, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE) end_date,
+      cast(warning as int64) warning,
+      state status,
+      metatype,
+      form
+    FROM `base-datateam.airbyte_base_timeoff.timeoff` timeoff
+  ),
+
+  timeoff_form AS (
+    SELECT
+      timeoff_id
+      ,JSON_EXTRACT_SCALAR(json, '$.value') value
+    FROM timeoff,
+      UNNEST(JSON_EXTRACT_ARRAY(form)) AS json
+    WHERE
+      JSON_EXTRACT_SCALAR(json, '$.id') = 'ghi_chu'
+  )
+
+
+SELECT
+  timeoff.* EXCEPT(form),
+  timeoff_form.value reason
+FROM timeoff
+JOIN user ON user.base_user_id = timeoff.creator_id
+LEFT JOIN timeoff_form ON timeoff_form.timeoff_id = timeoff.timeoff_id
+
+
