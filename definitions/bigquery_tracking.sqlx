@@ -20,21 +20,26 @@ FROM (
     -- select * from `base-datateam.airbyte_ads_coccoc.__TABLES__` union all 
     -- select * from `base-datateam.airbyte_ads_google.__TABLES__` union all 
     -- select * from `base-datateam.airbyte_ads_zalo.__TABLES__` union all 
+
+    -- base
     select * from `base-datateam.airbyte_base_hiring.__TABLES__` union all 
     select * from `base-datateam.airbyte_base_hrm.__TABLES__` union all 
     select * from `base-datateam.airbyte_base_income.__TABLES__` union all 
-    -- select * from `base-datateam.airbyte_base_payroll.__TABLES__` union all 
     select * from `base-datateam.airbyte_base_system.__TABLES__` union all 
     select * from `base-datateam.airbyte_base_workflow.__TABLES__` union all 
-    select * from `base-datateam.airbyte_bizfly.__TABLES__` union all 
+    select * from `base-datateam.airbyte_base_tiomeoff.__TABLES__` union all 
+
+    -- mkt
+    select * from `base-datateam.airbyte_google.__TABLES__` union all 
+    select * from `base-datateam.airbyte_facebook.__TABLES__` union all 
+    select * from `base-datateam.airbyte_ads.__TABLES__` union all 
+
+    -- select * from `base-datateam.airbyte_bizfly.__TABLES__` union all 
     select * from `base-datateam.airbyte_freshchat.__TABLES__` union all 
     select * from `base-datateam.airbyte_freshdesk.__TABLES__` union all 
-    -- select * from `base-datateam.airbyte_google_sheet_careerpath.__TABLES__` union all 
-    select * from `base-datateam.airbyte_google_sheet_request_co.__TABLES__` union all 
-    select * from `base-datateam.airbyte_internal.__TABLES__` union all 
-    select * from `base-datateam.airbyte_ads.__TABLES__` union all 
+    select * from `base-datateam.airbyte_google_sheet.__TABLES__` union all 
     select * from `base-datateam.airbyte_pipedrive.__TABLES__` union all 
-    select * from `base-datateam.airflow_crm_planhat.__TABLES__` union all 
+
 
     -- segment
     select * from `base-datateam.active_campaign.__TABLES__` union all 

@@ -1,0 +1,64 @@
+config {
+  type: "incremental",
+  uniqueKey: ['id'],
+  schema: "logging",
+  bigquery: {
+    partitionBy: "DATE(endTime)"
+  }
+}
+
+SELECT DISTINCT
+  MD5(CONCAT(
+        IFNULL(cast(json_column.tableId AS STRING), ''),
+        IFNULL(cast(json_column.datasetId AS STRING), ''),
+        IFNULL(cast(json_column.projectId AS STRING), ''),
+        IFNULL(cast(protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobName.jobId AS STRING), '')
+    )) id,
+  protopayload_auditlog.authenticationInfo.principalEmail,
+  json_column.projectId,
+  json_column.datasetId,
+  json_column.tableId,
+  protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobName.jobId jobId,
+  -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobConfiguration.query query,
+  -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatus.error.message message,
+  -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatus.state state,
+  (protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.totalBilledBytes / 1e12) * 5 AS cost_in_usd,  -- Giả sử 5 USD/TB
+  -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.createTime createTime,
+  CAST(TIMESTAMP_ADD(TIMESTAMP(protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.startTime), INTERVAL 7 HOUR) AS DATETIME) startTime,
+  -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.endTime endTime,
+  -- protopayload_auditlog.requestMetadata.callerIp,
+  -- protopayload_auditlog.requestMetadata.callerSuppliedUserAgent,
+  CAST(TIMESTAMP_ADD(TIMESTAMP(timestamp), INTERVAL 7 HOUR) AS DATETIME) endTime
+FROM `base-datateam.logging.cloudaudit_googleapis_com_data_access`,
+  UNNEST(protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.referencedTables) as json_column
+WHERE DATE(timestamp) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY) AND CURRENT_DATE()
+  AND protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.totalBilledBytes is not null
+
+union all
+
+SELECT DISTINCT
+  MD5(CONCAT(
+        IFNULL(cast(json_column.tableId AS STRING), ''),
+        IFNULL(cast(json_column.datasetId AS STRING), ''),
+        IFNULL(cast(json_column.projectId AS STRING), ''),
+        IFNULL(cast(protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobName.jobId AS STRING), '')
+    )) id,
+  protopayload_auditlog.authenticationInfo.principalEmail,
+  json_column.projectId,
+  json_column.datasetId,
+  json_column.tableId,
+  protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobName.jobId jobId,
+  -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobConfiguration.query query,
+  -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatus.error.message message,
+  -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatus.state state,
+  (protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.totalBilledBytes / 1e12) * 5 AS cost_in_usd,  -- Giả sử 5 USD/TB
+  -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.createTime createTime,
+  CAST(TIMESTAMP_ADD(TIMESTAMP(protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.startTime), INTERVAL 7 HOUR) AS DATETIME) startTime,
+  -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.endTime endTime,
+  -- protopayload_auditlog.requestMetadata.callerIp,
+  -- protopayload_auditlog.requestMetadata.callerSuppliedUserAgent,
+  CAST(TIMESTAMP_ADD(TIMESTAMP(timestamp), INTERVAL 7 HOUR) AS DATETIME) endTime
+FROM `base-data-analyst.logging.cloudaudit_googleapis_com_data_access`,
+  UNNEST(protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.referencedTables) as json_column
+WHERE DATE(timestamp) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY) AND CURRENT_DATE()
+  AND protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.totalBilledBytes is not null
