@@ -95,7 +95,7 @@ PIVOT (
 ),
 --- Thong tin app
  app_info as 
- (SELECT job_id,STRING_AGG(Distinct app) as Danh_sach_App, min(safe.PARSE_DATE('%d/%m/%Y', start_date)) as Ngay_bat_dau, max(safe.PARSE_DATE('%d/%m/%Y', end_date_promotion)) as Ngay_ket_thuc FROM `base-data-analyst.query.raw_job_app_info` GROUP BY job_id),
+ (SELECT job_id,STRING_AGG(Distinct app) as Danh_sach_App, min(safe.PARSE_DATE('%d/%m/%Y', start_date)) as Ngay_bat_dau, max(safe.PARSE_DATE('%d/%m/%Y', end_date)) as Ngay_ket_thuc FROM `base-data-analyst.query.raw_job_app_info` GROUP BY job_id),
 --- Thong tin trien khai
 onboading_info AS
 (SELECT job_id, MAX(count_training_session) as so_buoi, 
