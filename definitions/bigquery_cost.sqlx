@@ -22,7 +22,7 @@ SELECT DISTINCT
   -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobConfiguration.query query,
   -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatus.error.message message,
   -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatus.state state,
-  (protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.totalBilledBytes / 1e12) * 5 AS cost_in_usd,  -- Giả sử 5 USD/TB
+  (protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.totalBilledBytes / 1e12) * 6.25 AS cost_in_usd,  -- Giả sử 6.25 USD/TB
   -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.createTime createTime,
   CAST(TIMESTAMP_ADD(TIMESTAMP(protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.startTime), INTERVAL 7 HOUR) AS DATETIME) startTime,
   -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.endTime endTime,
@@ -51,7 +51,7 @@ SELECT DISTINCT
   -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobConfiguration.query query,
   -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatus.error.message message,
   -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatus.state state,
-  (protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.totalBilledBytes / 1e12) * 5 AS cost_in_usd,  -- Giả sử 5 USD/TB
+  (protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.totalBilledBytes / 1e12) * 6.25 AS cost_in_usd,  -- Giả sử 6.25 USD/TB
   -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.createTime createTime,
   CAST(TIMESTAMP_ADD(TIMESTAMP(protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.startTime), INTERVAL 7 HOUR) AS DATETIME) startTime,
   -- protopayload_auditlog.servicedata_v1_bigquery.jobQueryResponse.job.jobStatistics.endTime endTime,
