@@ -78,6 +78,7 @@ SELECT
 FROM `base-datateam.logging.cloudaudit_googleapis_com_data_access` 
 WHERE DATE(timestamp) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY) AND CURRENT_DATE()
 AND protopayload_auditlog.servicedata_v1_bigquery.jobGetQueryResultsResponse.job.jobStatistics.billingTier = 1
+AND protopayload_auditlog.servicedata_v1_bigquery.jobGetQueryResultsResponse.job.jobStatistics.totalBilledBytes is not null
 
 UNION ALL
 
@@ -94,6 +95,7 @@ SELECT
 FROM `base-data-analyst.logging.cloudaudit_googleapis_com_data_access` 
 WHERE DATE(timestamp) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY) AND CURRENT_DATE()
 AND protopayload_auditlog.servicedata_v1_bigquery.jobGetQueryResultsResponse.job.jobStatistics.billingTier = 1
+AND protopayload_auditlog.servicedata_v1_bigquery.jobGetQueryResultsResponse.job.jobStatistics.totalBilledBytes is not null
 
 
 
