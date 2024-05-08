@@ -1,0 +1,10 @@
+config {
+  type: "incremental",
+  uniqueKey: ["message_id"],
+  schema: "customer_onboarding",
+  bigquery: {
+    partitionBy: "DATE(add_time)"
+  }
+}
+
+SELECT * FROM ${ref('raw_deal_send_email')}
