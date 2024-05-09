@@ -12,8 +12,16 @@ WITH
 
   user AS (
     SELECT u.base_user_id 
-    FROM `base-data-analyst.sale.user` u
+    FROM ${ref('user')} u
     JOIN careerpath c ON u.email = c.email_BC
+  ),
+
+  group_timeoff AS (
+    SELECT DISTINCT
+      cast(JSON_EXTRACT_SCALAR(json_data, '$.id') as int64) AS group_id,
+      JSON_EXTRACT_SCALAR(json_data, '$.name') AS name
+    FROM `base-datateam.airbyte_base_timeoff.group`,
+      UNNEST(JSON_EXTRACT_ARRAY(`groups`)) as json_data
   ),
 
   timeoff AS (
@@ -49,9 +57,9 @@ WITH
 
 SELECT
   timeoff.* EXCEPT(form),
+  group_timeoff.name group_name,
   timeoff_form.value reason
 FROM timeoff
 JOIN user ON user.base_user_id = timeoff.creator_id
+LEFT JOIN group_timeoff ON group_timeoff.group_id = timeoff.group_id
 LEFT JOIN timeoff_form ON timeoff_form.timeoff_id = timeoff.timeoff_id
-
-
