@@ -27,7 +27,7 @@ FROM (
     select * from `base-datateam.airbyte_base_income.__TABLES__` union all 
     select * from `base-datateam.airbyte_base_system.__TABLES__` union all 
     select * from `base-datateam.airbyte_base_workflow.__TABLES__` union all 
-    select * from `base-datateam.airbyte_base_tiomeoff.__TABLES__` union all 
+    -- select * from `base-datateam.airbyte_base_tiomeoff.__TABLES__` union all 
 
     -- mkt
     select * from `base-datateam.airbyte_google.__TABLES__` union all 
