@@ -4,4 +4,4 @@ config {
   schema: "customer_onboarding"
 }
 
-SELECT DISTINCT * FROM ${ref('raw_job_goi_dich_vu_pocps')}
+SELECT DISTINCT * FROM ${ref('raw_job_package_pocps')}
