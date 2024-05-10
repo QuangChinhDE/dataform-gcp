@@ -1,0 +1,7 @@
+config {
+  type: "incremental",
+  uniqueKey: ['goi_dich_vu_pocps_id'],
+  schema: "customer_onboarding"
+}
+
+SELECT DISTINCT * FROM ${ref('raw_job_goi_dich_vu_pocps')}

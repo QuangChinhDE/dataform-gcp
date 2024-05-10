@@ -1,0 +1,54 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+
+SELECT
+  MD5(CONCAT(
+        IFNULL(cast(job_id AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[0]') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[1]') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[2]') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[3]') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[4]') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[5]') AS STRING), '')
+    )) goi_dich_vu_pocps_id
+  ,job_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[0]')
+  end name
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[1]')
+  end package
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[2]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[2]')
+  end session
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[3]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[3]')
+  end amount_exclude_tax
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[4]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[4]')
+  end tax
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[5]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[5]')
+  end amount_include_tax
+FROM (
+  SELECT
+    (json_extract_array(value)) AS json_array
+    ,job_id
+  FROM (SELECT job_id, CAST(FROM_BASE64(value) AS STRING) value FROM ${ref('raw_job_form')} job_form 
+      WHERE keys = 'goi_dich_vu_pocps' 
+            and type = 'input-table' 
+            AND NOT REGEXP_CONTAINS(cast(value as string), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
+            AND cast(value as string) not like '%{}%'
+            AND (value not like '%{}%') 
+            AND (value not like '% %') 
+            AND (value not like '%1.%'))
+), UNNEST(json_array) AS json
