@@ -1,0 +1,41 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT 
+  CAST(JSON_EXTRACT_SCALAR(ns, '$.id') AS INT64) project_id,
+  JSON_EXTRACT_SCALAR(ns, '$.name') project_name,
+  CAST(JSON_EXTRACT_SCALAR(tasklist, '$.id') AS INT64) tasklist_id,
+  JSON_EXTRACT_SCALAR(tasklist, '$.name') tasklist_name,
+  CAST(parent_id AS INT64) task_parent_id,
+  CAST(ancestor_id AS INT64) task_ancestor_id,
+  CAST(id AS INT64) task_id,
+  name,
+  content,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(since, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) since,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) update_time,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(deadline, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) deadline,
+  CAST(duration AS INT64) duration,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(stime, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) stime,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(etime, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) etime,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(completed_time, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) completed_time,
+  CAST(important AS INT64) important,
+  CAST(urgent AS INT64) urgent,
+  CAST(score AS INT64) score,
+  CAST(status AS INT64) status,
+  CAST(overdue AS INT64) overdue,
+  CAST(complete AS FLOAT64) complete,
+  CAST(user_id AS INT64) user_id,
+  username,
+  CAST(creator_id AS INT64) creator_id,
+  creator_username,
+  CAST(real_order AS INT64) real_order,
+  metatype,
+FROM `base-datateam.airbyte_base_wework.task` 
+
+
+
+
+
+

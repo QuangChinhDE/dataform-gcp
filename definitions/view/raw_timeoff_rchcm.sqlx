@@ -34,7 +34,7 @@ WITH
       cast(creator_id as int64) creator_id,
       creator_username,
       CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(since, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) since,
-      CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update,
+      CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) update_time,
       CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(start_date, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE) start_date,
       CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(end_date, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE) end_date,
       cast(warning as int64) warning,
