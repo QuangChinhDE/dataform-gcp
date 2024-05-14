@@ -1,5 +1,6 @@
 config {
-  type: "table",
+  type: "incremental",
+  uniqueKey: ["system_id","month","active_user","current_user","average_active_rate"],
   schema: "customer_onboarding"
 }
 
@@ -19,6 +20,18 @@ SELECT
   cast(month as date) month,
   safe_cast(avg(active_user) as int64) as active_user,
   safe_cast(avg(current_user) as int64) as current_user,
-  AVG(active_rate) AS average_active_rate
+  AVG(active_rate) AS average_active_rate,
+  'new' status
 FROM daily 
 GROUP BY system_id, month
+
+-- UNION ALL
+
+-- SELECT 
+--   system_id,
+--   thang month,
+--   active_user,
+--   current_user,
+--   CAST(ty_le as float64) average_active_rate,
+--   'old' status
+-- FROM `base-data-analyst.customer_onboarding.cutoff_month_old`
