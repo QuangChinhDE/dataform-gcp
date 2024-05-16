@@ -1,0 +1,7 @@
+config {
+  type: "incremental",
+  uniqueKey: ['Customer_id'],
+  schema: "base_revenue"
+}
+
+SELECT * FROM `base-data-analyst.revenue.Customers`

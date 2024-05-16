@@ -1,0 +1,17 @@
+SELECT
+  CAST(Id AS INT64) AS Id,
+  CAST(Deal_id AS INT64) AS Deal_id,
+  CAST(System_id AS INT64) AS System_id,
+  CAST(Product_name AS STRING) AS Product_name,
+  CAST(Service_package AS STRING) AS Service_package,
+  CAST(Product_package AS STRING) AS Product_package,
+  CAST(Revenue_type AS STRING) AS Revenue_type,
+  DATE (Start_date) AS Start_date,
+  CAST(Amount AS INT64) AS Amount,
+  DATE (Expired_date_after_promotion) AS Expired_date_after_promotion,
+  DATE (Expired_date_before_promotion) AS Expired_date_before_promotion,
+  CAST(Buy_account AS INT64) AS Buy_account,
+  CAST(Free_account AS INT64) AS Free_account,
+  CAST(Total_account AS INT64) AS Total_account
+FROM
+  `base-data-analyst.revenue.test_subscriptions`;
