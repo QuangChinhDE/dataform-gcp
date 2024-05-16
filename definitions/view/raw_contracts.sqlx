@@ -1,0 +1,79 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH contracts_temp AS (
+  SELECT 
+    CAST(Job_id AS INT64) AS Job_id,
+    CAST(Deal_id AS INT64) AS Deal_id,
+    CAST(Request_id AS INT64) AS Request_id,
+    CAST(First_payment_id AS INT64) AS First_payment_id,
+    Owner_email,
+    Customer_id,
+    DATE(Payment_date) AS Payment_date,
+    Revenue_source,
+    CAST(Amount AS INT64) AS Amount,
+    CAST(Total_amount AS INT64) AS Total_amount,
+    CAST(Amount_tk AS INT64) AS Amount_tk,
+    Ghi_chu,
+    MKT_source,
+    CAST(Amount_FPT AS INT64) AS Amount_FPT
+  FROM base-data-analyst.revenue.test_contracts
+),
+
+raw_contract AS (
+  SELECT
+    *,
+    CAST(
+      CASE
+        WHEN job_id IS NOT NULL THEN job_id
+        ELSE -1000 - DENSE_RANK() OVER (ORDER BY first_payment_id)
+      END AS FLOAT64
+    ) AS Job_id_hop_dong
+  FROM contracts_temp
+),
+
+raw_sub AS (
+  SELECT
+    deal_id,
+    SUM(IF(is_implementation_product = 1, 0, 1)) AS check_tk,
+    SUM(amount) AS amount_sub
+  FROM base-data-analyst.revenue.test_subscriptions s
+  LEFT JOIN base-data-analyst.revenue.dim_product p ON s.product_name = p.product_name
+  GROUP BY deal_id
+),
+
+final_contract AS (
+  SELECT
+    ROW_NUMBER() OVER () AS payment_detail_id_test,
+    c.* EXCEPT (amount, amount_tk),
+    CASE
+      WHEN total_amount = amount_sub AND check_tk = 0 THEN 0
+      ELSE SAFE_CAST(amount AS FLOAT64)
+    END AS amount,
+    CASE
+      WHEN total_amount = amount_sub AND check_tk = 0 THEN c.amount
+      ELSE SAFE_CAST(amount_tk AS FLOAT64)
+    END AS amount_tk
+  FROM raw_contract c
+  LEFT JOIN raw_sub s ON c.first_payment_id = s.deal_id
+)
+
+SELECT 
+  CAST(Job_id AS INT64) AS Job_id,
+  CAST(Deal_id AS INT64) AS Deal_id,
+  CAST(Request_id AS INT64) AS Request_id,
+  CAST(First_payment_id AS INT64) AS First_payment_id,
+  Owner_email,
+  Customer_id,
+  Payment_date,
+  Revenue_source,
+  CAST(Total_amount AS INT64) AS Total_amount,
+  CAST(amount AS INT64) AS amount,
+  CAST(amount_tk AS INT64) AS amount_tk,
+  Ghi_chu,
+  MKT_source,
+  CAST(Amount_FPT AS INT64) AS Amount_FPT,
+  CAST(Job_id_hop_dong AS INT64) AS Job_id_hop_dong
+FROM final_contract
