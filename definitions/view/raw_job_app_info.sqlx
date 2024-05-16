@@ -7,11 +7,13 @@ WITH tb as (
   SELECT
     json_array,
     job_id,
+    last_update,
     keys
   FROM (
     SELECT 
       keys, 
-      job_id, 
+      job_id,
+      last_update,
       SAFE_CAST(FROM_BASE64(CAST(value AS STRING)) AS STRING) AS value,
       -- Chuyển đổi value thành json_array ngay tại đây để kiểm tra độ dài sau
       JSON_EXTRACT_ARRAY(SAFE_CAST(FROM_BASE64(CAST(value AS STRING)) AS STRING)) AS json_array
@@ -31,6 +33,7 @@ WITH tb as (
 
 SELECT
   job_id
+  ,last_update
   ,case
     when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
     else JSON_EXTRACT_SCALAR(json, '$[0]')
@@ -78,6 +81,7 @@ UNION ALL
 
 SELECT
   job_id
+  ,last_update
   ,case
     when JSON_EXTRACT_SCALAR(json, '$[8]') = '' then NULL
     else JSON_EXTRACT_SCALAR(json, '$[8]')
@@ -131,6 +135,7 @@ UNION ALL
 
 SELECT
   job_id
+  ,last_update
   ,case
     when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
     else JSON_EXTRACT_SCALAR(json, '$[0]')

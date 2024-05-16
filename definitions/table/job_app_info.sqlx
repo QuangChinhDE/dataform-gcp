@@ -31,4 +31,5 @@ SELECT DISTINCT
   ,amount
   ,expense
   ,type
+  ,last_update
 FROM ${ref('raw_job_app_info')}
