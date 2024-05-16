@@ -1,0 +1,131 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH job AS (
+SELECT * from `base-data-analyst.revenue.dim_job`
+),
+
+job_form AS (
+  SELECT
+  MD5(CONCAT(
+        IFNULL(cast(job_id AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.id') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.value') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.type') AS STRING), '')
+    )) job_form_id
+  ,job_id
+  ,JSON_EXTRACT_SCALAR(json, '$.id')  keys
+  ,JSON_EXTRACT_SCALAR(json, '$.value') value
+  ,JSON_EXTRACT_SCALAR(json, '$.type') type
+FROM job,
+  UNNEST(JSON_EXTRACT_ARRAY(form)) AS json
+), 
+
+job_tt AS
+(
+  SELECT DISTINCT
+    j.job_id,
+    cast(j.workflow_id as int64) workflow_id,
+    CASE 
+      WHEN w.name LIKE '%TT 1 lần%' THEN 'Một lần'
+      WHEN w.name LIKE '%TT nhiều lần%' THEN 'Nhiều lần'
+      ELSE null 
+    END AS payment_type,
+    f.value AS contract_number
+  FROM job j
+  LEFT JOIN `base-data-analyst.revenue.dim_workflow` w ON w.workflow_id = cast(j.workflow_id as int64)
+  LEFT JOIN job_form f ON j.job_id = f.job_id
+  WHERE f.keys = 'so_hop_dong'
+),
+
+raw_contract AS
+(
+SELECT
+  *
+FROM `base-data-analyst.revenue.Contracts`
+)
+
+, job_deal AS
+(
+  SELECT 
+    *,
+    COUNT(*) OVER (PARTITION BY first_payment_id) AS job_count
+  FROM
+  (
+    SELECT DISTINCT 
+      first_payment_id,
+      job_id_hop_dong,
+      MAX(total_amount) OVER (PARTITION BY first_payment_id) AS deal_total_amount
+    FROM raw_contract
+  ) raw1
+)
+
+, job_deal_1 AS -- 1 first payment 1 job
+(
+  SELECT
+    d.job_id_hop_dong,
+    original_amount,
+    STRING_AGG(c.Ghi_chu, "\n") AS note,
+    MIN(c.payment_date) as min_payment_date
+  FROM 
+  (
+    SELECT 
+      job_id_hop_dong,
+      SUM(deal_total_amount) AS original_amount
+    FROM job_deal
+    WHERE job_count = 1
+    GROUP BY 1
+  ) d
+  JOIN `base-data-analyst.revenue.Contracts` c ON d.job_id_hop_dong = c.job_id_hop_dong
+  GROUP BY 1, 2
+)
+
+, job_deal_2 AS -- 1 first payment n job
+(
+  SELECT
+    d.job_id_hop_dong,
+    SUM(IFNULL(c.Amount,0) + IFNULL(c.Amount_TK,0) + IFNULL(c.Amount_FPT,0)) AS original_amount,
+    STRING_AGG(c.Ghi_chu, "\n") AS note,
+    MIN(payment_date) AS min_payment_date
+  FROM job_deal d
+  JOIN `base-data-analyst.revenue.Contracts` c
+  ON d.job_id_hop_dong = c.job_id_hop_dong
+  WHERE d.job_count > 1
+  GROUP BY 1
+)
+
+, raw AS
+(
+  SELECT 
+    job_id_hop_dong,
+    original_amount,
+    note,
+    min_payment_date,
+    0 AS discount_rate,
+    0 AS refund_amount
+  FROM job_deal_1
+  UNION ALL
+  SELECT 
+    job_id_hop_dong,
+    original_amount,
+    note,
+    min_payment_date,
+    0 AS discount_rate,
+    0 AS refund_amount
+  FROM job_deal_2
+)
+
+SELECT 
+  r.job_id_hop_dong,
+  job_tt.contract_number,
+  job_tt.payment_type,
+  r.original_amount,
+  r.discount_rate,
+  r.refund_amount,
+  SUM(r.original_amount * (1 - discount_rate) + r.refund_amount) AS final_amount,
+  r.note
+FROM raw r
+LEFT JOIN job_tt ON r.job_id_hop_dong = job_tt.job_id
+GROUP BY 1, 2, 3, 4, 5, 6, 8

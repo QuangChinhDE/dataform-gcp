@@ -1,0 +1,22 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT job.job_id AS job_id_hd,
+  form.deal_id,
+  job.workflow_id,
+  job.name,
+  job.since,
+  job.last_update,
+  job.stage_id,
+  stage.name AS stage_name,
+  job.status,
+  job.failed_name,
+  job.failed_note,
+  form.* EXCEPT(deal_id, job_id,email_ke_toan_nhan_hoa_don, email_ke_toan_nhan_hoa_don_dien_, nguoi_dai_dien, nguoi_dai_dien_ben_a),
+  IF(form.nguoi_dai_dien IS NULL, form.nguoi_dai_dien_ben_a,form.nguoi_dai_dien ) AS nguoi_dai_dien_ben_a,
+  IF(form.email_ke_toan_nhan_hoa_don IS NULL, form.email_ke_toan_nhan_hoa_don_dien_, form.email_ke_toan_nhan_hoa_don) AS email_ke_toan_nhan_hoa_don
+FROM ${ref('raw_job')} job
+LEFT JOIN ${ref('raw_form')} form ON job.job_id = form.job_id
+LEFT JOIN ${ref('raw_stage')} stage ON job.stage_id =  stage.stage_id

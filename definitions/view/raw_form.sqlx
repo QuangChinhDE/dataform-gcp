@@ -1,0 +1,15 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+  SELECT *
+  FROM (
+    SELECT job_id, keys, MAX(value) AS value
+    FROM ${ref('raw_job_form')}
+    WHERE keys IN ("ben_su_dung_dich_vu_ben_a", "ma_so_thue", "dia_chi_tru_so", "dia_chi_giao_dich", "nguoi_dai_dien", "nguoi_dai_dien_ben_a", "email_ke_toan_nhan_hoa_don", "email_ke_toan_nhan_hoa_don_dien_", "so_hop_dong", "gia_tri_hop_dong_bang_so", "loai_hop_dong", "ngay_ky_hop_dong", "ly_do_thay_doi", "noi_dung_thay_doi_trong_hop_dong", "ngay_thanh_toan_du_kien", "ngay_thanh_toan_lan_1", "ngay_thanh_toan_lan_2", "ngay_thanh_toan_lan_3", "ma_hoa_don", "so_tien_thanh_toan", "so_tien_da_thanh_toan_lan_1", "so_tien_tt_lan_2", "so_tien_da_thanh_toan_lan_3", "deal_id","khach_hang_han_che_quyen_su_dung")
+    GROUP BY job_id, keys
+  )
+  PIVOT (
+    MAX(value) FOR keys IN ("ben_su_dung_dich_vu_ben_a", "ma_so_thue", "dia_chi_tru_so", "dia_chi_giao_dich", "nguoi_dai_dien", "nguoi_dai_dien_ben_a", "email_ke_toan_nhan_hoa_don", "email_ke_toan_nhan_hoa_don_dien_", "so_hop_dong", "gia_tri_hop_dong_bang_so", "loai_hop_dong", "ngay_ky_hop_dong", "ly_do_thay_doi", "noi_dung_thay_doi_trong_hop_dong", "ngay_thanh_toan_du_kien", "ngay_thanh_toan_lan_1", "ngay_thanh_toan_lan_2", "ngay_thanh_toan_lan_3", "ma_hoa_don", "so_tien_thanh_toan", "so_tien_da_thanh_toan_lan_1", "so_tien_tt_lan_2", "so_tien_da_thanh_toan_lan_3", "deal_id", "khach_hang_han_che_quyen_su_dung")
+  )
