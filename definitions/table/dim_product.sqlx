@@ -1,0 +1,6 @@
+config {
+  type: "incremental",
+  uniqueKey: ['product_id'],
+  schema: "base_revenue"
+}
+SELECT * FROM `base-data-analyst.revenue.dim_product`
