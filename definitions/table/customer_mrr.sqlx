@@ -1,0 +1,6 @@
+config {
+  type: "incremental",
+  schema: "base_revenue"
+}
+
+SELECT DISTINCT * FROM ${ref('raw_customer_mrr')}

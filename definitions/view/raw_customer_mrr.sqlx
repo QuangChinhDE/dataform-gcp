@@ -1,0 +1,53 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH
+cus_deal AS 
+(
+  SELECT DISTINCT
+    customer_id,
+    First_payment_id
+  FROM `base-data-analyst.revenue.Contracts`
+  WHERE owner_email <> 'khoahoc@base.vn'
+)
+
+, cus_date AS 
+(
+  SELECT 
+    customer_id,
+    start_date,
+    Expired_date_after_promotion AS end_date,
+    amount / (DATE_DIFF(Expired_date_after_promotion, start_date, DAY) + 1) AS rev_per_day
+  FROM `base-data-analyst.revenue.Subscriptions` s 
+  JOIN cus_deal c ON c.First_payment_id = s.Deal_id
+)
+
+, raw_daily_rev AS 
+(
+  SELECT
+    customer_id,
+    date_contract,
+    rev_per_day
+  FROM 
+    cus_date AS d,
+    UNNEST(GENERATE_DATE_ARRAY(start_date, end_date)) AS date_contract
+)
+
+, raw_total_rev AS 
+(
+  SELECT
+    customer_id,
+    COUNT(DISTINCT date_contract) AS total_day_usage,
+    SUM(rev_per_day) AS total_revenue
+  FROM raw_daily_rev
+  GROUP BY 1
+)
+
+SELECT 
+  customer_id,
+  total_day_usage,
+  total_revenue,
+  IF(total_day_usage <= 30, total_revenue, total_revenue/total_day_usage*30) AS mrr
+FROM raw_total_rev

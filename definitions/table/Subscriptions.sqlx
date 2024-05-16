@@ -1,3 +1,9 @@
+config {
+  type: "incremental",
+  uniqueKey: ['Id'],
+  schema: "base_revenue"
+}
+
 SELECT
   CAST(Id AS INT64) AS Id,
   CAST(Deal_id AS INT64) AS Deal_id,
@@ -14,4 +20,4 @@ SELECT
   CAST(Free_account AS INT64) AS Free_account,
   CAST(Total_account AS INT64) AS Total_account
 FROM
-  `base-data-analyst.revenue.test_subscriptions`;
+  `base-data-analyst.revenue.test_subscriptions`
