@@ -20,7 +20,7 @@ cus_deal AS
     start_date,
     Expired_date_after_promotion AS end_date,
     amount / (DATE_DIFF(Expired_date_after_promotion, start_date, DAY) + 1) AS rev_per_day
-  FROM `base-data-analyst.revenue.Subscriptions` s 
+  FROM ${ref('_subscriptions')} s 
   JOIN cus_deal c ON c.First_payment_id = s.Deal_id
 )
 

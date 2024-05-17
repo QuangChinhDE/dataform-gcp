@@ -1,0 +1,53 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH raw_created AS
+(
+SELECT
+      deal_id,
+      MIN(add_time) AS add_time
+FROM base-data-analyst.sale.deal_transaction
+GROUP BY deal_id
+)
+
+SELECT
+      d.deal_id,
+      d.creator_user_id,
+      d.org_id,
+      d.title,
+      d.person_id,
+      d.update_time,
+      d.user_id,
+      d.pipeline_id,
+      CASE
+        WHEN d.pipeline_id in (2,30,53,8,11,15,16,23,25,32,42,51,10,13,26,35) THEN 'BC'
+        WHEN d.pipeline_id in (17,19,21,45,55) THEN 'CD'
+        WHEN d.pipeline_id in (7,24,39,47,20) THEN 'Partner'
+        ELSE 'Other'
+      END AS owner_role,
+      d.stage_id,
+      d.expected_close_date,
+      d.close_time,
+      d.won_time,
+      d.value,
+      d.probability,
+      d.tracking_source,
+      d.source_group,
+      d.system_id,
+      d.event,
+      d.lost_reason,
+      d.status,
+      CASE
+        WHEN rc.add_time IS NULL THEN d.add_time
+        WHEN rc.add_time <= d.add_time THEN rc.add_time
+        ELSE d.add_time
+      END AS add_time,
+      d.challenge,
+      d.lead_score,
+      d.priority_score,
+      d.gtm_type
+FROM base-data-analyst.sale.deal d
+LEFT JOIN raw_created rc
+ON d.deal_id = rc.deal_id

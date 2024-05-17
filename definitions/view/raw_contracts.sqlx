@@ -40,7 +40,7 @@ raw_sub AS (
     SUM(IF(is_implementation_product = 1, 0, 1)) AS check_tk,
     SUM(amount) AS amount_sub
   FROM base-data-analyst.revenue.test_subscriptions s
-  LEFT JOIN base-data-analyst.revenue.dim_product p ON s.product_name = p.product_name
+  LEFT JOIN ${ref('dim_product')} p ON s.product_name = p.product_name
   GROUP BY deal_id
 ),
 

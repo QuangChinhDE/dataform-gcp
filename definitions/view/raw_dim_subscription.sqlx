@@ -1,0 +1,88 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH job_deal AS
+(
+SELECT 
+  first_payment_id,
+  job_id_hop_dong,
+  COUNT(*) OVER (PARTITION BY first_payment_id) AS job_count
+FROM
+(
+  SELECT DISTINCT
+    first_payment_id,
+    job_id_hop_dong
+  FROM ${ref('_contracts')}
+) t
+)
+
+, ty_le_doanh_thu_job AS -- tỷ lệ doanh thu job trong deal (với trường hợp 1 deal nhiều job)
+(
+SELECT
+  d.first_payment_id,
+  d.job_id_hop_dong,
+  SUM((IFNULL(c.amount, 0) + IFNULL(c.amount_tk, 0) + IFNULL(c.amount_fpt, 0))/IFNULL(c.total_amount, 0)) as ty_le
+FROM job_deal d 
+JOIN ${ref('_contracts')} c ON d.job_id_hop_dong = c.job_id_hop_dong
+WHERE job_count > 1
+GROUP BY 1,2
+)
+
+, raw_subscription AS
+(
+-- Một deal đi với nhiều job
+SELECT
+  job_id_hop_dong,
+  system_id,
+  product_id,
+  product_package_id,
+  s.product_name,
+  service_package AS service_package_name,
+  revenue_type,
+  start_date,
+  expired_date_before_promotion,
+  expired_date_after_promotion,
+  NULL AS tax_pct,
+  ty_le * amount AS amount,
+  buy_account,
+  free_account,
+  total_account
+FROM ty_le_doanh_thu_job j
+JOIN ${ref('_subscriptions')} s ON j.first_payment_id = s.deal_id
+LEFT JOIN ${ref('dim_product')} p ON LOWER(s.product_name) = LOWER(p.product_name)
+LEFT JOIN ${ref('dim_product_package')} pp ON s.product_package = pp.product_package_name
+UNION ALL
+-- Một deal đi với một job 
+SELECT
+  job_id_hop_dong,
+  system_id,
+  product_id,
+  product_package_id,
+  s.product_name,
+  service_package,
+  revenue_type,
+  start_date,
+  expired_date_before_promotion,
+  expired_date_after_promotion,
+  NULL AS tax_pct,
+  amount,
+  buy_account,
+  free_account,
+  total_account
+FROM job_deal d
+JOIN ${ref('_subscriptions')} s ON d.First_payment_id = s.deal_id
+LEFT JOIN ${ref('dim_product')} p ON LOWER(s.product_name) = LOWER(p.product_name)
+LEFT JOIN ${ref('dim_product_package')} pp ON s.product_package = pp.product_package_name
+WHERE job_count = 1
+)
+
+SELECT
+  ROW_NUMBER() OVER () AS subscription_id, 
+  *,
+  IF(amount = 0, 1, 0) AS check_promotion
+FROM raw_subscription
+
+
+

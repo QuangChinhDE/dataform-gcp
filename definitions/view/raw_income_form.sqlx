@@ -1,0 +1,22 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+        FROM (
+            SELECT distinct income_id, safe_cast(custom_deal_id as int64) deal_id, custom_so_hop_dong contract_number,
+                ROW_NUMBER() OVER (PARTITION BY income_id ORDER BY last_update DESC) AS row_number
+            FROM (SELECT distinct * FROM
+                    (select
+                    income_id
+                    ,JSON_EXTRACT_SCALAR(json, '$.id')  keys
+                    ,JSON_EXTRACT_SCALAR(json, '$.value') value
+                    ,last_update
+                    from ${ref('raw_income')},
+                    UNNEST(JSON_EXTRACT_ARRAY(form)) AS json
+                    WHERE JSON_EXTRACT_SCALAR(json, '$.id') IN ('custom_deal_id', 'custom_so_hop_dong')) form
+                    PIVOT (MAX(value) FOR keys IN ('custom_deal_id', 'custom_so_hop_dong'))
+                ) a
+            ) t
+        WHERE t.row_number = 1

@@ -1,0 +1,5 @@
+config {
+  type: "incremental",
+  schema: "base_revenue"
+}
+SELECT * FROM ${ref('raw_fact_revenue')}

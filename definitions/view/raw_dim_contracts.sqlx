@@ -4,24 +4,8 @@ config {
 }
 
 WITH job AS (
-SELECT * from `base-data-analyst.revenue.dim_job`
+SELECT * from ${ref('raw_job')}
 ),
-
-job_form AS (
-  SELECT
-  MD5(CONCAT(
-        IFNULL(cast(job_id AS STRING), ''),
-        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.id') AS STRING), ''),
-        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.value') AS STRING), ''),
-        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.type') AS STRING), '')
-    )) job_form_id
-  ,job_id
-  ,JSON_EXTRACT_SCALAR(json, '$.id')  keys
-  ,JSON_EXTRACT_SCALAR(json, '$.value') value
-  ,JSON_EXTRACT_SCALAR(json, '$.type') type
-FROM job,
-  UNNEST(JSON_EXTRACT_ARRAY(form)) AS json
-), 
 
 job_tt AS
 (
@@ -36,15 +20,13 @@ job_tt AS
     f.value AS contract_number
   FROM job j
   LEFT JOIN `base-data-analyst.revenue.dim_workflow` w ON w.workflow_id = cast(j.workflow_id as int64)
-  LEFT JOIN job_form f ON j.job_id = f.job_id
+  LEFT JOIN ${ref('raw_job_form')} f ON j.job_id = f.job_id
   WHERE f.keys = 'so_hop_dong'
 ),
 
 raw_contract AS
 (
-SELECT
-  *
-FROM `base-data-analyst.revenue.Contracts`
+SELECT * FROM ${ref('_contracts')}
 )
 
 , job_deal AS
@@ -78,7 +60,7 @@ FROM `base-data-analyst.revenue.Contracts`
     WHERE job_count = 1
     GROUP BY 1
   ) d
-  JOIN `base-data-analyst.revenue.Contracts` c ON d.job_id_hop_dong = c.job_id_hop_dong
+  JOIN ${ref('_contracts')} c ON d.job_id_hop_dong = c.job_id_hop_dong
   GROUP BY 1, 2
 )
 
@@ -90,7 +72,7 @@ FROM `base-data-analyst.revenue.Contracts`
     STRING_AGG(c.Ghi_chu, "\n") AS note,
     MIN(payment_date) AS min_payment_date
   FROM job_deal d
-  JOIN `base-data-analyst.revenue.Contracts` c
+  JOIN ${ref('_contracts')} c
   ON d.job_id_hop_dong = c.job_id_hop_dong
   WHERE d.job_count > 1
   GROUP BY 1

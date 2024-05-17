@@ -1,0 +1,100 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH 
+raw_subscription AS
+(
+  SELECT 
+    s.*,
+    CASE 
+      WHEN product_category = 'FPT' THEN 'fpt'
+      WHEN is_implementation_product = 1 THEN 'tk'
+      ELSE 'other'
+    END AS product_type
+  FROM ${ref('raw_dim_subscription')} s
+  LEFT JOIN ${ref('dim_product')} p ON s.product_id = p.product_id
+), product_type_revenue AS
+
+(SELECT 
+    *
+  FROM
+  (
+    SELECT 
+      job_id_hop_dong,
+      product_type,
+      amount
+    FROM raw_subscription
+  ) 
+  PIVOT 
+  (
+    SUM(amount) AS job_amount
+    FOR product_type IN ('other', 'tk', 'fpt')
+  )), 
+  
+amount_rate AS 
+(
+  SELECT 
+    d.*,
+    IFNULL(SAFE_DIVIDE(amount, job_amount_other), 0) AS actual_amount_other_rate,
+    IFNULL(SAFE_DIVIDE(amount_tk, job_amount_tk), 0) AS actual_amount_tk_rate,
+    IFNULL(SAFE_DIVIDE(amount_fpt, job_amount_fpt), 0) AS actual_amount_fpt_rate
+  FROM ${ref('raw_sub_dim_payment_detail')} d
+  JOIN product_type_revenue r ON d.job_id_hop_dong = r.job_id_hop_dong
+)
+
+, raw_payment AS 
+(
+  SELECT 
+    *,
+    SUM(actual_amount_tk_rate) OVER (PARTITION BY job_id_hop_dong) AS check_tk
+  FROM amount_rate
+)
+
+, raw AS
+(
+  SELECT 
+    payment_detail_id,
+    subscription_id,
+    customer_id,
+    p.job_id_hop_dong,
+    p.payment_id,
+    source_id,
+    system_id,
+    product_id,
+    product_package_id,
+    owner_month_id,
+    owner_email,
+    payment_month,
+    payment_date,
+    start_date,
+    expired_date_before_promotion,
+    expired_date_after_promotion,
+    IF(product_type = 'fpt', actual_amount_fpt_rate*s.amount, 0) AS actual_amount_fpt,
+    IF(product_type = 'other', actual_amount_other_rate*s.amount, 0) AS actual_amount_other,
+    IF(
+      product_type = 'tk', 
+      CASE 
+        WHEN check_tk = 0 THEN actual_amount_other_rate*s.amount
+        ELSE actual_amount_tk_rate*s.amount
+      END,
+      0
+    ) AS actual_amount_tk,
+    revenue_type,
+    check_promotion
+  FROM raw_payment p
+  JOIN raw_subscription s ON p.job_id_hop_dong = s.job_id_hop_dong
+)
+
+SELECT 
+  * EXCEPT (check_promotion),
+  SAFE_DIVIDE(amount, SUM(amount) OVER (PARTITION BY job_id_hop_dong)) AS revenue_rate
+FROM
+  (
+  SELECT 
+    * EXCEPT (actual_amount_fpt, actual_amount_other, actual_amount_tk),
+    actual_amount_fpt + actual_amount_other + actual_amount_tk AS amount
+  FROM raw
+  ) t
+WHERE check_promotion = 1 OR amount <> 0

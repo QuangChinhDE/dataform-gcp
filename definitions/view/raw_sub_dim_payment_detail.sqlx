@@ -1,0 +1,79 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH 
+raw_contract AS 
+(
+SELECT 
+  deal_id AS payment_id,
+  job_id_hop_dong,
+  CASE 
+    WHEN Revenue_source  = 'TK' AND owner_email = 'data@base.vn' THEN 'Data'
+    WHEN Revenue_source  = 'TK' AND owner_email <> 'data@base.vn' THEN 'CO'
+    WHEN Revenue_source  = 'MKT' THEN 'Digital'
+    WHEN Revenue_source  LIKE '%salehunt%' THEN 'Salehunt'
+    WHEN Customer_id IN ('0305793402','0305793402-001') THEN 'FTI'
+    WHEN Revenue_source = "Partnership" THEN 'Partner'
+    ELSE Revenue_source
+  END AS source_name,
+  customer_id,
+  payment_date,
+  FORMAT_DATE('%Y-%m-01', payment_date) AS payment_month,
+  owner_email,
+  MKT_source AS marketer_source,
+  0 AS is_refund,
+  IFNULL(Amount,0) AS amount,
+  IFNULL(Amount_TK,0) AS amount_tk,
+  IFNULL(Amount_FPT,0) AS amount_fpt
+FROM ${ref('_contracts')}
+)
+
+, raw AS
+(
+SELECT 
+  r.payment_id,
+  r.job_id_hop_dong,
+  MD5(CONCAT(r.payment_month, r.owner_email)) AS owner_month_id,
+  source_id,
+  customer_id,
+  r.payment_date,
+  CAST(r.payment_month AS DATE) AS payment_month,
+  r.owner_email,
+  r.marketer_source,
+  CASE 
+    WHEN d.created_at IS NULL THEN 'Chưa rõ'
+    WHEN FORMAT_DATE('%Y-%m-01', d.created_at) = r.payment_month THEN '1'
+    WHEN FORMAT_DATE('%Y-%m-01', d.created_at) <> r.payment_month THEN '0'
+    ELSE 'Chưa rõ' 
+  END AS won_in_created_month,
+  r.is_refund,
+  r.amount,
+  r.amount_tk,
+  r.amount_fpt,
+  amount + amount_tk + amount_fpt AS payment_amount
+FROM raw_contract r
+LEFT JOIN ${ref('dim_source')} s ON r.source_name = s.source_name
+LEFT JOIN (SELECT 
+            d.deal_id,
+            d.system_id,
+            CASE 
+              WHEN d.pipeline_id in (2,30,53,8,11,15,16,23,25,32,42,51,10,13,26,35) THEN 'BC'
+              WHEN d.pipeline_id in (17,19,21,45,55) THEN 'CD'
+              WHEN d.pipeline_id in (7,24,39,47,20) THEN 'Partner'
+              ELSE 'Other' 
+            END AS owner_role,
+            d.lost_reason,
+            d.pipeline_id,
+            d.org_id,
+            d.add_time AS created_at
+          FROM `base-data-analyst.revenue.dim_deal` d) d
+ON r.payment_id = d.deal_id
+)
+
+
+SELECT 
+  ROW_NUMBER() OVER () AS payment_detail_id,
+  *
+FROM raw
