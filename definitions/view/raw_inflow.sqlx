@@ -19,8 +19,9 @@ FROM (
         FROM `base-datateam.airbyte_base_income.inflow` i
         -- LEFT JOIN `base-datateam.airbyte_base_income.inflow_payment` ip ON cast(i.id as int64) = cast(ip.inflow_id as int64)
         LEFT JOIN `base-datateam.airbyte_base_income.inflow_code` icode ON cast(icode.id as int64) = cast(i.inflow_code_id as int64)
+        where TIMESTAMP_TRUNC(i._airbyte_extracted_at, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+
         ) a
     ) t
 WHERE t.row_number = 1
-where TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
 
