@@ -12,6 +12,7 @@ SELECT
         IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[2]') AS STRING), '')
     )) customer_success_pod_id
   ,job_id
+  ,last_update
   ,case
     when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
     else JSON_EXTRACT_SCALAR(json, '$[0]')
@@ -28,7 +29,8 @@ FROM (
   SELECT
     (json_extract_array(value)) AS json_array
     ,job_id
-  FROM (SELECT job_id, CAST(FROM_BASE64(value) AS STRING) value FROM ${ref('raw_job_form')} job_form 
+    ,last_update
+  FROM (SELECT job_id, last_update, CAST(FROM_BASE64(value) AS STRING) value FROM ${ref('raw_job_form')} job_form 
       WHERE keys = 'customer_success_pod' 
             and type = 'input-table' 
             AND NOT REGEXP_CONTAINS(cast(value as string), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
