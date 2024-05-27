@@ -1,0 +1,25 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+  cast(id as int64) contract_id,
+  name,
+  NULLIF(content, '') as content,
+  NULLIF(code, '') code,
+  cast(is_probation as int64) is_probation,
+  cast(is_current as int64) is_current,
+  cast(status as int64) status,
+  cast(area_id as int64) area_id,
+  cast(office_id as int64) office_id,
+  cast(creator_id as int64) creator_id,
+  cast(user_id as int64) user_id,
+  cast(employee_id as int64) employee_id,
+  JSON_EXTRACT_SCALAR(type_export, '$.name') as type_export_name,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(since, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) since,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(start_date, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE) start_date,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(end_date, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE) end_date
+FROM `base-datateam.airbyte_base_hrm.contract`
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
