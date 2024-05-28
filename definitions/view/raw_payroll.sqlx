@@ -12,8 +12,8 @@ WITH
             ,cast(report_year as int64) year
             ,columns
             ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
-        FROM `base-datateam.airbyte_base_hrm.payroll_record` b
-        LEFT JOIN (SELECT DISTINCT cast(id as int64) payroll_id, name FROM `base-datateam.airbyte_base_hrm.payroll_payroll`) as a on a.payroll_id = cast(b.payroll_id as int64)
+        FROM `base-datateam.airbyte_base_hrm.record` b
+        LEFT JOIN (SELECT DISTINCT cast(id as int64) payroll_id, name FROM `base-datateam.airbyte_base_hrm.payroll`) as a on a.payroll_id = cast(b.payroll_id as int64)
         WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
     )
 
