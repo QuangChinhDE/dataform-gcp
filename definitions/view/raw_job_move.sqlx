@@ -5,30 +5,31 @@ config {
 
 SELECT
   MD5(CONCAT(
-        IFNULL(cast(job_id AS STRING), ''),
-        IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.user_id') as int64) AS STRING), ''),
-        IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.mover_id') as int64) AS STRING), ''),
-        IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.stage_id') as int64) AS STRING), ''),
-        IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.stage_start') as int64) AS STRING), ''),
-        IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.stage_deadline') as int64) AS STRING), ''),
-        IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.from_stage_id') as int64) AS STRING), ''),
-        IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.stage_end') as int64) AS STRING), ''),
-        IFNULL(cast(last_update AS STRING), ''),
-        IFNULL(cast(workflow_id AS STRING), ''),
-        IFNULL(cast(CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(json, '$.stage_start'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) AS STRING), '')
-    )) job_move_id
-  ,job_id
-  ,last_update
-  ,workflow_id
-  ,IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.user_id') as int64) AS STRING), '') user_id
-  ,IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.mover_id') as int64) AS STRING), '') mover_id
-  ,IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.stage_id') as int64) AS STRING), '') stage_id
-  ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(json, '$.stage_start'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) stage_start
-  ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(json, '$.stage_deadline'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) stage_deadline
-  ,IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.from_stage_id') as int64) AS STRING), '') from_stage_id
-  ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(json, '$.stage_end'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) stage_end
+        IFNULL(CAST(job_id AS STRING), ''),
+        IFNULL(CAST(CAST(JSON_EXTRACT_SCALAR(json, '$.user_id') AS INT64) AS STRING), ''),
+        IFNULL(CAST(CAST(JSON_EXTRACT_SCALAR(json, '$.mover_id') AS INT64) AS STRING), ''),
+        IFNULL(CAST(CAST(JSON_EXTRACT_SCALAR(json, '$.stage_id') AS INT64) AS STRING), ''),
+        IFNULL(CAST(CAST(JSON_EXTRACT_SCALAR(json, '$.stage_start') AS INT64) AS STRING), ''),
+        IFNULL(CAST(CAST(JSON_EXTRACT_SCALAR(json, '$.stage_deadline') AS INT64) AS STRING), ''),
+        IFNULL(CAST(CAST(JSON_EXTRACT_SCALAR(json, '$.from_stage_id') AS INT64) AS STRING), ''),
+        IFNULL(CAST(CAST(JSON_EXTRACT_SCALAR(json, '$.stage_end') AS INT64) AS STRING), ''),
+        IFNULL(CAST(last_update AS STRING), ''),
+        IFNULL(CAST(workflow_id AS STRING), ''),
+        IFNULL(CAST(CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(REPLACE(JSON_EXTRACT_SCALAR(json, '$.stage_start'), '.0', '') AS INT64)), INTERVAL 7 HOUR) AS DATETIME) AS STRING), '')
+    )) AS job_move_id,
+  job_id,
+  last_update,
+  workflow_id,
+  CAST(IFNULL(CAST(CAST(JSON_EXTRACT_SCALAR(json, '$.user_id') AS INT64) AS STRING), '') AS INT64) AS user_id,
+  CAST(IFNULL(CAST(CAST(JSON_EXTRACT_SCALAR(json, '$.mover_id') AS INT64) AS STRING), '') AS INT64) AS mover_id,
+  CAST(IFNULL(CAST(CAST(JSON_EXTRACT_SCALAR(json, '$.stage_id') AS INT64) AS STRING), '') AS INT64) AS stage_id,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(REPLACE(JSON_EXTRACT_SCALAR(json, '$.stage_start'), '.0', '') AS INT64)), INTERVAL 7 HOUR) AS DATETIME) AS stage_start,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(REPLACE(JSON_EXTRACT_SCALAR(json, '$.stage_deadline'), '.0', '') AS INT64)), INTERVAL 7 HOUR) AS DATETIME) AS stage_deadline,
+  CAST(IFNULL(CAST(CAST(JSON_EXTRACT_SCALAR(json, '$.from_stage_id') AS INT64) AS STRING), '') AS INT64) AS from_stage_id,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(REPLACE(JSON_EXTRACT_SCALAR(json, '$.stage_end'), '.0', '') AS INT64)), INTERVAL 7 HOUR) AS DATETIME) AS stage_end
 FROM ${ref('raw_job')},
   UNNEST(JSON_EXTRACT_ARRAY(moves)) AS json
+
 
 
 
