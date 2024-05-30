@@ -16,6 +16,7 @@ SELECT
   ,JSON_EXTRACT_SCALAR(json, '$.name') name
   ,CAST(JSON_EXTRACT_SCALAR(json, '$.stage_id') AS INT64) stage_id
   ,JSON_EXTRACT_SCALAR(json, '$.username') username
+  ,CAST(JSON_EXTRACT_SCALAR(json, '$.status') AS INT64)  status
   ,CASE
     WHEN safe_cast(replace(JSON_EXTRACT_SCALAR(json, '$.deadline'), '.0', '') as int64) = 0 or safe_cast(replace(JSON_EXTRACT_SCALAR(json, '$.deadline'), '.0', '') as int64) IS NULL THEN CAST(NULL AS DATETIME)
     ELSE CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(json, '$.deadline'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME)
