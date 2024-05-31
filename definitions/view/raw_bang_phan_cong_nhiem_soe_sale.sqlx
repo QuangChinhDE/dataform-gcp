@@ -28,11 +28,13 @@ SELECT
     when JSON_EXTRACT_SCALAR(json, '$[3]') = '' then NULL
     else JSON_EXTRACT_SCALAR(json, '$[3]')
   end nhiem_vu_cu_the_o_first_meeting
+  ,last_update
 FROM (
   SELECT
     (json_extract_array(value)) AS json_array
     ,job_id
-  FROM (SELECT job_id, SAFE_CONVERT_BYTES_TO_STRING(FROM_BASE64(value)) value FROM ${ref('raw_job_form')} job_form 
+    ,last_update
+  FROM (SELECT job_id,last_update, SAFE_CONVERT_BYTES_TO_STRING(FROM_BASE64(value)) value FROM ${ref('raw_job_form')} job_form 
       WHERE keys = 'bang_phan_cong_nhiem_soe_sale' 
         and type = 'input-table' 
         AND NOT REGEXP_CONTAINS(cast(value as string), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')

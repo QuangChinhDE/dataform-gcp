@@ -1,5 +1,13 @@
 config {
-  type: "table",
+  type: "incremental",
   uniqueKey: ['danh_sach_nhan_su_soe_tham_gia_id'],
-  schema: "sale_solution_engineer"}
-SELECT * FROM ${ref('raw_danh_sach_nhan_su_soe_tham_gia')}
+  schema: "sale_solution_engineer"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+  SELECT *,
+      ROW_NUMBER() OVER (PARTITION BY danh_sach_nhan_su_soe_tham_gia_id ORDER BY last_update DESC) AS row_number
+  FROM ${ref('raw_danh_sach_nhan_su_soe_tham_gia')}
+  ) t
+WHERE t.row_number = 1
