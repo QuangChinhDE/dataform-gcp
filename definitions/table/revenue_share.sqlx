@@ -1,5 +1,13 @@
 config {
-  type: "table",
+  type: "incremental",
   uniqueKey: ['revenue_share_id'],
-  schema: "sale_solution_engineer"}
-SELECT * FROM ${ref('raw_revenue_share')}
+  schema: "sale_solution_engineer"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+  SELECT *,
+      ROW_NUMBER() OVER (PARTITION BY revenue_share_id ORDER BY last_update DESC) AS row_number
+  FROM ${ref('raw_revenue_share')}
+  ) t
+WHERE t.row_number = 1
