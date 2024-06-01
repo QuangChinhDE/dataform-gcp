@@ -3,4 +3,6 @@ config {
   schema: "base_revenue"
 }
 
-SELECT * FROM ${ref('raw_income_estimate')}
+SELECT income_id, received, to_be_received, portion, due_date, since, last_update
+
+ FROM ${ref('raw_income_estimate')}
