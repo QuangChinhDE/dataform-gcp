@@ -5,12 +5,14 @@ config {
 SELECT DISTINCT * EXCEPT(row_number, last_update)
         FROM (
             SELECT distinct *,
-                ROW_NUMBER() OVER (PARTITION BY income_id, inflow_id ORDER BY last_update DESC) AS row_number
+                ROW_NUMBER() OVER (PARTITION BY income_id
+                -- ,inflow_id 
+                ORDER BY last_update DESC) AS row_number
             FROM (select
                     cast(income_id as int64) income_id
-                    ,cast(inflow_id as int64) inflow_id
+                    -- ,cast(inflow_id as int64) inflow_id
                     ,cast(customer_id as int64) customer_id
-                    ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(since as int64)), INTERVAL 7 HOUR) AS DATE) match_date
+                    -- ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(since as int64)), INTERVAL 7 HOUR) AS DATE) match_date
                     ,username
                     ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(last_update as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
                 from `base-datateam.airbyte_base_income.income_payment`
