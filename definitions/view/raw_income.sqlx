@@ -21,7 +21,9 @@ SELECT
             ,cast(split(amount_received, '.')[OFFSET(0)] as int64) received
             ,cast(split(to_be_received, '.')[OFFSET(0)] as int64) income_value
             ,cast(split(to_be_received, '.')[OFFSET(0)] as int64) - cast(split(amount_received, '.')[OFFSET(0)] as int64) receivable
-            ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(due_date as int64)), INTERVAL 7 HOUR) AS DATE) receive_date
+            ,CASE WHEN CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(due_date AS INT64)), INTERVAL 7 HOUR) AS DATE) = '1970-01-01' THEN NULL ELSE 
+            CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(due_date AS INT64)), INTERVAL 7 HOUR) AS DATE) 
+END AS receive_date
             ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(since as int64)), INTERVAL 7 HOUR) AS DATETIME) since
             ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(last_update as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
             ,form
