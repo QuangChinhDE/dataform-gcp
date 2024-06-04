@@ -1,7 +1,6 @@
 config {
   type: "incremental",
-  uniqueKey: ['Deal_id'],
   schema: "base_revenue"
 }
 
-SELECT * FROM ${ref('raw_contracts')}
+SELECT DISTINCT * FROM ${ref('raw_contracts')}
