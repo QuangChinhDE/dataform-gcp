@@ -13,8 +13,10 @@ FROM (
             ,i.name
             ,icode.name inflow_code
             ,i.metatype
-            ,CASE WHEN CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(i.receive_date as int64)), INTERVAL 7 HOUR) AS DATE) = '1970-01-01' THEN NULL ELSE 
-            CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(i.receive_date as int64)), INTERVAL 7 HOUR) AS DATE) END AS receive_date            
+            ,CASE 
+                WHEN CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(i.receive_date as int64)), INTERVAL 7 HOUR) AS DATE) = '1970-01-01' THEN NULL 
+                ELSE CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(i.receive_date as int64)), INTERVAL 7 HOUR) AS DATE) 
+            END AS receive_date            
             ,cast(split(i.amount_received, '.')[OFFSET(0)] as int64) amount_received
             ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(i.last_update as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
         FROM `base-datateam.airbyte_base_income.inflow` i

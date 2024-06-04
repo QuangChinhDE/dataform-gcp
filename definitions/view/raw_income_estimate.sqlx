@@ -6,41 +6,37 @@ config {
 SELECT DISTINCT * EXCEPT(row_number)
 FROM (
     SELECT DISTINCT *,
-        ROW_NUMBER() OVER (PARTITION BY income_id, inflow_id ORDER BY due_date DESC, last_update DESC) AS row_number
+        ROW_NUMBER() OVER (PARTITION BY income_estimate_id ORDER BY last_update DESC) AS row_number
     FROM (
         SELECT DISTINCT
-            MD5(CONCAT(
-                CAST(object_id AS INT64),
-                CAST(SPLIT(received, '.')[OFFSET(0)] AS INT64),
-                CAST(SPLIT(to_be_received, '.')[OFFSET(0)] AS INT64),
-                CAST(portion AS FLOAT64),
-                SAFE_CAST(REGEXP_REPLACE(id, r'[^0-9]', '') AS INT64),
-                CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(due_date AS INT64)), INTERVAL 7 HOUR) AS DATE),
-                CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(since AS INT64)), INTERVAL 7 HOUR) AS DATETIME),
-                CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(receive_date AS INT64)), INTERVAL 7 HOUR) AS DATE),
-                CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(ie.last_update AS INT64)), INTERVAL 7 HOUR) AS DATETIME)
-            )) AS income_estimate_id,
+            -- MD5(CONCAT(
+            --     CAST(id AS STRING),
+            --     CAST(object_id AS STRING)
+            -- )) AS income_estimate_id,
+            CAST(id AS INT64) income_estimate_id,
             CAST(object_id AS INT64) AS income_id,
             CAST(SPLIT(received, '.')[OFFSET(0)] AS INT64) AS received,
             CAST(SPLIT(to_be_received, '.')[OFFSET(0)] AS INT64) AS to_be_received,
             CAST(portion AS FLOAT64) AS portion,
-            SAFE_CAST(REGEXP_REPLACE(id, r'[^0-9]', '') AS INT64) AS inflow_id,
-            CASE WHEN CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(due_date AS INT64)), INTERVAL 7 HOUR) AS DATE) = '1970-01-01' THEN NULL ELSE 
-            CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(due_date AS INT64)), INTERVAL 7 HOUR) AS DATE) END AS due_date,
+            -- SAFE_CAST(REGEXP_REPLACE(id, r'[^0-9]', '') AS INT64) AS inflow_id,
+            CASE 
+                WHEN CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(due_date AS INT64)), INTERVAL 7 HOUR) AS DATE) = '1970-01-01' THEN NULL 
+                ELSE CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(due_date AS INT64)), INTERVAL 7 HOUR) AS DATE) 
+            END AS due_date,
             CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(since AS INT64)), INTERVAL 7 HOUR) AS DATETIME) AS since,
-            CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(receive_date AS INT64)), INTERVAL 7 HOUR) AS DATE) AS receive_date,
+            -- CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(receive_date AS INT64)), INTERVAL 7 HOUR) AS DATE) AS receive_date,
             CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(ie.last_update AS INT64)), INTERVAL 7 HOUR) AS DATETIME) AS last_update
-        FROM `base-datateam.airbyte_base_income.income_estimate` ie,
-        UNNEST(SPLIT(TO_JSON_STRING(inflow_ids), ',')) AS id
-        LEFT JOIN (
-            SELECT 
-                CAST(id AS INT64) AS inflow_id, 
-                receive_date, 
-                MAX(_airbyte_extracted_at) AS max_extracted_at
-            FROM `base-datateam.airbyte_base_income.inflow`
-            GROUP BY id, receive_date
-        ) inflow 
-        ON inflow.inflow_id = SAFE_CAST(REGEXP_REPLACE(id, r'[^0-9]', '') AS INT64)
+        FROM `base-datateam.airbyte_base_income.income_estimate` ie
+        -- UNNEST(SPLIT(TO_JSON_STRING(inflow_ids), ',')) AS id
+        -- LEFT JOIN (
+        --     SELECT 
+        --         CAST(id AS INT64) AS inflow_id, 
+        --         receive_date, 
+        --         MAX(_airbyte_extracted_at) AS max_extracted_at
+        --     FROM `base-datateam.airbyte_base_income.inflow`
+        --     GROUP BY id, receive_date
+        -- ) inflow 
+        -- ON inflow.inflow_id = SAFE_CAST(REGEXP_REPLACE(id, r'[^0-9]', '') AS INT64)
         WHERE 
             CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(since AS INT64)), INTERVAL 7 HOUR) AS DATE) IS NOT NULL
              and TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)

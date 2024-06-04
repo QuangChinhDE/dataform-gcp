@@ -1,8 +1,8 @@
 config {
   type: "incremental",
+  uniqueKey: ['income_estimate_id'],
   schema: "base_revenue"
 }
 
-SELECT income_estimate_id, income_id, received, to_be_received, portion, due_date, since, last_update
-
- FROM ${ref('raw_income_estimate')}
+SELECT DISTINCT income_estimate_id, income_id, received, to_be_received, portion, due_date, since, last_update
+FROM ${ref('raw_income_estimate')}

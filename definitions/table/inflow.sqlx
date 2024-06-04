@@ -1,5 +1,6 @@
 config {
   type: "incremental",
+  uniqueKey: ['inflow_id'],
   schema: "base_revenue"
 }
 
