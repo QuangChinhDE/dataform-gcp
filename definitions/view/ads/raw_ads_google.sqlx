@@ -8,7 +8,7 @@ SELECT distinct
     ,ad_group_ad_ad_id ad_id
     ,segments_date date
     ,CASE 
-        WHEN MAX(customer_currency_code) = 'USD' THEN MAX(metrics_cost_micros)/1000000*25500
+        WHEN MAX(customer_currency_code) = 'USD' THEN MAX(metrics_cost_micros)/1000000*26000
         ELSE MAX(metrics_cost_micros)/1000000
     END cost
     ,MAX(metrics_impressions) impression
