@@ -5,13 +5,15 @@ config {
 
 WITH
     old_activity_raw AS (
-        SELECT  
+        SELECT 
+            cast(id as int64) activity_id,
             cast(deal_id as int64) deal_id,
             cast(org_id as int64) org_id,
             cast(person_id as int64) person_id,
             cast(user_id as int64) user_id,
             subject,
             type,
+            CAST(NULL AS STRING) active,
             done,
             DATETIME_ADD(DATETIME(marked_as_done_time), INTERVAL 7 HOUR) marked_as_done_time,
             case 
@@ -26,12 +28,14 @@ WITH
                 OR person_id IS NOT NULL
                 OR user_id is not null)
         GROUP BY
+            cast(id as int64),
             cast(deal_id as int64),
             cast(org_id as int64),
             cast(person_id as int64),
             cast(user_id as int64),
             subject,
             type,
+            CAST(NULL AS STRING),
             done,
             DATETIME_ADD(DATETIME(marked_as_done_time), INTERVAL 7 HOUR),
             case 
@@ -43,12 +47,14 @@ WITH
         
     activity_raw AS (
         SELECT  
+            cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64) activity_id,
             cast(JSON_EXTRACT_SCALAR(data, '$.deal_id') as int64) deal_id,
             cast(JSON_EXTRACT_SCALAR(data, '$.org_id') as int64) org_id,
             cast(JSON_EXTRACT_SCALAR(data, '$.person_id') as int64) person_id,
             cast(JSON_EXTRACT_SCALAR(data, '$.user_id') as int64) user_id,
             JSON_EXTRACT_SCALAR(data, '$.subject') subject,
             JSON_EXTRACT_SCALAR(data, '$.type') type,
+            JSON_EXTRACT_SCALAR(data, '$.active_flag') active,
             cast(JSON_EXTRACT_SCALAR(data, '$.done') as STRING) done,
             DATETIME_ADD(safe_cast(JSON_EXTRACT_SCALAR(data, '$.marked_as_done_time') AS DATETIME), INTERVAL 7 HOUR) marked_as_done_time,
             case 
@@ -64,12 +70,14 @@ WITH
                 OR JSON_EXTRACT_SCALAR(data, '$.user_id') is not null)
             AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
         GROUP BY
+            cast(JSON_EXTRACT_SCALAR(data, '$.id') as int64),
             cast(JSON_EXTRACT_SCALAR(data, '$.deal_id') as int64),
             cast(JSON_EXTRACT_SCALAR(data, '$.org_id') as int64),
             cast(JSON_EXTRACT_SCALAR(data, '$.person_id') as int64),
             cast(JSON_EXTRACT_SCALAR(data, '$.user_id') as int64),
             JSON_EXTRACT_SCALAR(data, '$.subject'),
             JSON_EXTRACT_SCALAR(data, '$.type'),
+            JSON_EXTRACT_SCALAR(data, '$.active_flag'),
             cast(JSON_EXTRACT_SCALAR(data, '$.done') as STRING),
             DATETIME_ADD(safe_cast(JSON_EXTRACT_SCALAR(data, '$.marked_as_done_time') AS DATETIME), INTERVAL 7 HOUR),
             case 
@@ -81,12 +89,14 @@ WITH
 
 SELECT
     MD5(CONCAT(
+        IFNULL(cast(activity_id AS STRING), ''),
         IFNULL(cast(deal_id AS STRING), ''),
         IFNULL(cast(org_id AS STRING), ''),
         IFNULL(cast(person_id AS STRING), ''),
         IFNULL(cast(user_id AS STRING), ''),
         IFNULL(cast(subject AS STRING), ''),
         IFNULL(cast(type AS STRING), ''),
+        IFNULL(cast(active AS STRING), ''),
         IFNULL(cast(done AS STRING), ''),
         IFNULL(cast(marked_as_done_time AS STRING), ''),
         IFNULL(cast(due_datetime AS STRING), ''),
@@ -99,6 +109,7 @@ SELECT
     user_id,
     subject,
     type,
+    active,
     done,
     marked_as_done_time,
     due_datetime,
