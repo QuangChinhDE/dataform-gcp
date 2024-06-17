@@ -1,0 +1,20 @@
+config {
+  type: "table",
+  schema: "sale"
+}
+
+
+
+WITH t AS (
+        SELECT * EXCEPT(row_number)
+        FROM (
+        SELECT task_id, tags,
+            ROW_NUMBER() OVER (PARTITION BY task_id ORDER BY update_time DESC) AS row_number
+        FROM ${ref('raw_wework_rchcm')}
+        ) t
+        WHERE t.row_number = 1
+    )
+
+SELECT task_id, REPLACE(TO_JSON_STRING(tag), '"', '') tag FROM t,
+UNNEST(JSON_EXTRACT_ARRAY(tags)) AS tag
+WHERE TO_JSON_STRING(tag) LIKE '%point%'

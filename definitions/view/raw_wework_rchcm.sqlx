@@ -32,6 +32,7 @@ SELECT
   creator_username,
   CAST(real_order AS INT64) real_order,
   metatype,
+  tags
 FROM `base-datateam.airbyte_base_wework.task` 
 
 

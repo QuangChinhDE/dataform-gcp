@@ -5,7 +5,7 @@ config {
 
 SELECT DISTINCT * EXCEPT(row_number)
 FROM (
-SELECT *,
+SELECT * EXCEPT(tags),
     ROW_NUMBER() OVER (PARTITION BY task_id ORDER BY update_time DESC) AS row_number
 FROM ${ref('raw_wework_rchcm')}
 ) t
