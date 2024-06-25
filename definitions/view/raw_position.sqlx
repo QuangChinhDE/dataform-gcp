@@ -47,5 +47,3 @@ FROM (
 WHERE t.row_number = 1
 
 
-
-

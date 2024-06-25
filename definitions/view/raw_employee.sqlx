@@ -19,8 +19,8 @@ SELECT DISTINCT
         ELSE NULL END AS phone
     ,SAFE.PARSE_DATE('%Y-%m-%d', CONCAT(dob_year, '-', dob_month, '-', dob_day)) AS date_of_birth
     ,CASE
-        WHEN CAST(gender as int64) = 0 THEN 'male' 
-        WHEN CAST(gender as int64) = 1 THEN 'female'
+        WHEN CAST(gender as int64) = 1 THEN 'male' 
+        WHEN CAST(gender as int64) = 2 THEN 'female'
         ELSE 'other'
     END gender
     ,cast(salary as float64) salary
