@@ -20,10 +20,10 @@ WITH
     WHERE t.row_number = 1
   )
 
-SELECT DISTINCT * EXCEPT(row_number)
+SELECT DISTINCT * EXCEPT(row_number, _airbyte_extracted_at)
 FROM (
   SELECT *,
-    ROW_NUMBER() OVER (PARTITION BY position_id ORDER BY last_update DESC) AS row_number
+    ROW_NUMBER() OVER (PARTITION BY position_id ORDER BY _airbyte_extracted_at DESC) AS row_number
   FROM (SELECT 
           cast(position.id as int64) position_id
           ,position.code
@@ -39,9 +39,10 @@ FROM (
           ,cast(position.area_id as int64) area_id
           ,position.status
           ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(position.last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
+          ,_airbyte_extracted_at
         FROM `base-datateam.airbyte_base_hrm.position` position
         LEFT JOIN position_type ON position_type.type_id = cast(position.type_id as int64)
-        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+        -- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
       ) a
   ) t
 WHERE t.row_number = 1
