@@ -9,6 +9,7 @@ SELECT DISTINCT
     ,cast(office_id as int64) office_id
     ,cast(position_id as int64) position_id
     ,cast(team_id as int64) team_id
+    ,cast(area_id as int64) area_id
     ,code
     ,name
     ,CASE WHEN
@@ -34,3 +35,4 @@ SELECT DISTINCT
     ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
 FROM `base-datateam.airbyte_base_hrm.employee`
 WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+-- WHERE cast(area_id as int64) = 718
