@@ -1,5 +1,5 @@
 config {
-  type: "incremental",
+  type: "table",
   uniqueKey: ["employee_id"],
   schema: "human_resource"
 }
