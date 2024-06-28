@@ -1,0 +1,9 @@
+config {
+  type: "table",
+  schema: "your_schema",
+  name: "adsinsights"
+}
+
+SELECT distinct 
+  *
+FROM ${ref('view_adsets')}

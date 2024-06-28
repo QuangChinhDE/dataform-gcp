@@ -1,0 +1,14 @@
+config {
+  type: "table",
+  uniqueKey: ['ad_id'],
+  schema: "your_schema",
+  name: "ads"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+  SELECT distinct *,
+      ROW_NUMBER() OVER (PARTITION BY ad_id ORDER BY updated_time DESC) AS row_number
+  FROM ${ref('view_ads')}
+) t
+WHERE t.row_number = 1  

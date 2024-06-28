@@ -1,0 +1,18 @@
+config {
+  type: "view",
+  schema: "your_schema",
+  name: "view_adsets"
+}
+
+SELECT DISTINCT
+  CAST(id AS INT64) adset_id,
+  CAST(campaign_id AS INT64) campaign_id,
+  name adset_name,
+  effective_status status,
+  daily_budget,
+  start_time,
+  end_time,
+  created_time,
+  updated_time
+FROM `base-datateam.airbyte_facebook.ad_sets` 
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) = TIMESTAMP("2024-06-28")

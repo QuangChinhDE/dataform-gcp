@@ -1,0 +1,10 @@
+config {
+  type: "test",
+  name: "test_campaigns"
+}
+select
+  *
+from
+  ${ref("campaigns")}
+where
+  campaign_id is null

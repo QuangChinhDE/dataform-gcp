@@ -1,0 +1,14 @@
+config {
+  type: "table",
+  uniqueKey: ['campaign_id'],
+  schema: "your_schema",
+  name: "campaigns"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+  SELECT distinct *,
+      ROW_NUMBER() OVER (PARTITION BY campaign_id ORDER BY updated_time DESC) AS row_number
+  FROM ${ref('view_campaigns')}
+) t
+WHERE t.row_number = 1

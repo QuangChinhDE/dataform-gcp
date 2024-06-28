@@ -1,0 +1,9 @@
+config {
+  type: "test",
+  name: "test_adsinsights"
+}
+
+select
+  *
+from
+  ${ref("adsinsights")}

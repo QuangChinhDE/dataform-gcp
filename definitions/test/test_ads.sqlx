@@ -1,0 +1,11 @@
+config {
+  type: "test",
+  name: "test_ads"
+}
+
+select
+  *
+from
+  ${ref('ads')}
+where
+  ad_id is null

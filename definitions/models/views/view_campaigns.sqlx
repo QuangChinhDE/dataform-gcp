@@ -1,0 +1,15 @@
+config {
+  type: "view",
+  schema: "your_schema",
+  name: "view_campaigns"
+}
+
+SELECT DISTINCT
+  CAST(id as int64) campaign_id,
+  name campaign_name,
+  status,
+  objective,
+  created_time,
+  updated_time
+FROM `base-datateam.airbyte_facebook.campaigns` 
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) = TIMESTAMP("2024-06-28")

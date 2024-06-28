@@ -1,0 +1,19 @@
+config {
+  type: "view",
+  schema: "your_schema",
+  name: "view_adsinsights"
+}
+
+SELECT DISTINCT
+  CAST(ad_id AS INT64) ad_id,
+  DATE(date_start) date_start,
+  DATE(date_stop) date_stop,
+  MAX(impressions) impressions,
+  MAX(clicks) clicks,
+  MAX(spend) spend,
+FROM `base-datateam.airbyte_facebook.ads_insights` 
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) = TIMESTAMP("2024-06-28")
+GROUP BY
+  CAST(ad_id AS INT64),
+  date_start,
+  date_stop
