@@ -2,7 +2,8 @@ config {
   type: "table",
   uniqueKey: ['ad_id'],
   schema: "your_schema",
-  name: "ads"
+  name: "ads",
+  dependencies: ["assert_ads"]
 }
 
 SELECT DISTINCT * EXCEPT(row_number)
@@ -11,4 +12,5 @@ FROM (
       ROW_NUMBER() OVER (PARTITION BY ad_id ORDER BY updated_time DESC) AS row_number
   FROM ${ref('view_ads')}
 ) t
-WHERE t.row_number = 1  
+WHERE t.row_number = 1
+  AND (SELECT count(*) FROM ${ref('assert_ads')} WHERE invalid_count > 0) = 0

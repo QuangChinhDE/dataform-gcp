@@ -1,9 +1,11 @@
 config {
   type: "table",
   schema: "your_schema",
-  name: "adsinsights"
+  name: "adsinsights",
+  dependencies: ["assert_adsinsights"]
 }
 
 SELECT distinct 
   *
-FROM ${ref('view_adsets')}
+FROM ${ref('view_adsinsights')}
+WHERE (SELECT count(*) FROM ${ref('assert_adsinsights')} WHERE invalid_count > 0) = 0

@@ -1,9 +1,12 @@
 config {
-  type: "test",
-  name: "test_adsinsights"
+  type: "assertion",
+  schema: "your_schema",
+  name: "assert_adsinsights"
 }
 
 select
-  *
+  count(*) as invalid_count
 from
-  ${ref("adsinsights")}
+  ${ref('view_adsinsights')}
+where
+  ad_id IS NULL

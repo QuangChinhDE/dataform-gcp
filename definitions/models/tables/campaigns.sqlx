@@ -2,7 +2,8 @@ config {
   type: "table",
   uniqueKey: ['campaign_id'],
   schema: "your_schema",
-  name: "campaigns"
+  name: "campaigns",
+  dependencies: ["assert_campaigns"]
 }
 
 SELECT DISTINCT * EXCEPT(row_number)
@@ -12,3 +13,4 @@ FROM (
   FROM ${ref('view_campaigns')}
 ) t
 WHERE t.row_number = 1
+  AND (SELECT count(*) FROM ${ref('assert_campaigns')} WHERE invalid_count > 0) = 0

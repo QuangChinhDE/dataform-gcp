@@ -1,11 +1,14 @@
 config {
-  type: "test",
-  name: "test_ads"
+  type: "assertion",
+  schema: "your_schema",
+  name: "assert_ads"
 }
 
 select
-  *
-from
-  ${ref('ads')}
-where
-  ad_id is null
+  count(*) as invalid_count
+from (
+  select ad_id, count(*) 
+  from ${ref('view_ads')}
+  group by ad_id
+  having count(*) > 1
+) as duplicates

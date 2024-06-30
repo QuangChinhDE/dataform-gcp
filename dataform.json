@@ -1,6 +1,6 @@
 {
-  "defaultSchema": "query",
-  "assertionSchema": "query",
+  "defaultSchema": "marketing",
+  "assertionSchema": "marketing",
   "warehouse": "bigquery",
   "defaultDatabase": "base-data-analyst",
   "defaultLocation": "us-central1"
