@@ -12,7 +12,7 @@ SELECT
   ,job_id
   ,last_update
   ,JSON_EXTRACT_SCALAR(json, '$.id')  keys
-  ,JSON_EXTRACT_SCALAR(json, '$.value') value
+  ,CASE WHEN JSON_EXTRACT_SCALAR(json, '$.value') = '' THEN NULL ELSE JSON_EXTRACT_SCALAR(json, '$.value') END value
   ,JSON_EXTRACT_SCALAR(json, '$.type') type
 FROM ${ref('raw_job')},
   UNNEST(JSON_EXTRACT_ARRAY(form)) AS json
