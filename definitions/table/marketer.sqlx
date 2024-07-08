@@ -6,9 +6,10 @@ config {
 SELECT DISTINCT
     marketer
     ,code
-    ,account_id
+    ,SAFE_CAST(account_id AS INT64) account_id
     ,status
     ,start_date
     ,update_at
     ,source_id
 FROM ${ref('raw_marketer')}
+WHERE SAFE_CAST(account_id AS INT64) IS NOT NULL
