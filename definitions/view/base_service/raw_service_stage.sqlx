@@ -1,0 +1,10 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT DISTINCT
+  CAST(id AS INT64) stage_id,
+  name stage_name
+FROM `base-datateam.airbyte_base_service.stage` 
+-- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) = TIMESTAMP("2024-07-08")

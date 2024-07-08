@@ -1,0 +1,18 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+  MD5(CONCAT(
+        IFNULL(cast(ticket_id AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.id') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.type') AS STRING), '')
+    )) ticket_form_id
+  ,ticket_id
+  ,last_update
+  ,JSON_EXTRACT_SCALAR(json, '$.id')  keys
+  ,JSON_EXTRACT_SCALAR(json, '$.value') value
+FROM ${ref('raw_service_ticket')},
+  UNNEST(JSON_EXTRACT_ARRAY(form)) AS json
+WHERE (CASE WHEN JSON_EXTRACT_SCALAR(json, '$.value') = '' THEN NULL ELSE JSON_EXTRACT_SCALAR(json, '$.value') END) IS NOT NULL

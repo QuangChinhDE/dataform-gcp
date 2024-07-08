@@ -1,0 +1,21 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT  
+  CAST(id as int64) ticket_id,
+  CAST(JSON_EXTRACT_SCALAR(properties, '$.prev_root_id') as int64) parent_ticket_id,
+  CAST(service_id as int64) service_id,
+  CAST(group_id as int64) group_id,
+  -- CAST(JSON_EXTRACT_SCALAR(properties, '$.current_id') as int64) stage_id,
+  name ticket_name,
+  username,
+  content,
+  status,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(since, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) since,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(deadline, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) deadline,
+  form
+FROM `base-datateam.airbyte_base_service.ticket` 
+WHERE CAST(group_id as int64) IN (3,5,7)

@@ -1,0 +1,7 @@
+config {
+  type: "table",
+  uniqueKey: ['service_id'],
+  schema: "base_revenue"
+}
+
+SELECT * FROM ${ref('raw_service')}
