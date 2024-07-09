@@ -1,0 +1,7 @@
+config {
+  type: "table",
+  schema: "marketing"
+}
+
+SELECT DISTINCT *
+FROM ${ref('raw_voucher_ads')}
