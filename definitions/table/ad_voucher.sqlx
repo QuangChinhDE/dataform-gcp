@@ -4,4 +4,4 @@ config {
 }
 
 SELECT DISTINCT *
-FROM ${ref('raw_voucher_ads')}
+FROM ${ref('raw_ad_voucher')}

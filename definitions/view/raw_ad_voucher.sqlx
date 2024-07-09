@@ -7,6 +7,7 @@ SELECT DISTINCT
   DATE(Ngay) date,
   Tai_khoan marketer,
   mkter.account_id,
-  CAST(REPLACE(So_tien_khuyen_mai, '.','') AS INT64) discount
+  CAST(REPLACE(So_tien_khuyen_mai, '.','') AS INT64) discount,
+  MD5('zalo') source_id
 FROM `base-datateam.airbyte_ads.gg_sheet_Voucher_chia_theo_ngay` voucher
 LEFT JOIN ${ref('raw_marketer')} mkter ON mkter.marketer = voucher.Tai_khoan
