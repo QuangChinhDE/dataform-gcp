@@ -1,5 +1,5 @@
 config {
-  type: "table",
+  type: "incremental",
   uniqueKey: ["customer_id"],
   schema: "marketing",
   bigquery: {
@@ -7,10 +7,23 @@ config {
   }
 }
 
-SELECT DISTINCT * EXCEPT(row_number)
-FROM (
-SELECT *,
-    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY last_update DESC) AS row_number
-FROM ${ref('raw_customer')}
-) t
-WHERE t.row_number = 1
+WITH
+  title_raw AS (
+    SELECT title, person_title
+    FROM `base-datateam.airbyte_ads.gg_sheet_Title`
+  ),
+  customer AS (
+    SELECT DISTINCT * EXCEPT(row_number)
+    FROM (
+    SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY last_update DESC) AS row_number
+    FROM ${ref('raw_customer')}
+    ) t
+    WHERE t.row_number = 1
+  )
+
+SELECT DISTINCT
+  customer.* EXCEPT(title),
+  CASE WHEN title_raw.person_title IS NULL THEN customer.title ELSE title_raw.person_title END AS title
+FROM customer
+LEFT JOIN title_raw ON title_raw.title = customer.title

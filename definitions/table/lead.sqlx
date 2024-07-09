@@ -8,15 +8,18 @@ config {
 }
 
 WITH
+    company_size_raw AS (
+        SELECT DISTINCT size, company_size
+        FROM `base-datateam.airbyte_ads.gg_sheet_Company_size`
+    ),
     customer AS (
-        SELECT customer_id
+        SELECT DISTINCT customer_id
         FROM ${ref('customer')}
         WHERE email not like '%@base.vn%' 
             or lower(title) not like '%học sinh%' 
             or lower(title) not like '%sinh viên%' 
             or lower(title) not like '%student%'
-        ),
-
+    ),
     lead AS (
         SELECT DISTINCT
             lead_id
@@ -30,7 +33,7 @@ WITH
             ,name
             ,source_group
             ,company_name
-            ,company_size
+            ,CASE WHEN company_size_raw.size IS NULL THEN leads.company_size ELSE company_size_raw.size END company_size
             ,company_address
             ,campaign_medium
             ,campaign_name
@@ -40,13 +43,13 @@ WITH
             ,note
             ,status
             ,disqualified_reason
-        FROM ${ref('raw_lead')}
+        FROM ${ref('raw_lead')} leads
+        LEFT JOIN company_size_raw ON company_size_raw.company_size = leads.company_size
         WHERE customer_id IN (SELECT customer_id FROM customer)
             AND (status != 'delete'
             OR product_id != 220
             OR note not like '%manual%'
-            OR lower(note) not like '%sync leads in pipedrive%')
-            
+            OR lower(note) not like '%sync leads in pipedrive%')    
     )
 
 SELECT DISTINCT * EXCEPT(row_number)
