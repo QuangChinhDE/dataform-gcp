@@ -1,6 +1,7 @@
 config {
   type: "table",
-  uniqueKey: ['goi_dich_vu_pocps_id']
+  uniqueKey: ['goi_dich_vu_pocps_id'],
+  schema: "base_revenue"
 }
 
 SELECT DISTINCT * FROM ${ref('raw_service_ticket_package_pocps')}

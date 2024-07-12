@@ -1,6 +1,7 @@
 config {
   type: "table",
-  uniqueKey: ['app_info_id']
+  uniqueKey: ['app_info_id'],
+  schema: "base_revenue"
 }
 
 SELECT DISTINCT
