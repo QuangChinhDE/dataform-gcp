@@ -1,0 +1,6 @@
+config {
+  type: "table",
+  uniqueKey: ['goi_dich_vu_pocps_id']
+}
+
+SELECT DISTINCT * FROM ${ref('raw_service_ticket_package_pocps')}

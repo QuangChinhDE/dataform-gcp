@@ -1,0 +1,34 @@
+config {
+  type: "table",
+  uniqueKey: ['app_info_id']
+}
+
+SELECT DISTINCT
+  MD5(CONCAT(
+        IFNULL(cast(ticket_id AS STRING), ''),
+        IFNULL(cast(app AS STRING), ''),
+        IFNULL(cast(package_used AS STRING), ''),
+        IFNULL(cast(package AS STRING), ''),
+        IFNULL(cast(total_account AS STRING), ''),
+        IFNULL(cast(start_date AS STRING), ''),
+        IFNULL(cast(end_date AS STRING), ''),
+        IFNULL(cast(end_date_promotion AS STRING), ''),
+        IFNULL(cast(amount AS STRING), ''),
+        IFNULL(cast(expense AS STRING), ''),
+        IFNULL(cast(type AS STRING), '')
+    )) app_info_id
+  ,ticket_id
+  ,app
+  ,package_used_id
+  ,package_used
+  ,package_id
+  ,package
+  ,total_account
+  ,start_date
+  ,end_date
+  ,end_date_promotion
+  ,amount
+  ,expense
+  ,type
+  ,last_update
+FROM ${ref('raw_service_ticket_app_info')}

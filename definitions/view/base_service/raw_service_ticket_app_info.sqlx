@@ -1,0 +1,171 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH tb as (
+  SELECT
+    json_array,
+    ticket_id,
+    last_update,
+    keys
+  FROM (
+    SELECT 
+      keys, 
+      ticket_id,
+      last_update,
+      SAFE_CAST(FROM_BASE64(CAST(value AS STRING)) AS STRING) AS value,
+      -- Chuyển đổi value thành json_array ngay tại đây để kiểm tra độ dài sau
+      JSON_EXTRACT_ARRAY(SAFE_CAST(FROM_BASE64(CAST(value AS STRING)) AS STRING)) AS json_array
+    FROM 
+      ${ref('raw_service_ticket_form')} job_form
+    WHERE 
+      NOT REGEXP_CONTAINS(CAST(value AS STRING), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
+      AND CAST(value AS STRING) NOT LIKE '%{}%'
+      AND value NOT LIKE '%{}%'
+      AND value NOT LIKE '% %'
+      AND value NOT LIKE '%1.%'
+  )
+  -- Thêm điều kiện này để kiểm tra và loại bỏ các hàng với json_array rỗng
+  WHERE ARRAY_LENGTH(json_array) > 0
+)
+
+SELECT
+  ticket_id
+  ,last_update
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[0]')
+  end app
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[1]')
+  end package_used
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else MD5(lower(JSON_EXTRACT_SCALAR(json, '$[1]')))
+  end package_used_id
+  ,CAST(NULL AS STRING) package
+  ,MD5(NULL) package_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[2]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[2]')
+  end total_account
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[3]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[3]')
+  end start_date
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[4]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[4]')
+  end end_date
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[5]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[5]')
+  end end_date_promotion
+  ,case
+    when replace(replace(JSON_EXTRACT_SCALAR(json, '$[6]'), ',', ''), '.', '') = '' then NULL
+    else replace(replace(JSON_EXTRACT_SCALAR(json, '$[6]'), ',', ''), '.', '')
+  end amount
+  ,case
+    when replace(replace(JSON_EXTRACT_SCALAR(json, '$[7]'), ',', ''), '.', '') = '' then NULL
+    else replace(replace(JSON_EXTRACT_SCALAR(json, '$[7]'), ',', ''), '.', '')
+  end expense
+  ,'thong_tin_subscription' type
+FROM (
+  SELECT * FROM tb WHERE keys = 'service_thong_tin_app_le'
+), UNNEST(json_array) AS json
+
+UNION ALL
+
+SELECT
+  ticket_id
+  ,last_update
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[8]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[8]')
+  end app
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[1]')
+  end package_used
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else MD5(lower(JSON_EXTRACT_SCALAR(json, '$[1]')))
+  end package_used_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[0]')
+  end package
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
+    else MD5(lower(JSON_EXTRACT_SCALAR(json, '$[0]')))
+  end package_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[2]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[2]')
+  end total_account
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[5]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[5]')
+  end start_date
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[6]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[6]')
+  end end_date
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[7]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[7]')
+  end end_date_promotion
+  ,case
+    when replace(replace(JSON_EXTRACT_SCALAR(json, '$[3]'), ',', ''), '.', '') = '' then NULL
+    else replace(replace(JSON_EXTRACT_SCALAR(json, '$[3]'), ',', ''), '.', '')
+  end amount
+  ,case
+    when replace(replace(JSON_EXTRACT_SCALAR(json, '$[4]'), ',', ''), '.', '') = '' then NULL
+    else replace(replace(JSON_EXTRACT_SCALAR(json, '$[4]'), ',', ''), '.', '')
+  end expense
+  ,'thong_tin_package' type
+FROM (
+  SELECT * FROM tb WHERE keys = 'service_thong_tin_package'
+), UNNEST(json_array) AS json
+
+UNION ALL
+
+SELECT
+  ticket_id
+  ,last_update
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[0]')
+  end app
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[1]')
+  end package_used
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[1]') = '' then NULL
+    else MD5(lower(JSON_EXTRACT_SCALAR(json, '$[1]')))
+  end package_used_id
+  ,CAST(NULL AS STRING) package
+  ,MD5(NULL) package_id
+  ,case
+    when JSON_EXTRACT_SCALAR(json, '$[2]') = '' then NULL
+    else JSON_EXTRACT_SCALAR(json, '$[2]')
+  end total_account
+  ,CAST(NULL AS STRING) start_date
+  ,CAST(NULL AS STRING) end_date
+  ,CAST(NULL AS STRING) end_date_promotion
+  ,case
+    when replace(replace(JSON_EXTRACT_SCALAR(json, '$[3]'), ',', ''), '.', '') = '' then NULL
+    else replace(replace(JSON_EXTRACT_SCALAR(json, '$[3]'), ',', ''), '.', '')
+  end amount
+  ,case
+    when replace(replace(JSON_EXTRACT_SCALAR(json, '$[4]'), ',', ''), '.', '') = '' then NULL
+    else replace(replace(JSON_EXTRACT_SCALAR(json, '$[4]'), ',', ''), '.', '')
+  end expense
+  ,'fpt_product' type
+FROM (
+  SELECT * FROM tb WHERE keys = 'service_thong_tin_san_pham_fpt'
+), UNNEST(json_array) AS json
+
