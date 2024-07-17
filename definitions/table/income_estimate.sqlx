@@ -1,6 +1,5 @@
 config {
-  type: "incremental",
-  uniqueKey: ['income_estimate_id'],
+  type: "table",
   schema: "base_revenue"
 }
 
