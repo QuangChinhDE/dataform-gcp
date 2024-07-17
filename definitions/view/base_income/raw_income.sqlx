@@ -39,6 +39,6 @@ SELECT
 FROM `base-datateam.airbyte_base_income.income` income
 LEFT JOIN (SELECT id, name, max(since) from `base-datateam.airbyte_base_income.revenue_unit` group by id, name) revenue_unit ON revenue_unit.id = income.revenue_unit_id
 LEFT JOIN (SELECT id, name, uid, max(since) from `base-datateam.airbyte_base_income.income_customer` group by id, name, uid) income_customer ON income_customer.id = income.revenue_unit_id
--- where TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+where TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
 
 
