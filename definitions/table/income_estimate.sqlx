@@ -1,6 +1,6 @@
 config {
   type: "table",
-  schema: "base_revenue"
+  schema: "revenue"
 }
 
 SELECT DISTINCT income_estimate_id, income_id, received, to_be_received, portion, due_date, since, last_update
