@@ -1,0 +1,10 @@
+config {
+  type: "table",
+  schema: "base_salary"
+}
+
+SELECT
+  *
+FROM
+  `base-data-analyst.base_salary.salary_tot`
+where phong_ban = 'Phòng Phát Triển Sản Phẩm'
