@@ -1,7 +1,7 @@
 config {
   type: "table",
   uniqueKey: ['ticket_id'],
-  schema: "base_revenue"
+  schema: "revenue"
 }
 
 SELECT * EXCEPT(form) FROM ${ref('raw_service_ticket')}

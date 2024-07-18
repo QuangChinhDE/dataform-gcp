@@ -1,7 +1,7 @@
 config {
   type: "table",
   uniqueKey: ['ticket_form_id'],
-  schema: "base_revenue"
+  schema: "revenue"
 }
 
 SELECT

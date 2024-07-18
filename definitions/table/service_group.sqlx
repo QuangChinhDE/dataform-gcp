@@ -1,7 +1,7 @@
 config {
   type: "table",
   uniqueKey: ['group_id'],
-  schema: "base_revenue"
+  schema: "revenue"
 }
 
 SELECT * FROM ${ref('raw_service_group')}
