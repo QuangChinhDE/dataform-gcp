@@ -4,7 +4,9 @@ config {
 }
 
 SELECT
-  *
+  * EXCEPT (_airbyte_raw_id, 	
+_airbyte_extracted_at, _airbyte_meta, 	
+_airbyte_generation_id)
 FROM
   `base-data-analyst.base_salary.salary_tot`
 where phong_ban = 'Phòng Marketing'
