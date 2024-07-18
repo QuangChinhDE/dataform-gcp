@@ -1,0 +1,12 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+  CAST(id as int) as income_id,
+  CAST(REPLACE(JSON_EXTRACT_SCALAR(x), '\"', '') as int) AS inflow_id
+FROM
+  `base-datateam.airbyte_base_income.income`,
+  UNNEST(JSON_EXTRACT_ARRAY(linked_estimate_inflow_ids)) AS x
+
