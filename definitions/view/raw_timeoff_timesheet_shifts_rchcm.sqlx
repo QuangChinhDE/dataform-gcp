@@ -1,0 +1,39 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH 
+    timeoff AS (
+        SELECT
+        cast(id as int64) timeoff_id,
+        shifts
+        FROM `base-datateam.airbyte_base_timeoff.timeoff` timeoff
+    ),
+
+    timeoff_shift AS (
+        SELECT
+            timeoff_id
+            ,JSON_EXTRACT_SCALAR(json, '$.datetime') datetime
+            ,JSON_EXTRACT_ARRAY(json, '$.shifts') shifts
+        FROM timeoff,
+            UNNEST(JSON_EXTRACT_ARRAY(shifts)) AS json
+    )
+
+SELECT 
+    timeoff_id,
+    CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(datetime, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE) datetime,
+    CAST(JSON_EXTRACT_SCALAR(json, '$.hours_per_day') AS FLOAT64) hours_per_day,
+    CAST(JSON_EXTRACT_SCALAR(json, '$.key') AS INT64) key,
+    CAST(JSON_EXTRACT_SCALAR(json, '$.num_shifts') AS INT64) num_shift,
+    CAST(JSON_EXTRACT_SCALAR(json, '$.points_per_day') AS FLOAT64) points_per_day,
+    JSON_EXTRACT_SCALAR(json, '$.timesheet_metatype') timesheet_metatype,
+    REPLACE(JSON_EXTRACT_SCALAR(json, '$.value'), ' ','') value
+FROM timeoff_shift,
+    UNNEST(shifts) AS json
+
+
+
+
+
+
