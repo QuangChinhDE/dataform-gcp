@@ -11,12 +11,14 @@ SELECT DISTINCT * EXCEPT(row_number,_airbyte_extracted_at)
 FROM (
     SELECT distinct *,
         ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY _airbyte_extracted_at DESC) AS row_number
-    FROM (SELECT distinct customer_id account_id, customer_descriptive_name account_name, md5('google') source_id, _airbyte_extracted_at  
-              FROM `base-datateam.airbyte_ads.google_accounts` 
-              WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
-          union all
-          SELECT distinct customer_id account_id, customer_descriptive_name account_name, md5('google') source_id, _airbyte_extracted_at 
-              FROM `base-datateam.airbyte_ads.google_v15_customer` 
-              WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())) gg
+    FROM
+        (SELECT distinct customer_id account_id, customer_descriptive_name account_name, md5('google') source_id, _airbyte_extracted_at  
+            FROM `base-datateam.airbyte_google.ads_customer` 
+        WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+        -- union all
+        -- SELECT distinct customer_id account_id, customer_descriptive_name account_name, md5('google') source_id, _airbyte_extracted_at 
+        --     FROM `base-datateam.airbyte_ads.google_v15_customer` 
+        --     WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+        ) gg
     ) t
 WHERE t.row_number = 1
