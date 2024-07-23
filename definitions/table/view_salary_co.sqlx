@@ -1,6 +1,6 @@
 config {
   type: "table",
-  schema: "base_salary"
+  schema: "customer_onboarding"
 }
 
 SELECT
