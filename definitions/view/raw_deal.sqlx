@@ -105,7 +105,7 @@ WITH
     LEFT JOIN deal_field_option df15
       ON df15.key = 'b3bd99ab752feec3ff32eaaac58ee40cd9158fef' AND df15.id = cast(JSON_EXTRACT_SCALAR(data, '$.b3bd99ab752feec3ff32eaaac58ee40cd9158fef') as int64)
 
-    WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())  
+    -- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())  
     ),
 
     old_deal_field_raw AS (
@@ -265,10 +265,10 @@ WITH
     )
 
 SELECT distinct * FROM deal
--- UNION ALL
--- SELECT DISTINCT old_deal_raw.*, old_deal_field_pivot.* EXCEPT(deal_id) FROM old_deal_raw
--- INNER JOIN old_deal_field_pivot ON old_deal_field_pivot.deal_id = old_deal_raw.deal_id
--- WHERE old_deal_raw.deal_id not in (select distinct deal_id from deal)
+UNION ALL
+SELECT DISTINCT old_deal_raw.*, old_deal_field_pivot.* EXCEPT(deal_id) FROM old_deal_raw
+INNER JOIN old_deal_field_pivot ON old_deal_field_pivot.deal_id = old_deal_raw.deal_id
+WHERE old_deal_raw.deal_id not in (select distinct deal_id from deal)
 
 
 
