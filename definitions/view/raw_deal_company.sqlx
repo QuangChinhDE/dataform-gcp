@@ -76,7 +76,8 @@ SELECT DISTINCT
     industry_.label industry,
     segmentation.label segmentation,
     size.label size,
-    tax_code tax_code
+    tax_code tax_code,
+    update_time
 FROM ${ref('raw_deal')} new_deal_raw,
 UNNEST(SPLIT(industry, ',')) AS industry
 LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = 'ba7758126eaf7a1c291050d38314f3ef6caac23a' GROUP BY cast(id as int64)) category ON category.id = safe_cast(new_deal_raw.category as int64)
@@ -84,3 +85,9 @@ LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option 
 LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '433393a17d7d4d66fad7fea01c611906aa554327' GROUP BY cast(id as int64)) industry_ ON industry_.id = safe_cast(new_deal_raw.industry AS int64)
 LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '4bc6995517793efb195df2de43629b79fa001818' GROUP BY cast(id as int64)) segmentation ON segmentation.id = safe_cast(new_deal_raw.segmentation as int64)
 LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '803427a7bbfc4dc909c52469688b2a2a2d07a941' GROUP BY cast(id as int64)) size ON size.id = safe_cast(new_deal_raw.size as int64)
+WHERE category.label IS NOT NULL OR
+    field.label IS NOT NULL OR
+    -- industry_.label IS NOT NULL OR
+    segmentation.label IS NOT NULL OR
+    size.label IS NOT NULL OR
+    tax_code IS NOT NULL

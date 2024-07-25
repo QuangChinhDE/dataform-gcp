@@ -9,7 +9,7 @@ config {
 SELECT DISTINCT * EXCEPT(row_number)
 FROM (
 SELECT *,
-    ROW_NUMBER() OVER (PARTITION BY _id_ ORDER BY _id_) AS row_number
+    ROW_NUMBER() OVER (PARTITION BY _id_ ORDER BY update_time) AS row_number
 FROM ${ref('raw_deal_company')}
 ) t
 WHERE t.row_number = 1
