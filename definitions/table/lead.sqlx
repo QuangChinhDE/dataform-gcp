@@ -43,6 +43,7 @@ WITH
             ,note
             ,status
             ,disqualified_reason
+            ,is_duplicate
         FROM ${ref('raw_lead')} leads
         LEFT JOIN company_size_raw ON company_size_raw.company_size = leads.company_size
         WHERE customer_id IN (SELECT customer_id FROM customer)

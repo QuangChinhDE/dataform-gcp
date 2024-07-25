@@ -41,7 +41,7 @@ WITH
         CASE WHEN new_value is null then old_value else new_value END value,
         DATETIME_ADD(SAFE_CAST(time as DATETIME), INTERVAL 7 HOUR) update_time
       FROM `base-datateam.airbyte_pipedrive.deal_changelog` 
-      WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+      WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
 
       UNION ALL
 
@@ -55,7 +55,7 @@ WITH
         ,DATETIME_ADD(SAFE_CAST(JSON_VALUE(data, '$.log_time') as DATETIME), INTERVAL 7 HOUR) update_time
       FROM `base-datateam.airbyte_pipedrive.deal_change` 
       WHERE object = 'dealChange'
-        AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+        AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
         
   ),
 
@@ -94,6 +94,8 @@ WITH
       -- ,`b41b9f0d98fa55c63dd60005f8b184b104afb46c`customer_request
       ,`b7c205797fc745d3b7619146603d27568b5055ac` partner_owner
       ,`09fae946b918159745b5ad3a3ee7b079afe8f143` partner_id
+      ,`285007243d51367791647535d927b70e82f3aa8a` partner_bc_source
+      ,`b3bd99ab752feec3ff32eaaac58ee40cd9158fef` partnership_source
 
       ,`47ef271bef0e14a61274edbe0521a50064e77b2f` way_of_cooperation
       ,`84b9275df8967f3f77339a1394598c449573bf32` partner_type
@@ -142,6 +144,8 @@ WITH
                                       ,'b7c205797fc745d3b7619146603d27568b5055ac'
                                       ,'32df8feaa3cf81248288f4c18b562b52318aa71d'
                                       ,'36ada051863b3001106248b85a2a050caed5ba73'
+                                      ,'b3bd99ab752feec3ff32eaaac58ee40cd9158fef'
+                                      ,'285007243d51367791647535d927b70e82f3aa8a'
                                       
                                       ,'47ef271bef0e14a61274edbe0521a50064e77b2f'
                                       ,'84b9275df8967f3f77339a1394598c449573bf32'
@@ -208,6 +212,8 @@ WITH
       ,df8.label gtm_type
       ,cast(partner_owner as int64) partner_owner
       ,cast(partner_id as int64) partner_id
+      ,cast(partner_bc_source as int64) partner_bc_source
+      ,df13.label partnership_source
       ,df12.label way_of_cooperation
       ,df11.label partner_type
       ,df10.label partner_expertise
@@ -237,7 +243,8 @@ WITH
       ON df11.key = '84b9275df8967f3f77339a1394598c449573bf32' AND df11.id = cast(partner_type as int64)
     LEFT JOIN deal_field_option df12
       ON df12.key = '47ef271bef0e14a61274edbe0521a50064e77b2f' AND df12.id = cast(way_of_cooperation as int64)
-
+    LEFT JOIN deal_field_option df13
+      ON df13.key = 'b3bd99ab752feec3ff32eaaac58ee40cd9158fef' AND df13.id = cast(partnership_source as int64)
   ),
 
   deal_transaction AS (
@@ -282,6 +289,8 @@ WITH
       ,gtm_type
       ,partner_owner
       ,partner_id
+      ,partner_bc_source
+      ,partnership_source
       ,way_of_cooperation
       ,partner_type
       ,partner_expertise
@@ -330,6 +339,8 @@ WITH
       ,gtm_type
       ,partner_owner
       ,partner_id
+      ,partner_bc_source
+      ,partnership_source
       ,way_of_cooperation
       ,partner_type
       ,partner_expertise

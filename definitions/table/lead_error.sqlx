@@ -71,6 +71,7 @@ WITH
             ,note
             ,status
             ,disqualified_reason
+            ,is_duplicate
         FROM ${ref('raw_lead')} leads
         LEFT JOIN company_size_raw ON company_size_raw.company_size = leads.company_size
         WHERE lead_id not in (select lead_id from lead)

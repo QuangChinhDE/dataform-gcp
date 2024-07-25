@@ -48,6 +48,8 @@ SELECT DISTINCT
         IFNULL(cast(price_sensitive AS STRING), ''),
         IFNULL(cast(gtm_type AS STRING), ''),
         IFNULL(cast(partner_owner AS STRING), ''),
+        IFNULL(cast(partner_bc_source AS STRING), ''),
+        IFNULL(cast(partnership_source AS STRING), ''),
         IFNULL(cast(partner_id AS STRING), '')
     )) deal_transaction_id
   ,deal_id
@@ -90,4 +92,6 @@ SELECT DISTINCT
   ,gtm_type
   ,partner_owner
   ,partner_id 
+  ,partner_bc_source
+  ,partnership_source
 FROM ${ref('raw_deal_transaction')}

@@ -18,6 +18,7 @@ SELECT
     ,lead.SourceGroup source_group
     ,lead.CampaignMedium campaign_medium
     ,lead.CampaignName campaign_name
+    ,lead.IsDuplicate is_duplicate
     ,CASE
       WHEN CAST(REGEXP_EXTRACT(lead.CampaignName, r'_(\d+)(?:_|$)') AS INT64) < 1500000 THEN NULL
       ELSE CAST(REGEXP_EXTRACT(lead.CampaignName, r'_(\d+)(?:_|$)') AS INT64)

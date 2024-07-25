@@ -61,6 +61,8 @@ WITH
         ,df8.label gtm_type
         ,SAFE_CAST(replace(JSON_EXTRACT_SCALAR(data, '$.b7c205797fc745d3b7619146603d27568b5055ac'),'.0','') AS INT64) partner_owner
         ,SAFE_CAST(replace(JSON_EXTRACT_SCALAR(data, '$.09fae946b918159745b5ad3a3ee7b079afe8f143'),'.0','') AS INT64) partner_id
+        ,SAFE_CAST(replace(JSON_EXTRACT_SCALAR(data, '$.285007243d51367791647535d927b70e82f3aa8a'),'.0','') AS INT64) partner_bc_source
+        ,df15.label partnership_source
         ,df12.label way_of_cooperation
         ,df13.label partner_type
         ,df14.label partner_expertise
@@ -100,8 +102,8 @@ WITH
         ON df13.key = '84b9275df8967f3f77339a1394598c449573bf32' AND df13.id = cast(JSON_EXTRACT_SCALAR(data, '$.84b9275df8967f3f77339a1394598c449573bf32') as int64)
     LEFT JOIN deal_field_option df14
         ON df14.key = 'fbc0629b1cefb76b65c4cdb27aaba08a7d223142' AND df14.id = cast(JSON_EXTRACT_SCALAR(data, '$.fbc0629b1cefb76b65c4cdb27aaba08a7d223142') as int64)
-    -- LEFT JOIN deal_field_option df11 
-    --   ON df11.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df11.id = cast(JSON_EXTRACT_SCALAR(data, '$.56afadfee2e44cf5c478d3fc439c42e4940d7705') as int64)
+    LEFT JOIN deal_field_option df15
+      ON df15.key = 'b3bd99ab752feec3ff32eaaac58ee40cd9158fef' AND df15.id = cast(JSON_EXTRACT_SCALAR(data, '$.b3bd99ab752feec3ff32eaaac58ee40cd9158fef') as int64)
 
     WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())  
     ),
@@ -138,6 +140,8 @@ WITH
             -- ,df9.label customer_request
             ,SAFE_CAST(replace(`b7c205797fc745d3b7619146603d27568b5055ac`,'.0','') AS INT64) partner_owner
             ,SAFE_CAST(replace(`09fae946b918159745b5ad3a3ee7b079afe8f143`,'.0','') AS INT64) partner_id
+            ,SAFE_CAST(replace(`285007243d51367791647535d927b70e82f3aa8a`,'.0','') AS INT64) partner_bc_source
+            ,df15.label partnership_source
             ,df12.label way_of_cooperation
             ,df13.label partner_type
             ,df14.label partner_expertise
@@ -187,6 +191,8 @@ WITH
                                         ,'84b9275df8967f3f77339a1394598c449573bf32'
                                         ,'fbc0629b1cefb76b65c4cdb27aaba08a7d223142'
                                         ,'86ea3cdeeb36be6bdeffe3f9374a0d6c060dfcb6'
+                                        ,'285007243d51367791647535d927b70e82f3aa8a'
+                                        ,'b3bd99ab752feec3ff32eaaac58ee40cd9158fef'
                                         ,'add_time'
                                         ,'expected_close_date'
                                         ,'status'
@@ -228,6 +234,8 @@ WITH
         ON df13.key = '84b9275df8967f3f77339a1394598c449573bf32' AND df13.id = safe_cast(replace(`84b9275df8967f3f77339a1394598c449573bf32`,'.0','') as int64)
         LEFT JOIN deal_field_option df14
         ON df14.key = 'fbc0629b1cefb76b65c4cdb27aaba08a7d223142' AND df14.id = safe_cast(replace(`fbc0629b1cefb76b65c4cdb27aaba08a7d223142`,'.0','') as int64)
+        LEFT JOIN deal_field_option df15
+        ON df15.key = 'b3bd99ab752feec3ff32eaaac58ee40cd9158fef' AND df15.id = safe_cast(replace(`b3bd99ab752feec3ff32eaaac58ee40cd9158fef`,'.0','') as int64)
     ),
 
     old_deal_raw as (
