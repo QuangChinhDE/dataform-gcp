@@ -55,6 +55,7 @@ WITH
         ,df6.label brand_awareness
         ,df7.label price_sensitive
         ,JSON_EXTRACT_SCALAR(data, '$.f426029ed50cbedd3dbca57aff3b62749f76b56b') timing
+        ,df11.label pod_option
 
         -- Thông tin company của deal -----------------------------------------------------------------------
         ,replace(JSON_EXTRACT_SCALAR(data, '$.ba7758126eaf7a1c291050d38314f3ef6caac23a'),'.0','') category
@@ -88,7 +89,9 @@ WITH
             ON df9.key = '56b0cc5defaf568b6990b68341074fedc58693eb' AND df9.id = cast(JSON_EXTRACT_SCALAR(data, '$.56b0cc5defaf568b6990b68341074fedc58693eb') as int64)   
         LEFT JOIN deal_field_option df10 
             ON df10.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df10.id = cast(JSON_EXTRACT_SCALAR(data, '$.56afadfee2e44cf5c478d3fc439c42e4940d7705') as int64)
-  
+        LEFT JOIN deal_field_option df11
+            ON df11.key = 'f5ebc5880db1c80aa8b1f1520d15c2d58a2d1a11' AND df11.id = cast(JSON_EXTRACT_SCALAR(data, '$.f5ebc5880db1c80aa8b1f1520d15c2d58a2d1a11') as int64)
+   
         WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())  
     ),
 
@@ -120,6 +123,7 @@ WITH
             ,df6.label brand_awareness
             ,df7.label price_sensitive
             ,`f426029ed50cbedd3dbca57aff3b62749f76b56b` timing
+            ,df11.label pod_option
 
             ,`ba7758126eaf7a1c291050d38314f3ef6caac23a` category
             ,`03cb33c8f645c1cb6c4b5663060f5be62bd45b47` field
@@ -152,7 +156,8 @@ WITH
                                             ,'e6db98a67854a49d9b14d56edc70c2330cf8bc99'
                                             ,'0ff3d9479a456dc5fcde3fef42b2d4ef6082c912'
                                             ,'ad355ab57ff75dd561ccfbca41c9aba20468a133'
-                                            ,'f426029ed50cbedd3dbca57aff3b62749f76b56b')) 
+                                            ,'f426029ed50cbedd3dbca57aff3b62749f76b56b'
+                                            ,'f5ebc5880db1c80aa8b1f1520d15c2d58a2d1a11')) 
         LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = 'e4374d513b687b4de35fac6d149a0b75519483dc' GROUP BY cast(id as int64)) event 
             ON event.id = safe_cast(SPLIT(`e4374d513b687b4de35fac6d149a0b75519483dc`, ',')[OFFSET(0)] as int64)
         LEFT JOIN (SELECT cast(id as int64) id, max(label) label FROM deal_field_option WHERE key = '41c48ba0a3590d935a2130d18a6d0846ebf58102' GROUP BY cast(id as int64)) source_group 
@@ -175,6 +180,8 @@ WITH
             ON df9.key = '56b0cc5defaf568b6990b68341074fedc58693eb' AND df9.id = safe_cast(replace(`56b0cc5defaf568b6990b68341074fedc58693eb`,'.0','') as int64)
         LEFT JOIN deal_field_option df10
             ON df10.key = '56afadfee2e44cf5c478d3fc439c42e4940d7705' AND df10.id = safe_cast(replace(`56afadfee2e44cf5c478d3fc439c42e4940d7705`,'.0','') as int64)
+        LEFT JOIN deal_field_option df11
+            ON df11.key = 'f5ebc5880db1c80aa8b1f1520d15c2d58a2d1a11' AND df11.id = safe_cast(replace(`f5ebc5880db1c80aa8b1f1520d15c2d58a2d1a11`,'.0','') as int64)
 
     ),
 
