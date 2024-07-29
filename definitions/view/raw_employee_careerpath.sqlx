@@ -1,0 +1,28 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+  CAST(id AS INt64) employee_careerpath_id,
+  CAST(employee_id AS INt64) employee_id,
+  CAST(user_id AS INt64) user_id,
+  CAST(office_id AS INt64) office_id,
+  CAST(position_id AS INt64) position_id,
+  CAST(team_id AS INt64) team_id,
+  CAST(area_id AS INt64) area_id,
+  CAST(creator_id AS INt64) creator_id,
+  CAST(pic AS INt64) pic,
+  CAST(acting AS INt64) acting,
+  CAST(status AS INt64) status,
+  name,
+  content,
+  metatype,
+  intent,
+  CAST(finalized_by AS INt64) finalized_by,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(finalized_at as int64)), INTERVAL 7 HOUR) AS DATETIME) finalized_at,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(date, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATE) date,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update,
+  CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(since, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) since,
+FROM `base-datateam.airbyte_base_hrm.career_record` 
+-- WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) = TIMESTAMP("2024-07-29") LIMIT 1000

@@ -1,0 +1,13 @@
+config {
+  type: "table",
+  uniqueKey: ["employee_careerpath_id"],
+  schema: "human_resource"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY employee_careerpath_id ORDER BY last_update DESC) AS row_number
+FROM ${ref('raw_employee_careerpath')}
+) t
+WHERE t.row_number = 1
