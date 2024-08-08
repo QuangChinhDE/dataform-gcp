@@ -91,7 +91,7 @@ PIVOT (
   MAX(value) FOR keys IN ("ben_su_dung_dich_vu_ben_a","ma_so_thue","gia_tri_hop_dong_bang_so","thanh_toan_chi_phi_training","dia_chi_training","id_system","loai_hop_dong","username_co" ,"email_co", "email_cs_trien_khai", "location"))),
  --- Thông tin chuyển job: Account management
  move as ( SELECT a.job_id,a.min_bc_deal_planning FROM 
-(SELECT job_id,min(stage_start) as min_bc_deal_planning FROM ${ref('raw_job_move')} WHERE stage_id in ( '27156', '23231','39803')   GROUP BY job_id) as a
+(SELECT job_id,min(stage_start) as min_bc_deal_planning FROM ${ref('raw_job_move')} WHERE stage_id in ( '27156', '23231','39802')   GROUP BY job_id) as a
 ),
 --- Thong tin app
  app_info as 
