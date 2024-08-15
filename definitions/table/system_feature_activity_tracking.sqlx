@@ -1,0 +1,8 @@
+config {
+  type: "table",
+  schema: "customer_health_score"
+}
+
+SELECT DISTINCT * FROM ${ref('raw_system_feature_request_activity_tracking')}
+UNION ALL
+SELECT DISTINCT * FROM ${ref('raw_system_feature_wework_activity_tracking')}

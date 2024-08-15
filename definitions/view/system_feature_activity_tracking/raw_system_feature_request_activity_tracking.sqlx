@@ -1,0 +1,20 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+  f.app,
+  f.object, 
+  f.name feature,
+  s.system_id,
+  s.system_name,
+  CAST(value AS INT64) value,
+  DATE(date) date,
+  PARSE_DATE('%d/%m/%Y', REGEXP_EXTRACT(date_range, r'from (\d{2}/\d{2}/\d{4})')) AS start_date,
+  PARSE_DATE('%d/%m/%Y', REGEXP_EXTRACT(date_range, r'to (\d{2}/\d{2}/\d{4})')) AS end_date,
+  CONCAT('RAW DATA/', app, '/', object,'/', year, '/', name, '.', date_range, '.xlsx') path,
+FROM `base-datateam.airbyte_google_sheet.csm_request_feature_summary` s
+JOIN `base-datateam.airbyte_google_sheet.csm_request_feature_file` f ON s.file_id = f.id
+WHERE CAST(value AS INT64) != 0
+
