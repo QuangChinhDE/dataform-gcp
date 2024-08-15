@@ -8,7 +8,7 @@ SELECT
   f.app,
   f.object, 
   f.name feature,
-  s.system_id,
+  CAST(s.system_id AS INT64) system_id,
   s.system_name,
   CAST(value AS INT64) value,
   DATE(date) date,
