@@ -1,0 +1,13 @@
+config {
+  type: "table",
+  schema: "customer_health_score"
+}
+
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+    SELECT distinct * EXCEPT(subs),
+        ROW_NUMBER() OVER (PARTITION BY system_id ORDER BY last_update DESC) AS row_number
+    FROM ${ref('raw_system')} a
+  ) t
+WHERE t.row_number = 1  

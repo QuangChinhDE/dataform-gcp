@@ -6,3 +6,5 @@ config {
 SELECT DISTINCT * FROM ${ref('raw_system_feature_request_activity_tracking')}
 UNION ALL
 SELECT DISTINCT * FROM ${ref('raw_system_feature_wework_activity_tracking')}
+UNION ALL
+SELECT DISTINCT * FROM ${ref('raw_system_feature_workflow_activity_tracking')}
