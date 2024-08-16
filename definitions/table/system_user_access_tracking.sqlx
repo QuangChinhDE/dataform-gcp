@@ -1,4 +1,7 @@
-
+config {
+  type: "table",
+  schema: "customer_health_score"
+}
 
 WITH done AS (
   SELECT DISTINCT
