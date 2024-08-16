@@ -4,7 +4,7 @@ config {
 }
 
 SELECT
-  f.app,
+  LOWER(f.app) app,
   f.object, 
   f.name feature,
   CAST(s.system_id AS INT64) system_id,

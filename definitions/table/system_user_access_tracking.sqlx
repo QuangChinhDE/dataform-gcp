@@ -17,7 +17,7 @@ WITH done AS (
 
 SELECT
   CAST(system_id AS INT64) system_id,
-  app,
+  LOWER(app) app,
   DATE(date) date,
   MAX(user_count) user_count
 FROM done
