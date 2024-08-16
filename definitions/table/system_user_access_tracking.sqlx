@@ -1,0 +1,24 @@
+
+
+WITH done AS (
+  SELECT DISTINCT
+    *
+  FROM ${ref('raw_system_user_access_base_safelog')}
+
+  UNION ALL
+
+  SELECT DISTINCT
+    *
+  FROM ${ref('raw_system_user_access_usersub')}
+)
+
+SELECT
+  CAST(system_id AS INT64) system_id,
+  app,
+  DATE(date) date,
+  MAX(user_count) user_count
+FROM done
+GROUP BY
+  CAST(system_id AS INT64),
+  app,
+  DATE(date)

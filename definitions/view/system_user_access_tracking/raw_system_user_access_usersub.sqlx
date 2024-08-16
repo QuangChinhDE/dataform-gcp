@@ -1,0 +1,64 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH start_date_counts AS (
+    SELECT
+        app,
+        COUNT(user_id) AS user_count,
+        system_id,
+        DATE(TIMESTAMP_SECONDS(since + (7 * 60 * 60))) AS date
+    FROM
+        `base-datateam.airbyte_base_system.v_usersubs` 
+    -- WHERE
+    --     system_id = 79
+    GROUP BY
+        app,
+        system_id,
+        DATE(TIMESTAMP_SECONDS(since + (7 * 60 * 60)))
+),
+last_update_counts AS (
+    SELECT
+        app,
+        COUNT(user_id) AS user_count,
+        system_id,
+        DATE(TIMESTAMP_SECONDS(last_update + (7 * 60 * 60))) AS date
+    FROM
+        `base-datateam.airbyte_base_system.v_usersubs` 
+    -- WHERE
+    --     system_id = 79
+    GROUP BY
+        app,
+        system_id,
+        DATE(TIMESTAMP_SECONDS(last_update + (7 * 60 * 60)))
+),
+group_table AS (
+    SELECT * FROM start_date_counts
+    UNION ALL
+    SELECT * FROM last_update_counts 
+)
+
+SELECT DISTINCT
+  CAST(system_id AS INT64) system_id,
+  app,
+  DATE(date) date,
+  MAX(user_count) user_count
+FROM group_table
+GROUP BY app, system_id, date
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

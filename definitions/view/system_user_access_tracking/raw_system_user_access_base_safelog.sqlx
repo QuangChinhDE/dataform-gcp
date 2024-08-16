@@ -1,0 +1,17 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT DISTINCT
+    CAST(system_id AS INT64) system_id,
+    replace(label, '.access', '') app,
+    DATE(date) date,
+    CASE 
+        WHEN message = '' THEN 0
+        ELSE ARRAY_LENGTH(SPLIT(message, ','))
+    END AS user_count
+FROM `base-datateam.airbyte_base_system.v_basesafelogs`
+WHERE message != ''
+    -- AND system_id = 79
+    AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) = TIMESTAMP("2024-08-16")
