@@ -1,5 +1,6 @@
 config {
-  type: "table",
+  type: "incremental",
+  uniqueKey: ['system_id'],
   schema: "customer_onboarding"
 }
 
