@@ -1,8 +1,8 @@
 config {
-  type: "table",
+  type: "incremental",
+  uniqueKey: ['system_id', 'app', 'sub'],
   schema: "customer_onboarding"
 }
-
 
 SELECT DISTINCT
   system_id,
