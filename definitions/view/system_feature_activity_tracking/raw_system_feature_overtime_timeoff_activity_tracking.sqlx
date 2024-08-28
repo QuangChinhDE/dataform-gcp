@@ -42,19 +42,21 @@ SELECT
     -- STRING_AGG(DISTINCT object, '+') AS object,  -- CONCATENATE object
     "overtime+timeoff" app,
     "Overtime+Timeoff" object,
+    STRING_AGG(DISTINCT feature, ', ') AS feature,  -- CONCATENATE feature names
     system_id,
     system_name,
+    SUM(value) AS value,  -- SUM values
+    date,
     start_date,
     end_date,
     STRING_AGG(DISTINCT path, ', ') AS path,  -- CONCATENATE path
-    STRING_AGG(DISTINCT feature, ', ') AS concatenated_features,  -- CONCATENATE feature names
-    SUM(value) AS total_value  -- SUM values
 FROM overtime_timeoff
 GROUP BY
     system_id,
     system_name,
     start_date,
-    end_date
+    end_date,
+    date
 
 
 
