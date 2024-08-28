@@ -8,3 +8,17 @@ UNION ALL
 SELECT DISTINCT * FROM ${ref('raw_system_feature_wework_activity_tracking')}
 UNION ALL
 SELECT DISTINCT * FROM ${ref('raw_system_feature_workflow_activity_tracking')}
+UNION ALL
+SELECT DISTINCT * FROM ${ref('raw_system_feature_inside_activity_tracking')}
+UNION ALL
+SELECT DISTINCT * FROM ${ref('raw_system_feature_meeting_activity_tracking')}
+UNION ALL
+SELECT DISTINCT * FROM ${ref('raw_system_feature_office_activity_tracking')}
+UNION ALL
+SELECT DISTINCT * FROM ${ref('raw_system_feature_overtime_timeoff_activity_tracking')}
+UNION ALL
+SELECT DISTINCT * FROM ${ref('raw_system_feature_payroll_activity_tracking')}
+UNION ALL
+SELECT DISTINCT * FROM ${ref('raw_system_feature_schedule_timesheet_activity_tracking')}
+UNION ALL
+SELECT DISTINCT * FROM ${ref('raw_system_feature_hrm_activity_tracking')}

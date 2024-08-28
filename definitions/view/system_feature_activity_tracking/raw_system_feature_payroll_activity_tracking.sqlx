@@ -1,0 +1,21 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+  LOWER(f.app) app,
+  f.object, 
+  f.name feature,
+  CAST(s.system_id AS INT64) system_id,
+  s.system_name,
+  CAST(value AS INT64) value,
+  DATE(date) date,
+  PARSE_DATE('%d/%m/%Y', REGEXP_EXTRACT(date_range, r'from (\d{2}/\d{2}/\d{4})')) AS start_date,
+  PARSE_DATE('%d/%m/%Y', REGEXP_EXTRACT(date_range, r'to (\d{2}/\d{2}/\d{4})')) AS end_date,
+  CONCAT('RAW DATA/', app, '/', object,'/', year, '/', name, '.', date_range, '.xlsx') path,
+FROM `base-datateam.airbyte_google_sheet.csm_payroll_feature_summary` s
+JOIN `base-datateam.airbyte_google_sheet.csm_payroll_feature_file` f ON s.file_id = f.id
+WHERE CAST(value AS INT64) != 0
+-- AND TIMESTAMP_TRUNC(s._airbyte_extracted_at, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+

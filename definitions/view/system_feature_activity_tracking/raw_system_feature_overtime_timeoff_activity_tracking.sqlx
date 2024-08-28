@@ -1,0 +1,77 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH overtime_timeoff AS (
+    SELECT
+        LOWER(f.app) AS app,
+        f.object, 
+        f.name AS feature,
+        CAST(s.system_id AS INT64) AS system_id,
+        s.system_name,
+        CAST(value AS INT64) AS value,
+        DATE(date) AS date,
+        PARSE_DATE('%d/%m/%Y', REGEXP_EXTRACT(date_range, r'from (\d{2}/\d{2}/\d{4})')) AS start_date,
+        PARSE_DATE('%d/%m/%Y', REGEXP_EXTRACT(date_range, r'to (\d{2}/\d{2}/\d{4})')) AS end_date,
+        CONCAT('RAW DATA/', app, '/', object, '/', year, '/', name, '.', date_range, '.xlsx') AS path
+    FROM `base-datateam.airbyte_google_sheet.csm_overtime_feature_summary` s
+    JOIN `base-datateam.airbyte_google_sheet.csm_overtime_feature_file` f ON s.file_id = f.id
+    WHERE CAST(value AS INT64) != 0
+
+    UNION ALL
+
+    SELECT
+        LOWER(f.app) AS app,
+        f.object, 
+        f.name AS feature,
+        CAST(s.system_id AS INT64) AS system_id,
+        s.system_name,
+        CAST(value AS INT64) AS value,
+        DATE(date) AS date,
+        PARSE_DATE('%d/%m/%Y', REGEXP_EXTRACT(date_range, r'from (\d{2}/\d{2}/\d{4})')) AS start_date,
+        PARSE_DATE('%d/%m/%Y', REGEXP_EXTRACT(date_range, r'to (\d{2}/\d{2}/\d{4})')) AS end_date,
+        CONCAT('RAW DATA/', app, '/', object, '/', year, '/', name, '.', date_range, '.xlsx') AS path
+    FROM `base-datateam.airbyte_google_sheet.csm_timeoff_feature_summary` s
+    JOIN `base-datateam.airbyte_google_sheet.csm_timeoff_feature_file` f ON s.file_id = f.id
+    WHERE CAST(value AS INT64) != 0
+)
+
+SELECT
+    -- STRING_AGG(DISTINCT app, '+') AS app,  -- CONCATENATE app
+    -- STRING_AGG(DISTINCT object, '+') AS object,  -- CONCATENATE object
+    "overtime+timeoff" app,
+    "Overtime+Timeoff" object,
+    system_id,
+    system_name,
+    start_date,
+    end_date,
+    STRING_AGG(DISTINCT path, ', ') AS path,  -- CONCATENATE path
+    STRING_AGG(DISTINCT feature, ', ') AS concatenated_features,  -- CONCATENATE feature names
+    SUM(value) AS total_value  -- SUM values
+FROM overtime_timeoff
+GROUP BY
+    system_id,
+    system_name,
+    start_date,
+    end_date
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
