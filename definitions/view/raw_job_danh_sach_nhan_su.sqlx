@@ -3,6 +3,27 @@ config {
   schema: "query"
 }
 
+WITH latest_updates AS (
+  SELECT 
+    job_id, 
+    MAX(last_update) AS max_last_update
+  FROM (
+    SELECT 
+      job_id, 
+      SAFE_CONVERT_BYTES_TO_STRING(FROM_BASE64(value)) AS value, 
+      last_update
+    FROM `base-data-analyst.query.raw_job_form` job_form 
+    WHERE keys = 'danh_sach_pods' 
+      AND type = 'input-table' 
+      AND NOT REGEXP_CONTAINS(CAST(value AS STRING), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
+      AND CAST(value AS STRING) NOT LIKE '%{}%'
+      AND (value NOT LIKE '%{}%') 
+      AND (value NOT LIKE '% %') 
+      AND (value NOT LIKE '%1.%')
+  )
+  GROUP BY job_id
+)
+
 SELECT
   MD5(CONCAT(
           IFNULL(cast(job_id AS STRING), ''),
@@ -12,7 +33,7 @@ SELECT
           IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[3]') AS STRING), ''),
           IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$[4]') AS STRING), '')
       )) danh_sach_id
-  ,job_id
+  ,ds.job_id
   ,case
     when JSON_EXTRACT_SCALAR(json, '$[0]') = '' then NULL
     else JSON_EXTRACT_SCALAR(json, '$[0]')
@@ -33,18 +54,26 @@ SELECT
     when JSON_EXTRACT_SCALAR(json, '$[4]') = '' then NULL
     else JSON_EXTRACT_SCALAR(json, '$[4]')
   end commission_share
-  ,last_update
+  ,ds.last_update
 FROM (
   SELECT
-    (json_extract_array(value)) AS json_array
-    ,job_id
-    ,last_update
-  FROM (SELECT job_id,last_update, SAFE_CONVERT_BYTES_TO_STRING(FROM_BASE64(value)) value FROM ${ref('raw_job_form')} job_form 
-      WHERE keys = 'danh_sach_pods' 
-        and type = 'input-table' 
-        AND NOT REGEXP_CONTAINS(cast(value as string), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
-        AND cast(value as string) not like '%{}%'
-        AND (value not like '%{}%') 
-        AND (value not like '% %') 
-        AND (value not like '%1.%'))
-), UNNEST(json_array) AS json
+    (JSON_EXTRACT_ARRAY(value)) AS json_array,
+    ds.job_id,
+    ds.last_update
+  FROM (
+    SELECT 
+      job_id, 
+      SAFE_CONVERT_BYTES_TO_STRING(FROM_BASE64(value)) AS value, 
+      last_update
+    FROM `base-data-analyst.query.raw_job_form` job_form 
+    WHERE keys = 'danh_sach_pods' 
+      AND type = 'input-table' 
+      AND NOT REGEXP_CONTAINS(CAST(value AS STRING), r'[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]')
+      AND CAST(value AS STRING) NOT LIKE '%{}%'
+      AND (value NOT LIKE '%{}%') 
+      AND (value NOT LIKE '% %') 
+      AND (value NOT LIKE '%1.%')
+  ) ds
+  JOIN latest_updates lu
+  ON ds.job_id = lu.job_id AND ds.last_update = lu.max_last_update
+) ds, UNNEST(ds.json_array) AS json
