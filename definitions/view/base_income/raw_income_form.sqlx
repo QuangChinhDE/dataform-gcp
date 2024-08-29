@@ -4,19 +4,58 @@ config {
 }
 
 SELECT DISTINCT * EXCEPT(row_number)
-        FROM (
-            SELECT distinct income_id, safe_cast(custom_deal_id as int64) deal_id, custom_so_hop_dong contract_number,
-                ROW_NUMBER() OVER (PARTITION BY income_id ORDER BY last_update DESC) AS row_number
-            FROM (SELECT distinct * FROM
-                    (select
-                    income_id
-                    ,JSON_EXTRACT_SCALAR(json, '$.id')  keys
-                    ,JSON_EXTRACT_SCALAR(json, '$.value') value
-                    ,last_update
-                    from ${ref('raw_income')},
-                    UNNEST(JSON_EXTRACT_ARRAY(form)) AS json
-                    WHERE JSON_EXTRACT_SCALAR(json, '$.id') IN ('custom_deal_id', 'custom_so_hop_dong')) form
-                    PIVOT (MAX(value) FOR keys IN ('custom_deal_id', 'custom_so_hop_dong'))
-                ) a
-            ) t
-        WHERE t.row_number = 1
+FROM (
+    SELECT 
+        DISTINCT income_id, 
+        SAFE_CAST(custom_deal_id AS INT64) AS deal_id, 
+        custom_so_hop_dong AS contract_number,
+        custom_email_nhan_hoa_don AS email_nhan_hoa_don,
+        custom_loai_hop_dong AS loai_hop_dong,
+        SAFE_CAST(custom_gia_tri_hop_dong_bang_so AS INT64) AS gia_tri_hop_dong,
+        DATE(TIMESTAMP_SECONDS(SAFE_CAST(custom_thoi_diem_bat_dau_su_dung AS INT64))) AS thoi_diem_bat_dau_su_dung,
+        DATE(TIMESTAMP_SECONDS(SAFE_CAST(custom_thoi_diem_het_han_dich_vu_chua_p AS INT64))) AS thoi_diem_het_han_dich_vu_chua_p,
+        DATE(TIMESTAMP_SECONDS(SAFE_CAST(custom_thoi_diem_het_han_dich_vu_sau_pr AS INT64))) AS thoi_diem_het_han_dich_vu_sau_pr,
+        custom_file_hdpl_final file_hdpl_final,
+        ROW_NUMBER() OVER (PARTITION BY income_id ORDER BY last_update DESC) AS row_number
+    FROM (
+        SELECT DISTINCT 
+            income_id,
+            JSON_EXTRACT_SCALAR(json, '$.id') AS keys,
+            JSON_EXTRACT_SCALAR(json, '$.value') AS value,
+            last_update
+        FROM 
+            `base-data-analyst.query.raw_income`,
+            UNNEST(JSON_EXTRACT_ARRAY(form)) AS json
+        WHERE 
+            JSON_EXTRACT_SCALAR(json, '$.id') IN (
+                'custom_deal_id', 
+                'custom_so_hop_dong',
+                'custom_email_nhan_hoa_don',
+                'custom_loai_hop_dong',
+                'custom_thong_tin_bccs',
+                'custom_gia_tri_hop_dong_bang_so',
+                'custom_thoi_diem_bat_dau_su_dung',
+                'custom_thoi_diem_het_han_dich_vu_chua_p',
+                'custom_thoi_diem_het_han_dich_vu_sau_pr',
+                'custom_file_hdpl_final'
+            )
+    ) 
+    PIVOT (
+        MAX(value) FOR keys IN (
+            'custom_deal_id', 
+            'custom_so_hop_dong',
+            'custom_email_nhan_hoa_don',
+            'custom_loai_hop_dong',
+            'custom_thong_tin_bccs',
+            'custom_gia_tri_hop_dong_bang_so',
+            'custom_thoi_diem_bat_dau_su_dung',
+            'custom_thoi_diem_het_han_dich_vu_chua_p',
+            'custom_thoi_diem_het_han_dich_vu_sau_pr',
+            'custom_file_hdpl_final'
+        )
+    ) a
+) t
+
+WHERE t.row_number = 1 
+
+

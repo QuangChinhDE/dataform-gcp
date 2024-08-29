@@ -30,8 +30,9 @@ SELECT
     ,income.form
     ,income_customer.name customer_name
     ,income_customer.uid customer_mst
+    ,income_customer.address address
     ,customer_id
-    ,reference
+    ,reference, case when is_invoiced = '0' then 'Uninvoiced' else 'Invoiced' end is_invoiced
     -- ,JSON_EXTRACT_SCALAR(customer_export, '$.id') customer_id
     -- ,JSON_EXTRACT_SCALAR(customer_export, '$.uid') customer_mst
     -- ,JSON_EXTRACT_SCALAR(customer_export, '$.address') customer_name
