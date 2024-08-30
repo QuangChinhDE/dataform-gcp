@@ -12,9 +12,9 @@ FROM (
         custom_email_nhan_hoa_don AS email_nhan_hoa_don,
         custom_loai_hop_dong AS loai_hop_dong,
         SAFE_CAST(custom_gia_tri_hop_dong_bang_so AS INT64) AS gia_tri_hop_dong,
-        DATE(TIMESTAMP_SECONDS(SAFE_CAST(custom_thoi_diem_bat_dau_su_dung AS INT64))) AS thoi_diem_bat_dau_su_dung,
-        DATE(TIMESTAMP_SECONDS(SAFE_CAST(custom_thoi_diem_het_han_dich_vu_chua_p AS INT64))) AS thoi_diem_het_han_dich_vu_chua_p,
-        DATE(TIMESTAMP_SECONDS(SAFE_CAST(custom_thoi_diem_het_han_dich_vu_sau_pr AS INT64))) AS thoi_diem_het_han_dich_vu_sau_pr,
+        DATE(TIMESTAMP_ADD(TIMESTAMP_SECONDS(SAFE_CAST(custom_thoi_diem_bat_dau_su_dung AS INT64)), INTERVAL 7 HOUR)) AS thoi_diem_bat_dau_su_dung,
+        DATE(TIMESTAMP_ADD(TIMESTAMP_SECONDS(SAFE_CAST(custom_thoi_diem_het_han_dich_vu_chua_p AS INT64)), INTERVAL 7 HOUR)) AS thoi_diem_het_han_dich_vu_chua_p,
+        DATE(TIMESTAMP_ADD(TIMESTAMP_SECONDS(SAFE_CAST(custom_thoi_diem_het_han_dich_vu_sau_pr AS INT64)), INTERVAL 7 HOUR)) AS thoi_diem_het_han_dich_vu_sau_pr,
         custom_file_hdpl_final file_hdpl_final,
         ROW_NUMBER() OVER (PARTITION BY income_id ORDER BY last_update DESC) AS row_number
     FROM (
