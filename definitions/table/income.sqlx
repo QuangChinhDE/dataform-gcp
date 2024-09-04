@@ -14,12 +14,12 @@ FROM (
               --  payments.* EXCEPT(income_id),
                income_form.deal_id,
                income_form.contract_number,
-               income_form.email_nhan_hoa_don,
-               income_form.loai_hop_dong,
-               income_form.gia_tri_hop_dong,
-               income_form.thoi_diem_bat_dau_su_dung,
-               income_form.thoi_diem_het_han_dich_vu_chua_p,
-               income_form.thoi_diem_het_han_dich_vu_sau_pr,
+               income_form.email_nhan_hoa_don as email_receipt_invoice,
+              --  income_form.loai_hop_dong,
+              --  income_form.gia_tri_hop_dong,
+               income_form.thoi_diem_bat_dau_su_dung as start_date,
+               income_form.thoi_diem_het_han_dich_vu_chua_p as end_date,
+               income_form.thoi_diem_het_han_dich_vu_sau_pr as end_date_after_promotion,
                income_form.file_hdpl_final
         FROM ${ref('raw_income')} AS income
         LEFT JOIN ${ref('raw_income_form')} AS income_form ON income_form.income_id = income.income_id

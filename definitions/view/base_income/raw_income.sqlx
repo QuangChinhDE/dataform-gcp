@@ -29,9 +29,9 @@ SELECT
     ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(income.last_update as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
     ,income.form
     ,income_customer.name customer_name
-    ,income_customer.uid customer_mst
+    ,income_customer.uid customer_id
     ,income_customer.address address
-    ,customer_id
+    -- ,customer_id
     ,reference, case when is_invoiced = '0' then 'Uninvoiced' else 'Invoiced' end is_invoiced
     -- ,JSON_EXTRACT_SCALAR(customer_export, '$.id') customer_id
     -- ,JSON_EXTRACT_SCALAR(customer_export, '$.uid') customer_mst
