@@ -4,17 +4,21 @@ config {
 }
 
 SELECT DISTINCT
-  cast(ad_id as int64) ad_id
-  ,ad_name
-  ,cast(campaign_id as int64) campaign_id
-  ,campaign_name
-  ,PARSE_DATE('%Y-%m-%d', date) as date
-  ,cast(click as int64) click
-  ,cast(cost as int64) cost
-  ,cast(impression as int64) impression
-  ,marketer account_name
-  ,_airbyte_extracted_at
-FROM `base-datateam.airbyte_ads.coccoc_import` 
+  SAFE_CAST(ad_id AS INT64) AS ad_id,
+  ad_name,
+  SAFE_CAST(campaign_id AS INT64) AS campaign_id,
+  campaign_name,
+  CASE 
+    WHEN SAFE.PARSE_DATE('%Y-%m-%d', date) IS NOT NULL THEN PARSE_DATE('%Y-%m-%d', date)
+    WHEN SAFE.PARSE_DATE('%d-%m-%Y', date) IS NOT NULL THEN PARSE_DATE('%d-%m-%Y', date)
+    ELSE NULL
+  END AS date,
+  SAFE_CAST(REPLACE(click, ',', '') AS INT64) AS click,
+  SAFE_CAST(REPLACE(cost, ',', '') AS INT64) AS cost,
+  SAFE_CAST(REPLACE(impression, ',', '') AS INT64) AS impression,
+  marketer AS account_name,
+  _airbyte_extracted_at
+FROM `base-datateam.airbyte_ads.coccoc_import`
 WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
 
 -- WITH

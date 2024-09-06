@@ -8,6 +8,7 @@ SELECT
   TO_JSON_STRING(reports) reports,
   CAST(campaign_id AS INT64) campaign_id,
   campaign_name,
+  MAX(campaign_status) status,
   CAST(ad_id AS INT64) ad_id,
   ad_name,
   MAX(_airbyte_extracted_at) _airbyte_extracted_at
