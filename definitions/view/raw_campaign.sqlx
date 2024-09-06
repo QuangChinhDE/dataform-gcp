@@ -27,7 +27,7 @@ WITH
         --         CAST(NULL AS datetime) update_time, 
         --         MD5('facebook') source_id,          
         --         ROW_NUMBER() OVER (PARTITION BY campaign_id ORDER BY campaign_name DESC) row_number
-        --     FROM `base-datateam.airbyte_ads.facebook_old_ad_250920_250923` 
+        --     FROM `base-datateam.airbyte_ads.facebook_old_facebook_expense_detail` 
         --     WHERE  CAST(campaign_id AS INT64) not in (select campaign_id from `base-data-analyst.marketing.campaign`)
         -- ) t
         -- WHERE t.row_number = 1  
