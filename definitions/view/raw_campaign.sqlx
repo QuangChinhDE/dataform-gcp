@@ -71,17 +71,23 @@ WITH
     -- coccoc_campaign AS (
     --     SELECT DISTINCT * EXCEPT(row_number)
     --     FROM (
-    --     SELECT distinct campaign_id, campaign_name, MD5('coc_coc') source_id,
+    --     SELECT distinct 
+    --         campaign_id, 
+    --         campaign_name, 
+    --         CAST(status AS STRING) status, 
+    --         DATETIME_ADD(cast(_airbyte_extracted_at as datetime), INTERVAL 7 HOUR) update_time, 
+    --         MD5('coc_coc') source_id,
     --         ROW_NUMBER() OVER (PARTITION BY campaign_id ORDER BY _airbyte_extracted_at DESC) AS row_number
     --     FROM (SELECT DISTINCT
     --             cast(id as int64) campaign_id
     --             ,name campaign_name
+    --             ,status
     --             ,MAX(campaign._airbyte_extracted_at) _airbyte_extracted_at
     --         FROM `base-datateam.airbyte_ads.coccoc_campaign` campaign
-    --         WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
     --         GROUP BY
     --             cast(id as int64)
     --             ,name
+    --             ,status
     --         ) a
     --     ) t
     --     WHERE t.row_number = 1 

@@ -27,6 +27,7 @@ GROUP BY
 --     TO_JSON_STRING(reports) reports,
 --     CAST(campaign_id AS INT64) campaign_id,
 --     campaign_name,
+--     campaign_status status,
 --     CAST(ad_id AS INT64) ad_id,
 --     ad_name,
 --     CAST(NULL AS TIMESTAMP) _airbyte_extracted_at
