@@ -130,7 +130,6 @@ WITH
                 when Status = 'Active' then 'ACTIVE'
                 ELSE 'PAUSED'
             end status,
-            Status status,
             DATETIME_ADD(cast(_airbyte_extracted_at as datetime), INTERVAL 7 HOUR) update_time,
             MD5('bing') source_id,
         FROM `base-datateam.airbyte_microsoft.ads_campaigns`
