@@ -62,6 +62,34 @@ WITH
         FROM zalo_ad_raw
         ) t
         WHERE t.row_number = 1
+    ),
+
+    bing_asset_data AS (
+        SELECT  
+            CAST(Id AS INT64) ad_id,
+            AdGroupId AS adset_id,
+            JSON_EXTRACT(Descriptions, '$.AssetLink') AS AssetLinkArray
+        FROM `base-datateam.airbyte_microsoft.ads_ads`
+    ),
+    bing_extracted_data AS (
+        SELECT
+            ad_id,
+            adset_id,
+            JSON_EXTRACT_SCALAR(asset, '$.Asset.Text') AS TextDescription
+        FROM bing_asset_data,
+        UNNEST(JSON_EXTRACT_ARRAY(AssetLinkArray)) AS asset
+    ),
+    bing_ad AS (
+        SELECT 
+            adset.campaign_id,
+            bing_extracted_data.adset_id,
+            ad_id,
+            STRING_AGG(TextDescription, ' | ') AS ad_name,
+            MD5('bing') source_id,
+        FROM bing_extracted_data
+        LEFT JOIN (SELECT adset_id, campaign_id FROM ${ref('adset')} WHERE source_id = MD5('bing')) adset 
+            ON adset.adset_id  = bing_extracted_data.adset_id
+        GROUP BY adset.campaign_id, bing_extracted_data.adset_id, ad_id, adset_id
     )
 
 SELECT DISTINCT * FROM facebook_ad
@@ -71,3 +99,9 @@ UNION ALL
 SELECT DISTINCT * FROM zalo_ad
 UNION ALL
 SELECT DISTINCT * FROM coccoc_ad
+UNION ALL
+SELECT DISTINCT * FROM bing_ad
+
+
+
+

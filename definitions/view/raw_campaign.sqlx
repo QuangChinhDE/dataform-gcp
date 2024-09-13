@@ -120,6 +120,20 @@ WITH
             FROM zalo_campaign_raw
         ) t
         WHERE t.row_number = 1
+    ),
+
+    bing_campaign AS (
+        SELECT  
+            CAST(Id AS INT64) campaign_id,
+            Name campaign_name,
+            case 
+                when Status = 'Active' then 'ACTIVE'
+                ELSE 'PAUSED'
+            end status,
+            Status status,
+            DATETIME_ADD(cast(_airbyte_extracted_at as datetime), INTERVAL 7 HOUR) update_time,
+            MD5('bing') source_id,
+        FROM `base-datateam.airbyte_microsoft.ads_campaigns`
     )
 
 SELECT DISTINCT * FROM facebook_campaign
@@ -129,3 +143,12 @@ UNION ALL
 SELECT DISTINCT * FROM zalo_campaign
 UNION ALL
 SELECT DISTINCT * FROM coccoc_campaign
+UNION ALL
+SELECT DISTINCT * FROM bing_campaign
+
+
+
+
+
+
+

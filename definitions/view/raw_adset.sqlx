@@ -33,8 +33,22 @@ WITH
                     ,ad_group_name) a
         ) t
         WHERE t.row_number = 1  
+    ),
+
+    bing_adset AS (
+        SELECT  
+            CAST(CampaignId AS INT64) AS campaign_id,
+            CAST(Id AS INT64) adset_id,
+            Name adset_name,
+            MD5('bing') source_id
+        FROM `base-datateam.airbyte_microsoft.ads_ad_groups`
     )
 
 SELECT DISTINCT * FROM facebook_adset
 UNION ALL
 SELECT DISTINCT * FROM google_adset
+UNION ALL
+SELECT DISTINCT * FROM bing_adset
+
+
+
