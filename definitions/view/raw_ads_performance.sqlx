@@ -129,6 +129,33 @@ WITH
         -- ORDER BY cost desc
         -- where marketer = 'thaonguyen06' and date between '2023-11-01' and '2023-11-30'
 
+    ),
+
+    bing_cost AS (
+        SELECT 
+            account_id, 
+            marketer, 
+            ad_id, 
+            date, 
+            cost cost, 
+            impression impression, 
+            click click, 
+            reach, 
+            conversion,
+            cost_per_conversion,
+            source_id ,
+            network_type
+        FROM ${ref('raw_ads_bing')} 
+        -- where account_id != 782013387 and date between '2023-11-01' and '2023-11-30'
+        -- group by 
+        --     account_id, 
+        --     marketer, 
+        --     ad_id, 
+        --     date,
+        --     MD5('zalo')
+        -- ORDER BY cost desc
+        -- where marketer = 'thaonguyen06' and date between '2023-11-01' and '2023-11-30'
+
     )
 
 
@@ -139,7 +166,8 @@ UNION ALL
 SELECT DISTINCT * FROM zalo_cost
 UNION ALL
 SELECT DISTINCT * FROM coccoc_cost
-
+UNION ALL
+SELECT DISTINCT * FROM bing_cost
 -- SELECT DISTINCT * FROM zalo_cost
 
 

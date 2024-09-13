@@ -4,9 +4,11 @@ config {
 }
 
 SELECT distinct cast(replace(id, 'act_', '') as int64) account_id, name account_name, md5('facbebook') source_id 
-    FROM `base-datateam.airbyte_facebook.ads_030624_ad_account`
-    WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+FROM `base-datateam.airbyte_facebook.ads_030624_ad_account`
+WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
+
 union all
+
 SELECT DISTINCT * EXCEPT(row_number,_airbyte_extracted_at)
 FROM (
     SELECT distinct *,
@@ -21,3 +23,12 @@ FROM (
       ) gg
     ) t
 WHERE t.row_number = 1
+
+UNION ALL
+
+SELECT  
+  CAST(Id AS INT64) account_id,
+  name account_name,
+  md5('bing') source_id
+FROM `base-datateam.airbyte_microsoft.ads_accounts` 
+WHERE name like "BASE %"
