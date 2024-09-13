@@ -4,7 +4,7 @@ config {
 }
 
 SELECT DISTINCT
-  AccountId
+  CAST(AccountId AS INT64) account_id
   ,CAST(NULL AS STRING) marketer
   ,CAST(AdId AS INT64) ad_id
   ,CAST(TimePeriod AS DATE) date
@@ -21,7 +21,6 @@ SELECT DISTINCT
   ,CAST(NULL AS STRING) network_type
 FROM `base-datateam.airbyte_microsoft.ads_ad_performance_report_daily` 
 WHERE TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)) AND TIMESTAMP(CURRENT_TIMESTAMP())
-AND CAST(TimePeriod AS DATE) BETWEEN '2024-08-01' AND '2024-08-31'
 GROUP BY
   AccountId
   ,CAST(NULL AS STRING)
