@@ -5,7 +5,7 @@ config {
 
 SELECT DISTINCT
   CAST(AccountId AS INT64) account_id
-  ,CAST(NULL AS STRING) marketer
+  ,'trangha02' marketer
   ,CAST(AdId AS INT64) ad_id
   ,CAST(TimePeriod AS DATE) date
   ,CASE 
