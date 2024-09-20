@@ -1,0 +1,7 @@
+config {
+  type: "table",
+  uniqueKey: ['feature_id'],
+  schema: "dm_product_led"
+}
+
+SELECT DISTINCT * FROM ${ref('raw_feature')}

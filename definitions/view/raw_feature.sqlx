@@ -1,0 +1,30 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT 
+  feature_id, 
+  app, 
+  CASE 
+    WHEN step IS NULL THEN tour 
+    ELSE REPLACE(tour, CONCAT("_", step), "") 
+  END AS tour,
+  step
+FROM (
+  SELECT 
+    table_name AS feature_id,  
+    SUBSTR(table_name, 2, INSTR(table_name, '_', 1) - 2) AS app, 
+    REPLACE(table_name, CONCAT("x", SUBSTR(table_name, 2, INSTR(table_name, '_', 1) - 2), "_"), "") AS tour,
+    CASE 
+      WHEN REGEXP_CONTAINS(table_name, r"_\d+(_[a-zA-Z_]+)?$") THEN 
+        CONCAT(REGEXP_EXTRACT(table_name, r"_([0-9]+)"), 
+               COALESCE(REGEXP_EXTRACT(table_name, r"(_[a-zA-Z_]+)$"), "")) 
+      ELSE NULL 
+    END AS step
+  FROM 
+    `base-datateam.javascript.INFORMATION_SCHEMA.TABLES`
+  WHERE 
+    table_type = 'BASE TABLE' 
+    AND table_name LIKE 'x%'
+) AS a

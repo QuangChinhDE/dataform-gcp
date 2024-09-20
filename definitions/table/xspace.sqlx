@@ -1,0 +1,39 @@
+config {
+  type: "table",
+  uniqueKey: ['id'],
+  schema: "dm_product_led",
+  bigquery: {
+    partitionBy: "DATE(timestamp)"
+  }
+
+}
+
+SELECT 
+  DISTINCT id, 
+  feature_id, 
+  cast(user_id as int64) as user_id, 
+  DATETIME(
+    TIMESTAMP(timestamp) + INTERVAL 7 HOUR
+  ) as timestamp, 
+  DATE(
+    DATETIME(
+      TIMESTAMP(timestamp) + INTERVAL 7 HOUR
+    )
+  ) as date 
+FROM 
+  (
+    SELECT 
+      *, 
+      ROW_NUMBER() OVER (
+        PARTITION BY id 
+        ORDER BY 
+          timestamp DESC
+      ) AS row_number 
+    FROM 
+      `base-data-analyst.query.raw_xspace` a
+  ) t 
+WHERE 
+  t.row_number = 1
+
+
+

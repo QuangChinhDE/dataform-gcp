@@ -1,0 +1,40 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+WITH MaxMonth AS (
+  SELECT 
+    system_id,
+    MAX(month) AS max_month
+  FROM 
+    `base-data-analyst.customer_onboarding.user_active_rate_monthly` 
+  GROUP BY 
+    system_id
+),
+active_user AS (
+  SELECT 
+    a.system_id,
+    a.active_user
+  FROM 
+    `base-data-analyst.customer_onboarding.user_active_rate_monthly` a
+  JOIN 
+    MaxMonth b
+  ON 
+    a.system_id = b.system_id
+    AND a.month = b.max_month
+)
+
+SELECT 
+  a.id AS user_id, 
+  a.system_id, 
+  cast(b.user_limit as int64) AS system_user_limit,
+  c.active_user as system_active_user
+FROM 
+  `base-datateam.airbyte_base_system.v_users` a
+LEFT JOIN 
+  `base-data-analyst.customer_onboarding.system` b 
+  ON a.system_id = b.system_id
+LEFT JOIN 
+  active_user c 
+  ON a.system_id = c.system_id
