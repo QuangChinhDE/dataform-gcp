@@ -30,7 +30,7 @@ FROM
           timestamp DESC
       ) AS row_number 
     FROM 
-      `base-data-analyst.query.raw_xspace` a
+      ${ref('raw_xspace')} a
   ) t 
 WHERE 
   t.row_number = 1
