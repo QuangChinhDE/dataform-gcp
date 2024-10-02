@@ -8,12 +8,12 @@ DECLARE union_query STRING;
 SET union_query = (
   SELECT STRING_AGG(
     FORMAT(
-      "SELECT COALESCE(id, NULL) as id, COALESCE(feature_id, NULL) as feature_id, COALESCE(user_id, NULL) as user_id, COALESCE(timestamp, NULL) as timestamp, '%s' as source_table FROM `%s.%s.%s` where TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)", 
-      table_name, "base-datateam", "javascript", table_name
+      "SELECT COALESCE(id, NULL) as id, COALESCE(feature_id, NULL) as feature_id, COALESCE(user_id, NULL) as user_id, COALESCE(timestamp, NULL) as timestamp, '%s' as source_table FROM `%s.%s.%s`", 
+      table_name, "base-datateam", "javascript_staging", table_name
     ), 
     " UNION ALL "
   )
-  FROM `base-datateam.javascript.INFORMATION_SCHEMA.TABLES`
+  FROM `base-datateam.javascript_staging.INFORMATION_SCHEMA.TABLES`
   WHERE table_type = 'BASE TABLE' 
   AND table_name LIKE 'x%'
 )

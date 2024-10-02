@@ -11,15 +11,6 @@ SELECT
   'xspace_tour_vote_5' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_vote_5` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -29,15 +20,6 @@ SELECT
   'xcalendar_calendar_share' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_calendar_share` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -47,15 +29,6 @@ SELECT
   'xspace_tour_sidebar_step_3_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_sidebar_step_3_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -65,15 +38,6 @@ SELECT
   'xcalendar_meeting_created' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_meeting_created` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -83,15 +47,6 @@ SELECT
   'xcalendar_google_add' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_google_add` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -101,15 +56,6 @@ SELECT
   'xspace_tour_dashboard_step_3_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_dashboard_step_3_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -119,15 +65,6 @@ SELECT
   'xcalendar_focustime_created' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_focustime_created` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -137,15 +74,6 @@ SELECT
   'xspace_tour_tools_step_2_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_tools_step_2_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -155,15 +83,6 @@ SELECT
   'xspace_tour_explore_main_tools_start' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_explore_main_tools_start` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -173,15 +92,6 @@ SELECT
   'xcalendar_microsoft_add' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_microsoft_add` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -191,15 +101,6 @@ SELECT
   'xcalendar_rfocus_time_create' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_rfocus_time_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -209,15 +110,6 @@ SELECT
   'xspace_tour_start_survey' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_start_survey` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -227,15 +119,6 @@ SELECT
   'xcalendar_repeated_meeting_create' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_repeated_meeting_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -245,15 +128,6 @@ SELECT
   'xcalendar_meeting_click' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_meeting_click` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -263,15 +137,6 @@ SELECT
   'xspace_tour_sidebar_step_2_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_sidebar_step_2_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -281,15 +146,6 @@ SELECT
   'xspace_tour_click_vote_2' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_click_vote_2` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -299,15 +155,6 @@ SELECT
   'xspace_tour_tools_finish' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_tools_finish` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -317,15 +164,6 @@ SELECT
   'xspace_tour_calendar_step_4_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_calendar_step_4_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -335,15 +173,6 @@ SELECT
   'xspace_tour_calendar_step_1_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_calendar_step_1_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -353,15 +182,6 @@ SELECT
   'xspace_tour_checklist_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_checklist_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -371,15 +191,6 @@ SELECT
   'xcalendar_mytime_toggle' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_mytime_toggle` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -389,15 +200,6 @@ SELECT
   'xspace_tour_explore_message_start' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_explore_message_start` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -407,15 +209,6 @@ SELECT
   'xcalendar_following_remove' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_following_remove` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -425,15 +218,6 @@ SELECT
   'xspace_tour_click_vote_1' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_click_vote_1` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -443,15 +227,6 @@ SELECT
   'xspace_tour_vote_3' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_vote_3` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -461,15 +236,6 @@ SELECT
   'xdashboard_dashboard_edit_mode' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_dashboard_edit_mode` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -479,15 +245,6 @@ SELECT
   'xcalendar_calendar_share_teams' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_calendar_share_teams` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -497,15 +254,6 @@ SELECT
   'xdashboard_widget_created' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_widget_created` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -515,15 +263,6 @@ SELECT
   'xmessage_channel_star' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_channel_star` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -533,15 +272,6 @@ SELECT
   'xdashboard_dashboard_duplicate' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_dashboard_duplicate` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -551,15 +281,6 @@ SELECT
   'xcalendar_chat_created' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_chat_created` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -569,15 +290,6 @@ SELECT
   'xspace_tour_calendar_step_2_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_calendar_step_2_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -587,15 +299,6 @@ SELECT
   'xmessage_topic_open' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_topic_open` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -605,15 +308,6 @@ SELECT
   'xspace_tour_sidebar_step_3_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_sidebar_step_3_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -623,15 +317,6 @@ SELECT
   'xcalendar_chat_create' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_chat_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -641,15 +326,6 @@ SELECT
   'xcalendar_resources_view' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_resources_view` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -659,15 +335,6 @@ SELECT
   'xcalendar_calendar_share_public' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_calendar_share_public` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -677,15 +344,6 @@ SELECT
   'xdashboard_widget_create' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_widget_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -695,15 +353,6 @@ SELECT
   'xmessage_meeting_create' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_meeting_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -713,15 +362,6 @@ SELECT
   'xspace_tour_message_finish' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_finish` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -731,15 +371,6 @@ SELECT
   'xspace_tour_dashboard_step_3_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_dashboard_step_3_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -749,15 +380,6 @@ SELECT
   'xspace_tour_dashboard_step_2_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_dashboard_step_2_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -767,15 +389,6 @@ SELECT
   'xspace_tour_sidebar_step_1_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_sidebar_step_1_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -785,15 +398,6 @@ SELECT
   'xspace_tour_message_step_3_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_step_3_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -803,15 +407,6 @@ SELECT
   'xspace_tour_sidebar_step_1_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_sidebar_step_1_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -821,15 +416,6 @@ SELECT
   'xdashboard_dashboard_show' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_dashboard_show` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -839,15 +425,6 @@ SELECT
   'xcalendar_othercalendar_click' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_othercalendar_click` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -857,15 +434,6 @@ SELECT
   'xmessage_folder_remove' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_folder_remove` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -875,15 +443,6 @@ SELECT
   'xcalendar_focus_time_create' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_focus_time_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -893,15 +452,6 @@ SELECT
   'xcalendar_microsoft_click_event' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_microsoft_click_event` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -911,15 +461,6 @@ SELECT
   'xspace_popup_happy_birthday_8th_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_popup_happy_birthday_8th_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -929,15 +470,6 @@ SELECT
   'xspace_tour_message_step_1_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_step_1_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -947,15 +479,6 @@ SELECT
   'xspace_tour_calendar_step_3_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_calendar_step_3_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -965,15 +488,6 @@ SELECT
   'xdashboard_dashboard_remove' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_dashboard_remove` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -983,15 +497,6 @@ SELECT
   'xdashboard_widget_remove_item_after_close_popup' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_widget_remove_item_after_close_popup` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1001,15 +506,6 @@ SELECT
   'xspace_tour_calendar_step_1_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_calendar_step_1_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1019,15 +515,6 @@ SELECT
   'xdashboard_widget_resync' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_widget_resync` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1037,15 +524,6 @@ SELECT
   'xmessage_message_search' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_message_search` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1055,15 +533,6 @@ SELECT
   'xspace_tour_click_vote_3' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_click_vote_3` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1073,15 +542,6 @@ SELECT
   'xspace_tour_calendar_finish' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_calendar_finish` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1091,15 +551,6 @@ SELECT
   'xspace_tour_sidebar_step_3_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_sidebar_step_3_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1109,15 +560,6 @@ SELECT
   'xspace_tour_click_vote_5' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_click_vote_5` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1127,15 +569,6 @@ SELECT
   'xmessage_topic_click' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_topic_click` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1145,15 +578,6 @@ SELECT
   'xspace_tour_calendar_step_3_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_calendar_step_3_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1163,15 +587,6 @@ SELECT
   'xdashboard_dashboard_view_mode' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_dashboard_view_mode` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1181,15 +596,6 @@ SELECT
   'xcalendar_focustime_autodecline' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_focustime_autodecline` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1199,15 +605,6 @@ SELECT
   'xspace_tour_message_step_4_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_step_4_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1217,15 +614,6 @@ SELECT
   'xspace_tour_message_step_3_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_step_3_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1235,15 +623,6 @@ SELECT
   'xspace_tour_message_step_4_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_step_4_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1253,15 +632,6 @@ SELECT
   'xcalendar_google_click_event' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_google_click_event` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1271,15 +641,6 @@ SELECT
   'xspace_tour_explore_dashboard_start' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_explore_dashboard_start` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1289,15 +650,6 @@ SELECT
   'xspace_tour_message_step_3_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_step_3_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1307,15 +659,6 @@ SELECT
   'xspace_tour_message_step_1_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_step_1_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1325,15 +668,6 @@ SELECT
   'xspace_tour_explore_calendar_start' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_explore_calendar_start` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1343,15 +677,6 @@ SELECT
   'xmessage_folder_create' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_folder_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1361,15 +686,6 @@ SELECT
   'xspace_tour_vote' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_vote` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1379,15 +695,6 @@ SELECT
   'xdashboard_dashboard_edit' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_dashboard_edit` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1397,15 +704,6 @@ SELECT
   'xmessage_channel_set_folder' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_channel_set_folder` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1415,15 +713,6 @@ SELECT
   'xdashboard_dashboard_create' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_dashboard_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1433,15 +722,6 @@ SELECT
   'xspace_tour_calendar_step_2_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_calendar_step_2_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1451,15 +731,6 @@ SELECT
   'xcalendar_repeated_create' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_repeated_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1469,15 +740,6 @@ SELECT
   'xspace_tour_tools_step_1_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_tools_step_1_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1487,15 +749,6 @@ SELECT
   'xspace_tour_message_step_5_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_step_5_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1505,15 +758,6 @@ SELECT
   'xdashboard_widget_click_item' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_widget_click_item` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1523,15 +767,6 @@ SELECT
   'xdashboard_dashboard_share' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_dashboard_share` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1541,15 +776,6 @@ SELECT
   'xspace_tour_dashboard_step_4_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_dashboard_step_4_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1559,15 +785,6 @@ SELECT
   'xspace_tour_navigation_bar_on_left_start' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_navigation_bar_on_left_start` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1577,15 +794,6 @@ SELECT
   'xcalendar_following_follow' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_following_follow` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1595,15 +803,6 @@ SELECT
   'xspace_tour_tools_step_2_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_tools_step_2_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1613,15 +812,6 @@ SELECT
   'xmessage_topic_close' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_topic_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1631,15 +821,6 @@ SELECT
   'xspace_tour_message_step_2_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_step_2_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1649,15 +830,6 @@ SELECT
   'xspace_tour_dashboard_step_2_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_dashboard_step_2_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1667,15 +839,6 @@ SELECT
   'xspace_tour_vote_4' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_vote_4` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1685,15 +848,6 @@ SELECT
   'xspace_tour_vote_1' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_vote_1` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1703,15 +857,6 @@ SELECT
   'xcalendar_meeting_check_freebusy' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_meeting_check_freebusy` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1721,15 +866,6 @@ SELECT
   'xspace_tour_sidebar_step_2_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_sidebar_step_2_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1739,15 +875,6 @@ SELECT
   'xmessage_topic_create' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_topic_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1757,15 +884,6 @@ SELECT
   'xmessage_topic_created' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_topic_created` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1775,15 +893,6 @@ SELECT
   'xspace_tour_dashboard_step_1_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_dashboard_step_1_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1793,15 +902,6 @@ SELECT
   'xspace_tour_tools_step_3_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_tools_step_3_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1811,15 +911,6 @@ SELECT
   'xspace_tour_calendar_step_3_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_calendar_step_3_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1829,15 +920,6 @@ SELECT
   'xcalendar_chat_join' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_chat_join` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1847,15 +929,6 @@ SELECT
   'xspace_tour_sidebar_finish' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_sidebar_finish` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1865,15 +938,6 @@ SELECT
   'xspace_tour_dashboard_step_1_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_dashboard_step_1_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1883,15 +947,6 @@ SELECT
   'xmessage_open_quicksearch' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_open_quicksearch` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1901,15 +956,6 @@ SELECT
   'xspace_tour_calendar_step_1_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_calendar_step_1_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1919,15 +965,6 @@ SELECT
   'xcalendar_resources_create_meeting' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_resources_create_meeting` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1937,15 +974,6 @@ SELECT
   'xcalendar_meet_create' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_meet_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1955,15 +983,6 @@ SELECT
   'xdashboard_dashboard_hidden' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_dashboard_hidden` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1973,15 +992,6 @@ SELECT
   'xspace_tour_dashboard_finish' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_dashboard_finish` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -1991,15 +1001,6 @@ SELECT
   'xspace_tour_tools_step_2_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_tools_step_2_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2009,15 +1010,6 @@ SELECT
   'xspace_tour_message_step_2_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_step_2_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2027,15 +1019,6 @@ SELECT
   'xspace_tour_calendar_step_2_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_calendar_step_2_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2045,15 +1028,6 @@ SELECT
   'xcalendar_focustime_create' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_focustime_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2063,15 +1037,6 @@ SELECT
   'xspace_tour_dashboard_step_3_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_dashboard_step_3_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2081,15 +1046,6 @@ SELECT
   'xspace_tour_message_step_4_next' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_step_4_next` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2099,15 +1055,6 @@ SELECT
   'xspace_tour_click_vote_4' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_click_vote_4` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2117,15 +1064,6 @@ SELECT
   'xcalendar_meeting_select_room' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_meeting_select_room` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2135,15 +1073,6 @@ SELECT
   'xspace_tour_message_step_2_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_message_step_2_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2153,15 +1082,6 @@ SELECT
   'xcalendar_meeting_create' as source_table 
 FROM 
   `base-datateam.javascript.xcalendar_meeting_create` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2171,15 +1091,6 @@ SELECT
   'xspace_tour_tools_step_1_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_tools_step_1_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2189,15 +1100,6 @@ SELECT
   'xspace_tour_sidebar_step_2_close' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_sidebar_step_2_close` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2207,15 +1109,6 @@ SELECT
   'xdashboard_widget_remove' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_widget_remove` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2225,15 +1118,6 @@ SELECT
   'xspace_tour_dashboard_step_2_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_dashboard_step_2_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2243,15 +1127,6 @@ SELECT
   'xspace_tour_sidebar_step_4_prev' as source_table 
 FROM 
   `base-datateam.javascript.xspace_tour_sidebar_step_4_prev` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2261,15 +1136,6 @@ SELECT
   'xdashboard_widget_edited' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_widget_edited` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2279,15 +1145,6 @@ SELECT
   'xmessage_channel_unstar' as source_table 
 FROM 
   `base-datateam.javascript.xmessage_channel_unstar` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY) 
 UNION ALL 
 SELECT 
   COALESCE(id, NULL) as id, 
@@ -2296,13 +1153,5 @@ SELECT
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_widget_design' as source_table 
 FROM 
-  `base-datateam.javascript.xdashboard_widget_design` 
-where 
-  TIMESTAMP_TRUNC(timestamp, DAY) BETWEEN TIMESTAMP_TRUNC(
-    TIMESTAMP_SUB(
-      CURRENT_TIMESTAMP(), 
-      INTERVAL 2 DAY
-    ), 
-    DAY
-  ) 
-  AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
+  `base-datateam.javascript.xdashboard_widget_design`
+
