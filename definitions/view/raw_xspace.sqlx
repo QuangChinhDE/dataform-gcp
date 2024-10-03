@@ -6,6 +6,7 @@ config {
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_vote_5' as source_table 
@@ -15,6 +16,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_calendar_share' as source_table 
@@ -24,6 +26,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_sidebar_step_3_close' as source_table 
@@ -33,6 +36,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_meeting_created' as source_table 
@@ -42,6 +46,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_google_add' as source_table 
@@ -51,6 +56,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_dashboard_step_3_next' as source_table 
@@ -60,6 +66,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_focustime_created' as source_table 
@@ -69,6 +76,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_tools_step_2_close' as source_table 
@@ -78,6 +86,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_explore_main_tools_start' as source_table 
@@ -87,6 +96,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_microsoft_add' as source_table 
@@ -96,6 +106,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_rfocus_time_create' as source_table 
@@ -105,6 +116,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_start_survey' as source_table 
@@ -114,6 +126,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_repeated_meeting_create' as source_table 
@@ -123,6 +136,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_meeting_click' as source_table 
@@ -132,6 +146,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_sidebar_step_2_next' as source_table 
@@ -141,6 +156,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_click_vote_2' as source_table 
@@ -150,6 +166,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_tools_finish' as source_table 
@@ -159,6 +176,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_calendar_step_4_prev' as source_table 
@@ -168,6 +186,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_calendar_step_1_next' as source_table 
@@ -177,6 +196,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_checklist_close' as source_table 
@@ -186,6 +206,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_mytime_toggle' as source_table 
@@ -195,6 +216,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_explore_message_start' as source_table 
@@ -204,6 +226,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_following_remove' as source_table 
@@ -213,6 +236,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_click_vote_1' as source_table 
@@ -222,6 +246,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_vote_3' as source_table 
@@ -231,6 +256,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_dashboard_edit_mode' as source_table 
@@ -240,6 +266,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_calendar_share_teams' as source_table 
@@ -249,6 +276,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_widget_created' as source_table 
@@ -258,6 +286,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_channel_star' as source_table 
@@ -267,6 +296,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_dashboard_duplicate' as source_table 
@@ -276,6 +306,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_chat_created' as source_table 
@@ -285,6 +316,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_calendar_step_2_prev' as source_table 
@@ -294,6 +326,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_topic_open' as source_table 
@@ -303,6 +336,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_sidebar_step_3_next' as source_table 
@@ -312,6 +346,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_chat_create' as source_table 
@@ -321,6 +356,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_resources_view' as source_table 
@@ -330,6 +366,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_calendar_share_public' as source_table 
@@ -339,6 +376,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_widget_create' as source_table 
@@ -348,6 +386,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_meeting_create' as source_table 
@@ -357,6 +396,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_finish' as source_table 
@@ -366,6 +406,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_dashboard_step_3_close' as source_table 
@@ -375,6 +416,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_dashboard_step_2_close' as source_table 
@@ -384,6 +426,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_sidebar_step_1_next' as source_table 
@@ -393,6 +436,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_step_3_prev' as source_table 
@@ -402,6 +446,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_sidebar_step_1_close' as source_table 
@@ -411,6 +456,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_dashboard_show' as source_table 
@@ -420,6 +466,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_othercalendar_click' as source_table 
@@ -429,6 +476,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_folder_remove' as source_table 
@@ -438,6 +486,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_focus_time_create' as source_table 
@@ -447,6 +496,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_microsoft_click_event' as source_table 
@@ -456,6 +506,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_popup_happy_birthday_8th_close' as source_table 
@@ -465,6 +516,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_step_1_close' as source_table 
@@ -474,6 +526,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_calendar_step_3_close' as source_table 
@@ -483,6 +536,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_dashboard_remove' as source_table 
@@ -492,6 +546,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_widget_remove_item_after_close_popup' as source_table 
@@ -501,6 +556,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_calendar_step_1_prev' as source_table 
@@ -510,6 +566,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_widget_resync' as source_table 
@@ -519,6 +576,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_message_search' as source_table 
@@ -528,6 +586,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_click_vote_3' as source_table 
@@ -537,6 +596,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_calendar_finish' as source_table 
@@ -546,6 +606,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_sidebar_step_3_prev' as source_table 
@@ -555,6 +616,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_click_vote_5' as source_table 
@@ -564,6 +626,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_topic_click' as source_table 
@@ -573,6 +636,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_calendar_step_3_next' as source_table 
@@ -582,6 +646,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_dashboard_view_mode' as source_table 
@@ -591,6 +656,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_focustime_autodecline' as source_table 
@@ -600,6 +666,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_step_4_prev' as source_table 
@@ -609,6 +676,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_step_3_close' as source_table 
@@ -618,6 +686,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_step_4_close' as source_table 
@@ -627,6 +696,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_google_click_event' as source_table 
@@ -636,6 +706,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_explore_dashboard_start' as source_table 
@@ -645,6 +716,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_step_3_next' as source_table 
@@ -654,6 +726,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_step_1_next' as source_table 
@@ -663,6 +736,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_explore_calendar_start' as source_table 
@@ -672,6 +746,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_folder_create' as source_table 
@@ -681,6 +756,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_vote' as source_table 
@@ -690,6 +766,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_dashboard_edit' as source_table 
@@ -699,6 +776,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_channel_set_folder' as source_table 
@@ -708,6 +786,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_dashboard_create' as source_table 
@@ -717,6 +796,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_calendar_step_2_close' as source_table 
@@ -726,6 +806,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_repeated_create' as source_table 
@@ -735,6 +816,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_tools_step_1_next' as source_table 
@@ -744,6 +826,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_step_5_prev' as source_table 
@@ -753,6 +836,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_widget_click_item' as source_table 
@@ -762,6 +846,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_dashboard_share' as source_table 
@@ -771,6 +856,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_dashboard_step_4_prev' as source_table 
@@ -780,6 +866,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_navigation_bar_on_left_start' as source_table 
@@ -789,6 +876,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_following_follow' as source_table 
@@ -798,6 +886,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_tools_step_2_next' as source_table 
@@ -807,6 +896,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_topic_close' as source_table 
@@ -816,6 +906,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_step_2_next' as source_table 
@@ -825,6 +916,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_dashboard_step_2_next' as source_table 
@@ -834,6 +926,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_vote_4' as source_table 
@@ -843,6 +936,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_vote_1' as source_table 
@@ -852,6 +946,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_meeting_check_freebusy' as source_table 
@@ -861,6 +956,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_sidebar_step_2_prev' as source_table 
@@ -870,6 +966,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_topic_create' as source_table 
@@ -879,6 +976,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_topic_created' as source_table 
@@ -888,6 +986,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_dashboard_step_1_next' as source_table 
@@ -897,6 +996,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_tools_step_3_prev' as source_table 
@@ -906,6 +1006,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_calendar_step_3_prev' as source_table 
@@ -915,6 +1016,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_chat_join' as source_table 
@@ -924,6 +1026,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_sidebar_finish' as source_table 
@@ -933,6 +1036,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_dashboard_step_1_close' as source_table 
@@ -942,6 +1046,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_open_quicksearch' as source_table 
@@ -951,6 +1056,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_calendar_step_1_close' as source_table 
@@ -960,6 +1066,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_resources_create_meeting' as source_table 
@@ -969,6 +1076,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_meet_create' as source_table 
@@ -978,6 +1086,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_dashboard_hidden' as source_table 
@@ -987,6 +1096,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_dashboard_finish' as source_table 
@@ -996,6 +1106,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_tools_step_2_prev' as source_table 
@@ -1005,6 +1116,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_step_2_prev' as source_table 
@@ -1014,6 +1126,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_calendar_step_2_next' as source_table 
@@ -1023,6 +1136,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_focustime_create' as source_table 
@@ -1032,6 +1146,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_dashboard_step_3_prev' as source_table 
@@ -1041,6 +1156,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_step_4_next' as source_table 
@@ -1050,6 +1166,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_click_vote_4' as source_table 
@@ -1059,6 +1176,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_meeting_select_room' as source_table 
@@ -1068,6 +1186,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_message_step_2_close' as source_table 
@@ -1077,6 +1196,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xcalendar_meeting_create' as source_table 
@@ -1086,6 +1206,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_tools_step_1_close' as source_table 
@@ -1095,6 +1216,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_sidebar_step_2_close' as source_table 
@@ -1104,6 +1226,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_widget_remove' as source_table 
@@ -1113,6 +1236,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_dashboard_step_2_prev' as source_table 
@@ -1122,6 +1246,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xspace_tour_sidebar_step_4_prev' as source_table 
@@ -1131,6 +1256,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_widget_edited' as source_table 
@@ -1140,6 +1266,7 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xmessage_channel_unstar' as source_table 
@@ -1149,9 +1276,9 @@ UNION ALL
 SELECT 
   COALESCE(id, NULL) as id, 
   COALESCE(feature_id, NULL) as feature_id, 
+  COALESCE(product_id, NULL) as product_id, 
   COALESCE(user_id, NULL) as user_id, 
   COALESCE(timestamp, NULL) as timestamp, 
   'xdashboard_widget_design' as source_table 
 FROM 
   `base-datateam.javascript.xdashboard_widget_design`
-
