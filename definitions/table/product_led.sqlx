@@ -11,6 +11,7 @@ config {
 SELECT 
   DISTINCT id, 
   feature_id, 
+  product_id,
   cast(user_id as int64) as user_id, 
   DATETIME(
     TIMESTAMP(timestamp) + INTERVAL 7 HOUR
