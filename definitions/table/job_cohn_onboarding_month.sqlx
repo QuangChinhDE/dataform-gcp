@@ -6,4 +6,4 @@ config {
 
 -- SELECT *, 1 as data_old FROM ${ref('raw_trien_khai_1_thang_ggsheet')}
 -- UNION ALL
-SELECT *, 0 as data_old FROM ${ref('raw_job_cohn_onboarding_month')}
+SELECT DISTINCT *, 0 as data_old FROM ${ref('raw_job_cohn_onboarding_month')}
