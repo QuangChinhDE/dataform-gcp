@@ -1,0 +1,33 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT DISTINCT * EXCEPT(row_number)
+FROM (
+SELECT DISTINCT * ,
+    ROW_NUMBER() OVER (PARTITION BY bankfeed_id ORDER BY since DESC) AS row_number
+FROM (
+    SELECT 
+        CAST(id AS INT64) bankfeed_id,
+        CAST(amount AS FLOAT64) AS amount,
+        CAST(account_balance AS FLOAT64) AS account_balance,
+        currency,
+        content,
+        username,
+        link,
+        account_id,
+        JSON_EXTRACT_SCALAR(account_export, '$.account_holder_bank_name') account_holder_bank_name,
+        JSON_EXTRACT_SCALAR(account_export, '$.account_holder_name') account_holder_name,
+        JSON_EXTRACT_SCALAR(account_export, '$.account_holder_number') account_holder_number,
+        JSON_EXTRACT_SCALAR(account_export, '$.bank_balance') bank_balance,
+        JSON_EXTRACT_SCALAR(account_export, '$.name') bank_name,
+        CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(transaction_date AS INT64)), INTERVAL 7 HOUR) AS DATETIME) AS transaction_date,
+        CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(since AS INT64)), INTERVAL 7 HOUR) AS DATETIME) AS since,
+        CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(CAST(last_update AS INT64)), INTERVAL 7 HOUR) AS DATETIME) AS last_update
+FROM `base-datateam.airbyte_base_bankfeeds.transaction`
+order by since asc
+    ) a
+) t
+WHERE t.row_number = 1
+

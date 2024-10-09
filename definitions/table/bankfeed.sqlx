@@ -1,0 +1,8 @@
+config {
+  type: "incremental",
+  uniqueKey: ['bankfeed_id'],
+  schema: "base_revenue"
+}
+
+SELECT * EXCEPT(last_update, since)
+FROM ${ref('raw_bankfeed')} 
