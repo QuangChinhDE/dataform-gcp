@@ -1,0 +1,48 @@
+config {
+  type: "table",
+  schema: "customer_development"
+}
+
+WITH 
+  data AS 
+    (
+      SELECT agent_id,	cast(created_at as timestamp) created_at,	interaction_id, interaction_raw_id,	cast(value as float64) value
+      FROM `base-datateam.airbyte_freshchat.report_conversation_agent_assigned_json`
+      WHERE TIMESTAMP_TRUNC(cast(created_at as timestamp), DAY) >= '2023-07-24'
+      GROUP BY agent_name, agent_id,	cast(created_at as timestamp), interaction_id, interaction_raw_id, cast(value as float64)
+
+      UNION ALL
+
+      SELECT agent_id,	cast(created_at as timestamp) created_at, interaction_id, interaction_raw_id,	cast(replace(value, ',', '') as float64) value
+      FROM `base-datateam.airbyte_freshchat.report_conversation_agent_assigned_old`
+      WHERE TIMESTAMP_TRUNC(cast(created_at as timestamp), DAY) < '2023-07-24'
+      GROUP BY agent_name, agent_id,	cast(created_at as timestamp), interaction_id, interaction_raw_id, cast(replace(value, ',', '') as float64)
+
+      UNION ALL
+      
+      SELECT DISTINCT
+        -- JSON_EXTRACT_SCALAR(json, '$.agent_name') agent_name,
+        JSON_EXTRACT_SCALAR(json, '$.agent_id') agent_id,
+        CAST(JSON_EXTRACT_SCALAR(json, '$.created_time') AS TIMESTAMP) AS created_at,
+        JSON_EXTRACT_SCALAR(json, '$.interaction_id') interaction_id,	
+        JSON_EXTRACT_SCALAR(json, '$.interaction_raw_id') interaction_raw_id,
+        CAST(REPLACE(JSON_EXTRACT_SCALAR(json, '$.value'), ',', '') AS FLOAT64) AS value,
+        -- MAX(_airbyte_extracted_at)
+      FROM `base-datateam.airbyte_freshchat.rp_conversation_agent_assigned`
+      WHERE 
+        TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) >= '2024-09-24'
+      -- GROUP BY
+      --   JSON_EXTRACT_SCALAR(json, '$.agent_name'),
+      --   JSON_EXTRACT_SCALAR(json, '$.agent_id'),	
+      --   JSON_EXTRACT_SCALAR(json, '$.interaction_id'),
+      --   CAST(REPLACE(JSON_EXTRACT_SCALAR(json, '$.value'), ',', '') AS FLOAT64)
+    ),
+  final as (
+    SELECT concat(first_name, " ", last_name) agent_name, email, max(created_at) created_at,	interaction_id, interaction_raw_id,	value
+    FROM data
+    LEFT JOIN `base-datateam.airbyte_freshchat.agent`  agent ON agent.id = data.agent_id
+    GROUP BY agent_name, email,	interaction_id, interaction_raw_id,	value
+  )
+
+  select agent_name, email, (created_at + INTERVAL 7 HOUR) as created_at, interaction_id, interaction_raw_id,	value from final
+

@@ -1,0 +1,32 @@
+config {
+  type: "table",
+  schema: "customer_development"
+}
+
+WITH
+  ticket AS (
+    SELECT  
+      CAST(id AS INT64) AS ticket_id,
+      custom_fields,
+      created_at,
+      MAX(_airbyte_extracted_at) OVER(PARTITION BY id) AS _airbyte_extracted_at
+    FROM `base-datateam.airbyte_freshdesk.tickets`
+    WHERE 
+      custom_fields IS NOT NULL
+  ),
+
+  ticket_custom AS (
+    SELECT
+      DISTINCT ticket.ticket_id,
+      TIMESTAMP(ticket.created_at) AS created_at,
+      JSON_EXTRACT_SCALAR(ticket.custom_fields, '$.cf_app_h_tr') AS app,
+      JSON_EXTRACT_SCALAR(ticket.custom_fields, '$.cf_company_id') AS company_id,
+      JSON_EXTRACT_SCALAR(ticket.custom_fields, '$.cf_company_userlimit') AS company_userlimit,
+      JSON_EXTRACT_SCALAR(ticket.custom_fields, '$.cf_thi_ca_khch') AS customer_status,
+      JSON_EXTRACT_SCALAR(ticket.custom_fields, '$.cf_email_khch') AS customer_email,
+      JSON_EXTRACT_SCALAR(ticket.custom_fields, '$.cf_tnh_trng') AS status,
+      JSON_EXTRACT_SCALAR(ticket.custom_fields, '$.cf_support') AS support
+    FROM ticket
+  )
+
+SELECT * FROM ticket_custom

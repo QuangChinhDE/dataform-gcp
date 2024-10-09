@@ -1,0 +1,6 @@
+config {
+  type: "table",
+  schema: "customer_development"
+}
+
+SELECT * EXCEPT(_airbyte_extracted_at, _airbyte_generation_id, _airbyte_meta, _airbyte_raw_id) FROM `base-data-analyst.base_salary.salary_tot` WHERE phong_ban = "CD"

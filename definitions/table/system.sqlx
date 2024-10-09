@@ -1,0 +1,6 @@
+config {
+  type: "table",
+  schema: "customer_development"
+}
+
+SELECT system_id, name, taxcode, status, num_people, since FROM `base-data-analyst.customer_onboarding.system`

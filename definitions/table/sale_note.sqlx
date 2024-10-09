@@ -1,0 +1,6 @@
+config {
+  type: "table",
+  schema: "customer_development"
+}
+
+SELECT * FROM `base-data-analyst.sale.note` 

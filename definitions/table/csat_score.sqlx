@@ -1,0 +1,64 @@
+config {
+  type: "table",
+  schema: "customer_development"
+}
+
+WITH 
+  agent AS (
+    SELECT DISTINCT
+      id as agent_id
+      ,MAX(first_name)first_name
+      ,MAX(last_name)last_name
+    FROM `base-datateam.airbyte_freshchat.agent`
+    GROUP BY id
+  ),
+  data AS 
+    (
+      SELECT csat_id, agent_name, max(cast(created_at as timestamp)) created_at, issue_resolved, cast(value as int64) value
+      FROM `base-datateam.airbyte_freshchat.report_csat_score_old`
+      WHERE TIMESTAMP_TRUNC(cast(created_at as timestamp), DAY) < '2023-07-24'
+      GROUP BY csat_id, agent_name, issue_resolved, cast(value as int64), agent_id, interaction_id, group_id, conversation_id, actor_id, channel_id
+      UNION ALL
+      SELECT csat_id, agent_name, max(cast(created_at as timestamp)) created_at, issue_resolved, cast(value as int64) value
+      FROM `base-datateam.airbyte_freshchat.report_csat_score_json`
+      WHERE TIMESTAMP_TRUNC(cast(created_at as timestamp), DAY) >= '2023-07-24'
+      GROUP BY csat_id, agent_name, issue_resolved, cast(value as int64), agent_id, interaction_id, group_id, conversation_id, actor_id, channel_id
+      UNION ALL
+      SELECT DISTINCT
+        JSON_EXTRACT_SCALAR(json, '$.csat_id') csat_id,
+        CONCAT(agent.first_name, ' ', agent.last_name) agent_name,
+        MAX(
+          CAST(JSON_EXTRACT_SCALAR(json, '$.created_time') AS TIMESTAMP)
+        ) AS created_at,
+        JSON_EXTRACT_SCALAR(json, '$.issue_resolved') issue_resolved,
+        MAX(SAFE_CAST(REPLACE(JSON_EXTRACT_SCALAR(json, '$.value'), ',', '') AS FLOAT64)) AS value
+      FROM `base-datateam.airbyte_freshchat.rp_csat_score` csat_score
+      LEFT JOIN agent ON agent.agent_id = JSON_EXTRACT_SCALAR(json, '$.agent_id')
+      -- WHERE SAFE_CAST(REPLACE(JSON_EXTRACT_SCALAR(json, '$.value'), ',', '') AS FLOAT64) IS NOT NULL
+      GROUP BY
+        -- JSON_EXTRACT_SCALAR(json, '$.agent_name'),
+        CONCAT(agent.first_name, ' ', agent.last_name),
+        JSON_EXTRACT_SCALAR(json, '$.agent_id'),
+        JSON_EXTRACT_SCALAR(json, '$.csat_id'),
+        JSON_EXTRACT_SCALAR(json, '$.interaction_id'),
+        JSON_EXTRACT_SCALAR(json, '$.group_id'),
+        JSON_EXTRACT_SCALAR(json, '$.conversation_id'),
+        JSON_EXTRACT_SCALAR(json, '$.csat_submitter_user_id'),
+        JSON_EXTRACT_SCALAR(json, '$.has_response'),
+        JSON_EXTRACT_SCALAR(json, '$.actor_belongs_to_group'),
+        JSON_EXTRACT_SCALAR(json, '$.csat_reopen'),
+        JSON_EXTRACT_SCALAR(json, '$.actor_id'),
+        JSON_EXTRACT_SCALAR(json, '$.channel_id'),
+        JSON_EXTRACT_SCALAR(json, '$.issue_resolved'),
+        JSON_EXTRACT_SCALAR(json, '$.csat_response'),
+        JSON_EXTRACT_SCALAR(json, '$.reopened'),
+        JSON_EXTRACT_SCALAR(json, '$.interaction_raw_id')
+        -- SAFE_CAST(REPLACE(JSON_EXTRACT_SCALAR(json, '$.value'), ',', '') AS FLOAT64)
+    ),
+  final as (
+    SELECT distinct created_at + INTERVAL 7 HOUR as created_at, * except(created_at)
+    FROM data
+  )
+
+  select * from final
+-- WHERE FORMAT_TIMESTAMP("%m-%Y", TIMESTAMP_ADD(created_at, INTERVAL 0 HOUR)) = '06-2024'

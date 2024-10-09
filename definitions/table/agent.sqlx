@@ -1,0 +1,13 @@
+config {
+  type: "table",
+  uniqueKey: ['agent_id'],
+  schema: "customer_development"
+}
+
+SELECT DISTINCT
+  id as agent_id
+  ,email
+  ,first_name
+  ,last_name
+  ,role_name
+FROM `base-datateam.airbyte_freshchat.agent`

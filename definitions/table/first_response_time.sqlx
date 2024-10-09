@@ -1,0 +1,51 @@
+config {
+  type: "table",
+  schema: "customer_development"
+}
+
+WITH 
+  user as (
+    SELECT distinct id, email, concat(last_name, " ", first_name) agent_name FROM `base-datateam.airbyte_freshchat.agent` 
+  ),
+
+  data AS (
+    SELECT user.agent_name, user.email email, max(cast(created_at as timestamp)) created_at, cast(total_first_response_time_in_seconds as int64) total_first_response_time_in_seconds,	cast(value_in_seconds as int64) value_in_seconds
+    FROM `base-datateam.airbyte_freshchat.report_first_response_time_json` json
+    left join user ON user.id = json.agent_id
+    WHERE TIMESTAMP_TRUNC(cast(created_at as timestamp), DAY) >= '2023-07-24'
+    GROUP BY user.agent_name, email, cast(total_first_response_time_in_seconds as int64),	cast(value_in_seconds as int64)
+    UNION ALL
+    SELECT user.agent_name, user.email	email,	max(cast(created_at as timestamp)) created_at,	cast(total_first_response_time_in_seconds as int64) total_first_response_time_in_seconds,	cast(value_in_seconds as int64) value_in_seconds
+    FROM `base-datateam.airbyte_freshchat.report_first_response_time_old` old
+    left join user ON user.id = old.agent_id
+    WHERE TIMESTAMP_TRUNC(cast(created_at as timestamp), DAY) < '2023-07-24'
+    GROUP BY user.agent_name, user.email,	cast(total_first_response_time_in_seconds as int64),	cast(value_in_seconds as int64)
+
+    UNION ALL
+    SELECT
+      user.agent_name,
+      user.email email,	
+        MAX(
+          CAST(JSON_EXTRACT_SCALAR(json, '$.created_time') AS TIMESTAMP)
+        ) AS created_at,
+              cast(JSON_EXTRACT_SCALAR(json, '$.total_first_response_time_in_seconds') as int64) total_first_response_time_in_seconds,	
+      cast(JSON_EXTRACT_SCALAR(json, '$.value_in_seconds') as int64) value_in_seconds
+    FROM `base-datateam.airbyte_freshchat.rp_first_response_time` news
+    left join user ON user.id = JSON_EXTRACT_SCALAR(json, '$.agent_id')
+    WHERE 
+      TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) >= '2024-09-24'
+    GROUP BY
+      user.agent_name,
+      user.email,	
+      cast(JSON_EXTRACT_SCALAR(json, '$.total_first_response_time_in_seconds') as int64),	
+      cast(JSON_EXTRACT_SCALAR(json, '$.value_in_seconds') as int64)
+  ),
+
+  final as (
+    SELECT agent_name, email,	max(created_at) created_at,	total_first_response_time_in_seconds,	value_in_seconds
+    FROM data
+    GROUP BY agent_name, email,	total_first_response_time_in_seconds,	value_in_seconds
+  )
+
+  select agent_name, email, created_at + INTERVAL 7 HOUR as created_at, total_first_response_time_in_seconds,	value_in_seconds from final 
+

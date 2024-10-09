@@ -1,0 +1,41 @@
+config {
+  type: "table",
+  schema: "customer_development"
+}
+
+with
+  messages as (
+    SELECT 
+      _airbyte_messages_hashid
+      ,conversation_id
+    FROM `base-datateam.airbyte_freshchat.conversation_message_json_messages` messages
+    WHERE 
+      TIMESTAMP_TRUNC(_airbyte_emitted_at, DAY) = TIMESTAMP("2023-08-10")
+  ),
+
+  message_parts as (
+    SELECT 
+      _airbyte_message_parts_hashid
+      ,conversation_id
+    FROM `base-datateam.airbyte_freshchat.conversation_message_json_messages_message_parts` message_parts
+    INNER JOIN messages ON messages._airbyte_messages_hashid = message_parts._airbyte_messages_hashid
+    WHERE 
+      TIMESTAMP_TRUNC(message_parts._airbyte_emitted_at, DAY) = TIMESTAMP("2023-08-10")
+  ),
+
+  ticket as (
+    select
+      CAST(SPLIT(REPLACE(content, 'Conversation has been converted to freshdesk ticket https://basehelp.freshdesk.com/helpdesk/tickets/', ''), ' by ')[SAFE_OFFSET(0)] AS INT64) ticket_id
+      ,conversation_id
+      ,max(_airbyte_emitted_at) _airbyte_emitted_at
+    from `base-datateam.airbyte_freshchat.conversation_message_json_messages_message_parts_text` ticket
+    INNER JOIN message_parts ON message_parts._airbyte_message_parts_hashid = ticket._airbyte_message_parts_hashid
+    WHERE 
+      TIMESTAMP_TRUNC(_airbyte_emitted_at, DAY) = TIMESTAMP("2023-08-10")
+      AND content like '%https://basehelp.freshdesk.com/helpdesk/tickets/%'
+    GROUP BY
+      CAST(SPLIT(REPLACE(content, 'Conversation has been converted to freshdesk ticket https://basehelp.freshdesk.com/helpdesk/tickets/', ''), ' by ')[SAFE_OFFSET(0)] AS INT64)
+      ,conversation_id
+  )
+
+select * except(_airbyte_emitted_at) from ticket
