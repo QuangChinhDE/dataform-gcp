@@ -1,0 +1,8 @@
+config {
+  type: "table",
+  uniqueKey: ["timeoff_id"],
+  schema: "sale"
+}
+
+SELECT distinct *
+FROM ${ref('raw_timeoff_rchn')}

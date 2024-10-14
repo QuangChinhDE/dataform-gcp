@@ -1,0 +1,7 @@
+config {
+  type: "table",
+  schema: "sale"
+}
+
+SELECT distinct *
+FROM ${ref('raw_timeoff_timesheet_shifts_rchn')}
