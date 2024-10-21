@@ -12,7 +12,7 @@ WITH
 
   user AS (
     SELECT u.base_user_id 
-    FROM ${ref('user')} u
+    FROM `base-data-analyst.sale.user` u
     JOIN careerpath c ON u.email = c.email_BC
   ),
 
@@ -45,26 +45,70 @@ WITH
   ),
 
   timeoff_form AS (
-    SELECT
-      timeoff_id
-      ,JSON_EXTRACT_SCALAR(json, '$.value') value
-    FROM timeoff,
-      UNNEST(JSON_EXTRACT_ARRAY(form)) AS json
-    WHERE
-      JSON_EXTRACT_SCALAR(json, '$.id') = 'ghi_chu'
+    SELECT *
+    FROM (
+        SELECT
+            timeoff_id,
+            JSON_EXTRACT_SCALAR(json_element, '$.value') AS value,
+            JSON_EXTRACT_SCALAR(json_element, '$.id') AS id
+        FROM
+            `timeoff`,
+            UNNEST(JSON_EXTRACT_ARRAY(form)) AS json_element
+        WHERE
+            JSON_EXTRACT_SCALAR(json_element, '$.name') IN ("Tên khách hàng", "Địa chỉ", "Link CRM", "Ảnh chụp calender/email mời khách meeting", "Giờ bắt đầu", "Giờ dự kiến kết thúc")
+    )
+    PIVOT (
+        MAX(value) FOR id IN ('custom_anh_chup_calenderemail_moi_khach','ten_khach_hang','dia_chi'
+                              ,'link_google_calendar','gio_bat_dau','gio_du_kien_ket_thuc'
+                              ,'custom_ten_khach_hang','custom_dia_chi')
+    )
   )
 
 
 SELECT
   timeoff.* EXCEPT(form),
-  -- group_timeoff.name group_name,
-  timeoff_form.value reason
+  CASE WHEN ten_khach_hang IS NULL THEN custom_ten_khach_hang ELSE ten_khach_hang END AS ten_khach_hang,
+  CASE WHEN dia_chi IS NULL THEN custom_dia_chi ELSE dia_chi END AS dia_chi,
+  custom_anh_chup_calenderemail_moi_khach anh_chup_calenderemail_moi_khach,
+  link_google_calendar link_crm,
+  SAFE.PARSE_DATETIME('%d/%m/%Y %H:%M',
+    CONCAT(
+      LPAD(SPLIT(SPLIT(gio_bat_dau, ' ')[SAFE_OFFSET(0)], '/')[SAFE_OFFSET(0)], 2, '0'), '/',  -- Ngày
+      CASE 
+        WHEN CAST(LPAD(SPLIT(SPLIT(gio_bat_dau, ' ')[SAFE_OFFSET(0)], '/')[SAFE_OFFSET(1)], 2, '0') AS INT64) > 12 
+        THEN '12'  -- Giới hạn tháng lớn nhất là 12
+        ELSE LPAD(SPLIT(SPLIT(gio_bat_dau, ' ')[SAFE_OFFSET(0)], '/')[SAFE_OFFSET(1)], 2, '0')
+      END, '/',  -- Tháng
+      SPLIT(SPLIT(gio_bat_dau, ' ')[SAFE_OFFSET(0)], '/')[SAFE_OFFSET(2)], ' ',  -- Năm
+      LPAD(SPLIT(SPLIT(gio_bat_dau, ' ')[SAFE_OFFSET(1)], ':')[SAFE_OFFSET(0)], 2, '0'), ':',  -- Giờ
+      CASE 
+        WHEN CAST(LPAD(SPLIT(SPLIT(gio_bat_dau, ' ')[SAFE_OFFSET(1)], ':')[SAFE_OFFSET(1)], 2, '0') AS INT64) > 59 
+        THEN '59'  -- Giới hạn phút lớn nhất là 59
+        ELSE LPAD(SPLIT(SPLIT(gio_bat_dau, ' ')[SAFE_OFFSET(1)], ':')[SAFE_OFFSET(1)], 2, '0')
+      END  -- Phút
+    )
+  ) AS gio_bat_dau,
+  SAFE.PARSE_DATETIME('%d/%m/%Y %H:%M',
+    CONCAT(
+      LPAD(SPLIT(SPLIT(gio_du_kien_ket_thuc, ' ')[SAFE_OFFSET(0)], '/')[SAFE_OFFSET(0)], 2, '0'), '/',  -- Ngày
+      CASE 
+        WHEN CAST(LPAD(SPLIT(SPLIT(gio_du_kien_ket_thuc, ' ')[SAFE_OFFSET(0)], '/')[SAFE_OFFSET(1)], 2, '0') AS INT64) > 12 
+        THEN '12'  -- Giới hạn tháng lớn nhất là 12
+        ELSE LPAD(SPLIT(SPLIT(gio_du_kien_ket_thuc, ' ')[SAFE_OFFSET(0)], '/')[SAFE_OFFSET(1)], 2, '0')
+      END, '/',  -- Tháng
+      SPLIT(SPLIT(gio_du_kien_ket_thuc, ' ')[SAFE_OFFSET(0)], '/')[SAFE_OFFSET(2)], ' ',  -- Năm
+      LPAD(SPLIT(SPLIT(gio_du_kien_ket_thuc, ' ')[SAFE_OFFSET(1)], ':')[SAFE_OFFSET(0)], 2, '0'), ':',  -- Giờ
+      CASE 
+        WHEN CAST(LPAD(SPLIT(SPLIT(gio_du_kien_ket_thuc, ' ')[SAFE_OFFSET(1)], ':')[SAFE_OFFSET(1)], 2, '0') AS INT64) > 59 
+        THEN '59'  -- Giới hạn phút lớn nhất là 59
+        ELSE LPAD(SPLIT(SPLIT(gio_du_kien_ket_thuc, ' ')[SAFE_OFFSET(1)], ':')[SAFE_OFFSET(1)], 2, '0')
+      END  -- Phút
+    )
+  ) AS gio_du_kien_ket_thuc,
 FROM timeoff
 LEFT JOIN user ON user.base_user_id = timeoff.creator_id
--- LEFT JOIN group_timeoff ON CAST(group_timeoff.group_id AS INT64) = CAST(timeoff.group_id AS INT64)
 LEFT JOIN timeoff_form ON timeoff_form.timeoff_id = timeoff.timeoff_id
 WHERE timeoff.group_id = 24
-
 
 
 
