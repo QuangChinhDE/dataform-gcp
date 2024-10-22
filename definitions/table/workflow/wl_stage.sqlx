@@ -1,0 +1,7 @@
+config {
+  type: "table",
+  uniqueKey: ['stage_id'],
+  schema: "sale"
+}
+
+SELECT * FROM ${ref('raw_wl_stage')}

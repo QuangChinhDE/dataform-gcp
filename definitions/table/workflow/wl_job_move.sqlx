@@ -1,0 +1,10 @@
+config {
+  type: "incremental",
+  uniqueKey: ['job_move_id'],
+  schema: "sale",
+  bigquery: {
+    partitionBy: "DATE(last_update)"
+  }
+}
+
+SELECT DISTINCT * FROM ${ref('raw_wl_job_move')}

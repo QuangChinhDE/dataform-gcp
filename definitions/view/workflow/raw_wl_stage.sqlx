@@ -1,0 +1,22 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT * EXCEPT(row_number)
+FROM (
+  SELECT *,
+      ROW_NUMBER() OVER (PARTITION BY stage_id ORDER BY last_update DESC) AS row_number
+  FROM (SELECT  
+          cast(replace(id, '.0', '') as int64) stage_id
+          ,name
+          ,cast(replace(workflow_id, '.0', '') as int64) workflow_id
+          ,cast(real_order as int64) order_by
+          ,cast(replace(user_id, '.0', '') as int64) user_id
+          ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update
+          ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(since, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) since
+        FROM `base-datateam.airbyte_base_workflow.stage`
+        WHERE cast(replace(workflow_id, '.0', '') as int64) IN (SELECT workflow_id FROM ${ref('wl_workflow')})
+  ) a
+) t
+WHERE t.row_number = 1

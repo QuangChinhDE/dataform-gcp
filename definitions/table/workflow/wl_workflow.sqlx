@@ -1,0 +1,7 @@
+config {
+  type: "table",
+  uniqueKey: ['workflow_id'],
+  schema: "sale"
+}
+
+SELECT * FROM ${ref('raw_wl_workflow')}

@@ -1,0 +1,13 @@
+config {
+  type: "incremental",
+  uniqueKey: ['job_form_id'],
+  schema: "customer_onboarding",
+  bigquery: {
+    partitionBy: "DATE(last_update)"
+  }
+}
+
+SELECT
+  * EXCEPT(last_update)
+  ,MAX(last_update) OVER (PARTITION BY job_form_id) as last_update
+FROM ${ref('raw_wl_job_form')}
