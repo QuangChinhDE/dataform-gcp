@@ -16,6 +16,7 @@ SELECT
   CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(since, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) since,
   CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(last_update, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) last_update,
   CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(deadline, '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) deadline,
-  form
+  form,
+  activity_logs
 FROM `base-datateam.airbyte_base_service.ticket` 
 WHERE CAST(group_id as int64) IN (3,5,7)

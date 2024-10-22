@@ -4,4 +4,4 @@ config {
   schema: "revenue"
 }
 
-SELECT * EXCEPT(form) FROM ${ref('raw_service_ticket')}
+SELECT * EXCEPT(form,activity_logs) FROM ${ref('raw_service_ticket')}

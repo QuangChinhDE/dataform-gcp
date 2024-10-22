@@ -1,0 +1,10 @@
+config {
+  type: "table",
+  uniqueKey: ['ticket_move_id'],
+  schema: "revenue"
+}
+
+SELECT
+  * EXCEPT(last_update)
+  ,MAX(last_update) OVER (PARTITION BY ticket_move_id) as last_update
+FROM ${ref('raw_service_ticket_move')}

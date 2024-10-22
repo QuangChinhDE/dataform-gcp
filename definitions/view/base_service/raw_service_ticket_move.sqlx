@@ -1,0 +1,25 @@
+config {
+  type: "view",
+  schema: "query"
+}
+
+SELECT
+  MD5(CONCAT(
+        IFNULL(cast(ticket_id AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.data.icon') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.message') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.since') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.user_id') AS STRING), ''),
+        IFNULL(cast(JSON_EXTRACT_SCALAR(json, '$.username') AS STRING), '')
+    )) ticket_move_id
+  ,ticket_id
+  ,last_update
+  ,JSON_EXTRACT_SCALAR(json, '$.data.icon') log_action
+  ,JSON_EXTRACT_SCALAR(json, '$.message') log_info
+  ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(json, '$.since'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) log_since
+  ,CAST(JSON_EXTRACT_SCALAR(json, '$.user_id') AS INT64) user_id
+  ,JSON_EXTRACT_SCALAR(json, '$.username') username
+FROM ${ref('raw_service_ticket')},
+  UNNEST(JSON_EXTRACT_ARRAY(activity_logs)) AS json
+WHERE service_id = 111
+  AND JSON_EXTRACT_SCALAR(json, '$.data.icon') in ('log_next', 'log_approved')
