@@ -27,7 +27,7 @@ SELECT
   ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(json, '$.stage_deadline'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) stage_deadline
   ,IFNULL(cast(cast(JSON_EXTRACT_SCALAR(json, '$.from_stage_id') as int64) AS STRING), '') from_stage_id
   ,CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(json, '$.stage_end'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME) stage_end
-FROM ${ref('raw_wl_job')},
+FROM ${ref('raw_wf_job')},
   UNNEST(JSON_EXTRACT_ARRAY(moves)) AS json
 
 

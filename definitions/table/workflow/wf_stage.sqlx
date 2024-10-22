@@ -4,4 +4,4 @@ config {
   schema: "sale"
 }
 
-SELECT * FROM ${ref('raw_wl_stage')}
+SELECT * FROM ${ref('raw_wf_stage')}

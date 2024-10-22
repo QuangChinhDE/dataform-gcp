@@ -1,10 +1,10 @@
 config {
   type: "incremental",
-  uniqueKey: ['job_move_id'],
+  uniqueKey: ["job_id"],
   schema: "sale",
   bigquery: {
     partitionBy: "DATE(last_update)"
   }
 }
 
-SELECT DISTINCT * FROM ${ref('raw_wl_job_move')}
+SELECT * FROM ${ref('raw_wf_job')}

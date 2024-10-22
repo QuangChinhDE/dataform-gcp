@@ -14,5 +14,5 @@ SELECT
   ,JSON_EXTRACT_SCALAR(json, '$.id')  keys
   ,CASE WHEN JSON_EXTRACT_SCALAR(json, '$.value') = '' THEN NULL ELSE JSON_EXTRACT_SCALAR(json, '$.value') END value
   ,JSON_EXTRACT_SCALAR(json, '$.type') type
-FROM ${ref('raw_wl_job')},
+FROM ${ref('raw_wf_job')},
   UNNEST(JSON_EXTRACT_ARRAY(form)) AS json

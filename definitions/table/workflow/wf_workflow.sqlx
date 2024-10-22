@@ -4,4 +4,4 @@ config {
   schema: "sale"
 }
 
-SELECT * FROM ${ref('raw_wl_workflow')}
+SELECT * FROM ${ref('raw_wf_workflow')}

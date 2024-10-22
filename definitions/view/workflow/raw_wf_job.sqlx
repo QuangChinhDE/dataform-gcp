@@ -44,7 +44,7 @@ SELECT * EXCEPT(row_number)
                 ELSE CAST(TIMESTAMP_ADD(TIMESTAMP_SECONDS(cast(replace(JSON_EXTRACT_SCALAR(on_failed, '$.since'), '.0', '') as int64)), INTERVAL 7 HOUR) AS DATETIME)
               END failed_since
           FROM `base-datateam.airbyte_base_workflow.job` 
-          WHERE cast(replace(workflow_id, '.0', '') as int64) IN (SELECT workflow_id FROM ${ref('wl_workflow')})
+          WHERE cast(replace(workflow_id, '.0', '') as int64) IN (SELECT workflow_id FROM ${ref('wf_workflow')})
             AND TIMESTAMP_TRUNC(_airbyte_extracted_at, DAY) BETWEEN TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY), DAY) AND TIMESTAMP_TRUNC(CURRENT_TIMESTAMP, DAY)
       ) a
   ) t
