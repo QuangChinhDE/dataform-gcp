@@ -1,7 +1,7 @@
 config {
   type: "incremental",
   uniqueKey: ['job_form_id'],
-  schema: "customer_onboarding",
+  schema: "sale",
   bigquery: {
     partitionBy: "DATE(last_update)"
   }
