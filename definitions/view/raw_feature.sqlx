@@ -3,6 +3,13 @@ config {
   schema: "query"
 }
 
+select feature_id, 
+  app, 
+  tour,
+  CASE 
+    WHEN step is not null then step ELSE
+    REGEXP_EXTRACT(feature_id, r'_([a-zA-Z]+)$') END AS step
+from (
 SELECT distinct
   feature_id, 
   app, 
@@ -64,4 +71,4 @@ WHERE
   table_type = 'BASE TABLE' 
   AND table_name LIKE 'workflow_tour%'
 
-) AS a
+) AS a) b
