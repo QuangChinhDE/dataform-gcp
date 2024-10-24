@@ -4,64 +4,66 @@ config {
   schema: "logging"
 }
 
+DECLARE project_id STRING DEFAULT 'base-datateam';
+DECLARE dataset_name STRING;
+DECLARE dataset_index INT64 DEFAULT 0;
+DECLARE total_datasets INT64;
 
+-- Lấy danh sách các dataset
+DECLARE datasets ARRAY<STRING>;
+
+SET datasets = (
+  SELECT ARRAY_AGG(schema_name)
+  FROM `base-datateam.region-us-central1.INFORMATION_SCHEMA.SCHEMATA`
+);
+
+-- Tổng số dataset
+SET total_datasets = ARRAY_LENGTH(datasets);
+
+-- Tạo bảng tạm để lưu kết quả tổng hợp
+CREATE TEMP TABLE dataset_table_list AS
 SELECT
-  project_id
-  ,dataset_id
-  ,table_id
-  ,cast(TIMESTAMP_SECONDS(CAST(ROUND(creation_time/1000, 0)+60*60*7 AS INT64)) as datetime) creation_time
-  ,cast(TIMESTAMP_SECONDS(CAST(ROUND(last_modified_time/1000, 0)+60*60*7 AS INT64)) as datetime) last_modified_time
-  ,row_count
-  ,size_bytes
-FROM (
-  -- base-datateam
-    -- airbyte
-    -- select * from `base-datateam.airbyte_ads_facebook.__TABLES__` union all 
-    -- select * from `base-datateam.airbyte_ads_coccoc.__TABLES__` union all 
-    -- select * from `base-datateam.airbyte_ads_google.__TABLES__` union all 
-    -- select * from `base-datateam.airbyte_ads_zalo.__TABLES__` union all 
+  "" AS project_id,
+  "" AS dataset_id,
+  "" AS table_id,
+  DATETIME('1970-01-01 00:00:00') AS creation_time,
+  DATETIME('1970-01-01 00:00:00') AS last_modified_time,
+  0 AS row_count,
+  0 AS size_bytes
+LIMIT 0;
 
-    -- base
-    select * from `base-datateam.airbyte_base_hiring.__TABLES__` union all 
-    select * from `base-datateam.airbyte_base_hrm.__TABLES__` union all 
-    select * from `base-datateam.airbyte_base_income.__TABLES__` union all 
-    select * from `base-datateam.airbyte_base_system.__TABLES__` union all 
-    select * from `base-datateam.airbyte_base_workflow.__TABLES__` union all 
-    -- select * from `base-datateam.airbyte_base_tiomeoff.__TABLES__` union all 
+-- Vòng lặp WHILE để duyệt qua từng dataset
+WHILE dataset_index < total_datasets DO
+  -- Lấy tên dataset hiện tại
+  SET dataset_name = datasets[OFFSET(dataset_index)];
 
-    -- mkt
-    select * from `base-datateam.airbyte_google.__TABLES__` union all 
-    select * from `base-datateam.airbyte_facebook.__TABLES__` union all 
-    select * from `base-datateam.airbyte_ads.__TABLES__` union all 
+  -- Chèn dữ liệu từ dataset hiện tại vào bảng tạm
+  EXECUTE IMMEDIATE FORMAT("""
+    INSERT INTO dataset_table_list
+    SELECT
+      project_id,
+      dataset_id,
+      table_id,
+      cast(TIMESTAMP_SECONDS(CAST(ROUND(creation_time/1000, 0)+60*60*7 AS INT64)) as datetime) creation_time,
+      cast(TIMESTAMP_SECONDS(CAST(ROUND(last_modified_time/1000, 0)+60*60*7 AS INT64)) as datetime) last_modified_time,
+      row_count,
+      size_bytes
+    FROM `%s.%s.__TABLES__`
+    WHERE row_count != 0 AND type = 1
+    ORDER BY dataset_id, table_id ASC
+    """, project_id, dataset_name);
 
-    -- select * from `base-datateam.airbyte_bizfly.__TABLES__` union all 
-    select * from `base-datateam.airbyte_freshchat.__TABLES__` union all 
-    select * from `base-datateam.airbyte_freshdesk.__TABLES__` union all 
-    select * from `base-datateam.airbyte_google_sheet.__TABLES__` union all 
-    select * from `base-datateam.airbyte_pipedrive.__TABLES__` union all 
+  -- Tăng chỉ số dataset
+  SET dataset_index = dataset_index + 1;
+END WHILE;
 
-
-    -- segment
-    select * from `base-datateam.active_campaign.__TABLES__` union all 
-    select * from `base-datateam.ios.__TABLES__` union all 
-    select * from `base-datateam.javascript.__TABLES__` union all 
-    select * from `base-datateam.javascript_staging.__TABLES__` union all 
-    select * from `base-datateam.marketing_sites.__TABLES__` union all 
-    select * from `base-datateam.php_base.__TABLES__` union all 
-    select * from `base-datateam.php_production.__TABLES__` union all 
-    select * from `base-datateam.react_native.__TABLES__` union all 
-    select * from `base-datateam.react_native_base_me.__TABLES__` union all 
-    select * from `base-datateam.react_native_finance.__TABLES__` union all 
-    select * from `base-datateam.rn_request.__TABLES__` union all 
-    select * from `base-datateam.rn_wework.__TABLES__` union all 
-    select * from `base-datateam.rn_workflow.__TABLES__`
-  -- base-data-analyst
-    -- dbt
-    -- select * from `base-data-analyst.sale.__TABLES__` union all 
-    -- select * from `base-data-analyst.customer_development.__TABLES__` union all 
-    -- select * from `base-data-analyst.customer_onboarding.__TABLES__` union all 
-    -- select * from `base-data-analyst.human_resource.__TABLES__` union all 
-    -- select * from `base-data-analyst.marketing.__TABLES__`
-)
-WHERE row_count != 0 and type = 1
+-- Truy vấn kết quả cuối cùng từ bảng tạm tổng hợp
+SELECT *
+FROM dataset_table_list
 ORDER BY dataset_id, table_id asc
+
+
+
+
+
+
